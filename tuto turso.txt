@@ -1,0 +1,300 @@
+Actuellement, ton jeu est “en full cache”. Ça veut dire que la progression du joueur est probablement stockée dans le navigateur, par exemple dans localStorage, IndexedDB, ou juste en mémoire.
+
+Le problème, c’est que ce n’est pas une vraie sauvegarde serveur.
+
+Si le joueur change d’ordinateur, vide son cache, change de navigateur, perd son téléphone, ou joue en navigation privée, sa sauvegarde peut disparaître. En gros : le cache, c’est pratique pour jouer vite, mais ce n’est pas fiable comme coffre-fort.
+
+L’idée avec Turso, c’est d’avoir une petite base de données en ligne où tu peux stocker l’état du jeu.
+
+Le schéma mental est simple :
+
+Le jeu dans le navigateur
+        ↓
+Une petite fonction Netlify
+        ↓
+La base Turso
+
+Le navigateur ne doit pas parler directement à Turso avec le mot de passe de la base. Sinon n’importe qui pourrait ouvrir les DevTools, récupérer la clé, et écrire n’importe quoi dans ta base.
+
+Donc on met une “porte” entre les deux : une Netlify Function.
+
+Netlify ne sert pas seulement à héberger ton site statique. Même si ton app est hébergée “comme un branquignole” sur Netlify, tu peux ajouter des petites fonctions backend. Ce sont des mini-routes serveur, par exemple :
+
+/.netlify/functions/save-game
+/.netlify/functions/load-game
+
+Ton jeu appelle ces routes. Ces routes, elles, parlent à Turso.
+
+Ce qu’on va sauvegarder
+
+Au minimum, il te faut une table qui dit :
+
+Pour tel joueur,
+voici sa sauvegarde,
+mise à jour à telle date.
+
+Exemple de table :
+
+CREATE TABLE IF NOT EXISTS game_saves (
+  player_id TEXT PRIMARY KEY,
+  save_data TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
+player_id, c’est l’identifiant du joueur.
+
+save_data, c’est l’état du jeu converti en JSON. Par exemple :
+
+{
+  "level": 4,
+  "coins": 120,
+  "inventory": ["sword", "potion"],
+  "position": { "x": 10, "y": 5 }
+}
+
+updated_at, c’est la date de dernière sauvegarde.
+
+Version très simple sans compte utilisateur
+
+Pour une première version, tu peux créer un identifiant joueur dans le navigateur et le garder en local.
+
+Exemple :
+
+let playerId = localStorage.getItem("player_id");
+
+if (!playerId) {
+  playerId = crypto.randomUUID();
+  localStorage.setItem("player_id", playerId);
+}
+
+Ça ne permet pas encore de récupérer la sauvegarde sur un autre appareil, mais ça permet déjà de ne pas perdre la progression à chaque reload ou update du site.
+
+Pour faire une vraie sauvegarde cross-device, il faudra plus tard un système de login, un code magique, un compte, ou au minimum un “code de sauvegarde” que le joueur peut copier.
+
+Installation côté projet
+
+Dans ton projet Netlify, tu installes le client Turso :
+
+npm install @tursodatabase/serverless
+
+Ensuite, dans Netlify, tu ajoutes deux variables d’environnement :
+
+TURSO_DATABASE_URL
+TURSO_AUTH_TOKEN
+
+Important : ces variables doivent être côté Netlify Functions, pas dans le frontend public.
+
+À ne pas faire :
+
+// Mauvaise idée si ce code finit dans le navigateur
+const token = "mon-token-turso-secret";
+
+À faire :
+
+// Bonne idée : uniquement dans une Netlify Function
+const token = process.env.TURSO_AUTH_TOKEN;
+Fonction Netlify pour sauvegarder
+
+Tu crées un fichier :
+
+netlify/functions/save-game.js
+
+Dedans :
+
+import { connect } from "@tursodatabase/serverless";
+
+export default async function handler(req) {
+  if (req.method !== "POST") {
+    return new Response("Method not allowed", { status: 405 });
+  }
+
+  const { playerId, saveData } = await req.json();
+
+  if (!playerId || !saveData) {
+    return Response.json(
+      { error: "playerId and saveData are required" },
+      { status: 400 }
+    );
+  }
+
+  const conn = connect({
+    url: process.env.TURSO_DATABASE_URL,
+    authToken: process.env.TURSO_AUTH_TOKEN,
+  });
+
+  await conn.execute({
+    sql: `
+      INSERT INTO game_saves (player_id, save_data, updated_at)
+      VALUES (?, ?, ?)
+      ON CONFLICT(player_id)
+      DO UPDATE SET
+        save_data = excluded.save_data,
+        updated_at = excluded.updated_at
+    `,
+    args: [
+      playerId,
+      JSON.stringify(saveData),
+      new Date().toISOString()
+    ],
+  });
+
+  return Response.json({ ok: true });
+}
+
+Cette fonction fait trois choses :
+
+Elle reçoit la sauvegarde envoyée par le jeu.
+
+Elle l’écrit dans Turso.
+
+Si le joueur avait déjà une sauvegarde, elle la remplace.
+
+Fonction Netlify pour charger la sauvegarde
+
+Tu crées un deuxième fichier :
+
+netlify/functions/load-game.js
+
+Dedans :
+
+import { connect } from "@tursodatabase/serverless";
+
+export default async function handler(req) {
+  const url = new URL(req.url);
+  const playerId = url.searchParams.get("playerId");
+
+  if (!playerId) {
+    return Response.json(
+      { error: "playerId is required" },
+      { status: 400 }
+    );
+  }
+
+  const conn = connect({
+    url: process.env.TURSO_DATABASE_URL,
+    authToken: process.env.TURSO_AUTH_TOKEN,
+  });
+
+  const result = await conn.execute({
+    sql: "SELECT save_data, updated_at FROM game_saves WHERE player_id = ?",
+    args: [playerId],
+  });
+
+  if (result.rows.length === 0) {
+    return Response.json({ saveData: null });
+  }
+
+  const row = result.rows[0];
+
+  return Response.json({
+    saveData: JSON.parse(row.save_data),
+    updatedAt: row.updated_at,
+  });
+}
+
+Cette fonction cherche la sauvegarde du joueur dans Turso et la renvoie au jeu.
+
+Côté jeu : sauvegarder
+
+Dans ton frontend :
+
+async function saveGame(saveData) {
+  const playerId = localStorage.getItem("player_id");
+
+  await fetch("/.netlify/functions/save-game", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      playerId,
+      saveData
+    })
+  });
+}
+
+Exemple d’utilisation :
+
+await saveGame({
+  level: 4,
+  coins: 120,
+  inventory: ["sword", "potion"]
+});
+Côté jeu : charger
+async function loadGame() {
+  const playerId = localStorage.getItem("player_id");
+
+  const response = await fetch(
+    `/.netlify/functions/load-game?playerId=${playerId}`
+  );
+
+  const data = await response.json();
+
+  return data.saveData;
+}
+
+Exemple :
+
+const save = await loadGame();
+
+if (save) {
+  console.log("Sauvegarde trouvée :", save);
+} else {
+  console.log("Nouvelle partie");
+}
+Le vrai point important : la sécurité
+
+Pour un petit jeu solo, ce système suffit largement.
+
+Mais il faut comprendre un truc : tout ce qui vient du navigateur peut être modifié par le joueur.
+
+Donc si le jeu envoie :
+
+{
+  "coins": 999999999
+}
+
+La base peut l’accepter si tu ne vérifies rien.
+
+Pour un jeu solo tranquille, ce n’est pas forcément grave.
+
+Pour un jeu compétitif, avec classement, économie, scores publics ou achats, il faut valider côté serveur. Par exemple, tu ne laisses pas le joueur décider directement de son score ou de son argent. Tu calcules ou vérifies ça côté backend.
+
+Résumé simple
+
+Turso, c’est la base de données.
+
+Netlify, c’est l’hébergement du site et aussi le petit backend via Netlify Functions.
+
+Le frontend ne doit jamais contenir le token Turso.
+
+Le frontend appelle une fonction Netlify.
+
+La fonction Netlify lit le token secret dans les variables d’environnement.
+
+La fonction Netlify écrit ou lit la sauvegarde dans Turso.
+
+Donc le montage propre, c’est :
+
+Jeu → Netlify Function → Turso
+
+Pas :
+
+Jeu → Turso directement avec le token secret visible
+Version MVP recommandée
+
+Pour une première version, fais simple :
+
+Une table game_saves.
+
+Une route save-game.
+
+Une route load-game.
+
+Un player_id stocké dans localStorage.
+
+Une sauvegarde JSON.
+
+Plus tard, tu pourras ajouter un vrai compte utilisateur, un système de code de récupération, ou une authentification propre.
+
+Mais pour arrêter de perdre les sauvegardes à cause du cache, ce setup est déjà une grosse amélioration.

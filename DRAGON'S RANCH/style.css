@@ -1,0 +1,4508 @@
+/* =========================================================
+   ÉLEVAGE DE DRAGONS
+   Direction artistique : gothique médiéval-fantasy
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   POLICES
+   --------------------------------------------------------- */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+
+/* ---------------------------------------------------------
+   VARIABLES GÉNÉRALES
+   --------------------------------------------------------- */
+
+:root {
+
+    /* Fonds */
+    --fond-principal: #0d0c0b;
+    --fond-secondaire: #151311;
+    --fond-panneau: #1c1916;
+    --fond-panneau-clair: #25211d;
+    --fond-champ: #100f0e;
+
+    /* Bordures */
+    --bordure-sombre: #3a332b;
+    --bordure-claire: #655744;
+    --bordure-or: #8f7546;
+
+    /* Texte */
+    --texte-principal: #ddd4c4;
+    --texte-secondaire: #a99f90;
+    --texte-sombre: #71695e;
+
+    /* Couleurs d'accent */
+    --or: #b79a62;
+    --or-clair: #d3b978;
+    --or-sombre: #705a35;
+
+    --rouge: #722f37;
+    --rouge-clair: #94414c;
+    --rouge-sombre: #461b21;
+
+    /* Effets */
+    --ombre-legere:
+        0 4px 12px rgba(0, 0, 0, 0.35);
+
+    --ombre-profonde:
+        0 10px 30px rgba(0, 0, 0, 0.55);
+
+    --transition:
+        0.2s ease;
+}
+
+
+/* ---------------------------------------------------------
+   RÉGLAGES GLOBAUX
+   --------------------------------------------------------- */
+
+* {
+    box-sizing: border-box;
+}
+
+
+html {
+    min-height: 100%;
+}
+
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    padding: 40px 24px 80px;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #211c17 0%,
+            #12100e 35%,
+            #090807 100%
+        );
+
+    color: var(--texte-principal);
+
+    font-family:
+        "Crimson Text",
+        Georgia,
+        serif;
+
+    font-size: 19px;
+    line-height: 1.5;
+}
+
+
+/* Texture discrète sur toute la page */
+
+body::before {
+    content: "";
+
+    position: fixed;
+    inset: 0;
+
+    pointer-events: none;
+
+    background-image:
+        linear-gradient(
+            rgba(255, 255, 255, 0.012) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.008) 1px,
+            transparent 1px
+        );
+
+    background-size:
+        4px 4px;
+
+    opacity: 0.3;
+
+    z-index: -1;
+}
+
+
+/* ---------------------------------------------------------
+   CONTENU PRINCIPAL
+   --------------------------------------------------------- */
+
+body > * {
+    width: 100%;
+    max-width: 1100px;
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ---------------------------------------------------------
+   CENTRAGE GÉNÉRAL DU CONTENU
+   --------------------------------------------------------- */
+
+body {
+    text-align: center;
+}
+
+
+/* Les cartes conservent un contenu lisible à gauche */
+
+.candidat-sauvage,
+.carte-dragon,
+.oeuf {
+    text-align: left;
+}
+
+
+/* Les titres des cartes restent centrés */
+
+.candidat-sauvage h3,
+.carte-dragon h3,
+.oeuf h3 {
+    text-align: center;
+}
+
+
+/* Les textes introductifs sont centrés */
+
+#fiche-dragon > p,
+#zone-oeuf > p {
+    text-align: center;
+}
+
+
+/* Les grands boutons d'action sont centrés */
+
+#bouton-generation,
+#bouton-reproduction {
+    display: block;
+
+    width: fit-content;
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#zone-reproduction {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+
+    max-width: 800px;
+
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+}
+
+
+.selection-parent {
+    padding: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #24201c,
+            #181512
+        );
+
+    border: 1px solid var(--bordure-sombre);
+    border-top: 2px solid var(--or-sombre);
+
+    text-align: center;
+}
+
+/* ---------------------------------------------------------
+   TITRES
+   --------------------------------------------------------- */
+
+h1,
+h2,
+h3,
+h4 {
+    font-family:
+        "Cinzel",
+        Georgia,
+        serif;
+
+    font-weight: 600;
+}
+
+
+h1 {
+    margin-top: 0;
+    margin-bottom: 35px;
+
+    color: var(--or-clair);
+
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.15;
+
+    text-align: center;
+
+    letter-spacing: 0.08em;
+
+    text-shadow:
+        0 2px 3px #000,
+        0 0 20px rgba(183, 154, 98, 0.15);
+}
+
+
+h1::after {
+    content: "◆";
+
+    display: block;
+
+    margin-top: 14px;
+
+    color: var(--or-sombre);
+
+    font-size: 0.5em;
+}
+
+
+h2 {
+    margin-top: 0;
+    margin-bottom: 22px;
+
+    color: var(--or);
+
+    font-size: 1.55rem;
+
+    letter-spacing: 0.04em;
+}
+
+
+h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+
+    color: var(--or-clair);
+
+    font-size: 1.2rem;
+}
+
+
+h4 {
+    margin-top: 24px;
+    margin-bottom: 10px;
+
+    color: var(--texte-secondaire);
+
+    font-size: 0.95rem;
+
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+
+/* ---------------------------------------------------------
+   TEXTE
+   --------------------------------------------------------- */
+
+p {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+
+strong {
+    color: #eee3d1;
+    font-weight: 600;
+}
+
+
+hr {
+    max-width: 1150px;
+
+    margin-top: 50px;
+    margin-bottom: 50px;
+
+    border: 0;
+    border-top: 1px solid var(--bordure-sombre);
+}
+
+
+/* ---------------------------------------------------------
+   SECTIONS PRINCIPALES
+   --------------------------------------------------------- */
+
+/*
+   Ce style s'applique aux principaux blocs du jeu.
+   Si ton HTML utilise des <section>, ils auront
+   automatiquement cette apparence.
+*/
+
+section {
+    position: relative;
+
+    margin-bottom: 35px;
+
+    padding: 28px;
+
+    background:
+        linear-gradient(
+            145deg,
+            var(--fond-panneau-clair),
+            var(--fond-panneau)
+        );
+
+    border: 1px solid var(--bordure-sombre);
+    border-radius: 4px;
+
+    box-shadow:
+        var(--ombre-profonde),
+        inset 0 1px rgba(255, 255, 255, 0.025);
+}
+
+
+section::before {
+    content: "";
+
+    position: absolute;
+
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+
+    pointer-events: none;
+
+    border: 1px solid rgba(143, 117, 70, 0.12);
+}
+
+
+/* ---------------------------------------------------------
+   BOUTONS
+   --------------------------------------------------------- */
+
+button {
+    position: relative;
+
+    padding: 11px 20px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #4b4032,
+            #30291f
+        );
+
+    color: var(--texte-principal);
+
+    border: 1px solid var(--bordure-or);
+    border-radius: 2px;
+
+    font-family:
+        "Cinzel",
+        Georgia,
+        serif;
+
+    font-size: 0.82rem;
+    font-weight: 600;
+
+    letter-spacing: 0.05em;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 3px 8px rgba(0, 0, 0, 0.35),
+        inset 0 1px rgba(255, 255, 255, 0.06);
+
+    transition:
+        background var(--transition),
+        border-color var(--transition),
+        transform var(--transition),
+        box-shadow var(--transition);
+}
+
+
+button:hover {
+    background:
+        linear-gradient(
+            to bottom,
+            #62533e,
+            #3d3326
+        );
+
+    border-color: var(--or-clair);
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 12px rgba(0, 0, 0, 0.45),
+        0 0 10px rgba(183, 154, 98, 0.08);
+}
+
+
+button:active {
+    transform: translateY(1px);
+
+    box-shadow:
+        0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+
+button:disabled {
+    opacity: 0.35;
+
+    cursor: not-allowed;
+
+    filter: grayscale(0.8);
+
+    transform: none;
+}
+
+
+/* ---------------------------------------------------------
+   CHAMPS DE TEXTE ET MENUS
+   --------------------------------------------------------- */
+
+input,
+select {
+    width: 100%;
+
+    padding: 11px 13px;
+
+    background-color: var(--fond-champ);
+
+    color: var(--texte-principal);
+
+    border: 1px solid var(--bordure-sombre);
+    border-radius: 2px;
+
+    font-family:
+        "Crimson Text",
+        Georgia,
+        serif;
+
+    font-size: 1rem;
+
+    outline: none;
+
+    transition:
+        border-color var(--transition),
+        box-shadow var(--transition);
+}
+
+
+input:focus,
+select:focus {
+    border-color: var(--bordure-or);
+
+    box-shadow:
+        0 0 0 2px rgba(143, 117, 70, 0.12);
+}
+
+
+input::placeholder {
+    color: var(--texte-sombre);
+
+    font-style: italic;
+}
+
+
+select {
+    cursor: pointer;
+}
+
+
+/* ---------------------------------------------------------
+   ZONE DES DRAGONS SAUVAGES
+   --------------------------------------------------------- */
+
+#fiche-dragon {
+    margin-top: 25px;
+}
+
+
+.liste-dragons-sauvages {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 20px;
+
+    margin-top: 25px;
+}
+
+
+.candidat-sauvage {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+
+    padding: 24px;
+
+    background:
+        linear-gradient(
+            160deg,
+            #28231e 0%,
+            #171411 100%
+        );
+
+    border:
+        1px solid
+        var(--bordure-sombre);
+
+    border-top:
+        2px solid
+        var(--or-sombre);
+
+    border-radius: 3px;
+
+    box-shadow:
+        var(--ombre-legere),
+        inset 0 0 25px rgba(0, 0, 0, 0.25);
+
+    transition:
+        transform var(--transition),
+        border-color var(--transition),
+        box-shadow var(--transition);
+}
+
+
+.candidat-sauvage:hover {
+    transform:
+        translateY(-4px);
+
+    border-color:
+        var(--bordure-or);
+
+    box-shadow:
+        0 12px 25px rgba(0, 0, 0, 0.5),
+        0 0 18px rgba(183, 154, 98, 0.06);
+}
+
+
+.candidat-sauvage::before {
+    content: "✦";
+
+    position: absolute;
+
+    top: 12px;
+    right: 14px;
+
+    color: var(--or-sombre);
+
+    font-size: 0.8rem;
+}
+
+
+.candidat-sauvage h3 {
+    padding-bottom: 12px;
+
+    border-bottom:
+        1px solid
+        var(--bordure-sombre);
+}
+
+
+.candidat-sauvage h4 {
+    padding-bottom: 5px;
+
+    border-bottom:
+        1px solid
+        rgba(101, 87, 68, 0.35);
+}
+
+
+.candidat-sauvage input {
+    margin-top: auto;
+    margin-bottom: 10px;
+}
+
+
+.candidat-sauvage button {
+    width: 100%;
+}
+
+
+/* ---------------------------------------------------------
+   PASTILLES DE COULEUR
+   --------------------------------------------------------- */
+
+.pastille-couleur {
+    display: inline-block;
+
+    width: 24px;
+    height: 24px;
+
+    margin-left: 6px;
+    margin-right: 12px;
+
+    vertical-align: middle;
+
+    border:
+        2px solid
+        rgba(220, 210, 190, 0.65);
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 0 2px rgba(0, 0, 0, 0.5),
+        0 2px 6px rgba(0, 0, 0, 0.7);
+}
+
+
+/* ---------------------------------------------------------
+   COLLECTION DE DRAGONS
+   --------------------------------------------------------- */
+
+#compteur-dragons {
+    display: inline-block;
+
+    margin-bottom: 18px;
+
+    color: var(--texte-secondaire);
+
+    font-family:
+        "Cinzel",
+        Georgia,
+        serif;
+
+    font-size: 0.85rem;
+
+    letter-spacing: 0.05em;
+}
+
+
+#collection-dragons {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(280px, 1fr)
+        );
+
+    gap: 16px;
+}
+
+
+.carte-dragon {
+    position: relative;
+
+    padding: 20px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #24201c,
+            #181512
+        );
+
+    border:
+        1px solid
+        var(--bordure-sombre);
+
+    border-left:
+        3px solid
+        var(--or-sombre);
+
+    border-radius: 2px;
+
+    box-shadow:
+        0 5px 14px rgba(0, 0, 0, 0.3);
+
+    transition:
+        border-color var(--transition),
+        transform var(--transition),
+        background var(--transition);
+}
+
+
+.carte-dragon:hover {
+    transform:
+        translateY(-2px);
+
+    background:
+        linear-gradient(
+            145deg,
+            #2a251f,
+            #1b1814
+        );
+
+    border-left-color:
+        var(--or);
+}
+
+
+.carte-dragon h3 {
+    margin-bottom: 14px;
+
+    padding-bottom: 10px;
+
+    border-bottom:
+        1px solid
+        var(--bordure-sombre);
+}
+
+
+.carte-dragon p {
+    color: var(--texte-secondaire);
+}
+
+
+/* ---------------------------------------------------------
+   ZONE DE REPRODUCTION
+   --------------------------------------------------------- */
+
+#selection-pere,
+#selection-mere {
+    margin-bottom: 14px;
+}
+
+
+#bouton-reproduction {
+    margin-top: 10px;
+}
+
+
+#bouton-reproduction:disabled {
+    opacity: 0.35;
+
+    cursor: not-allowed;
+}
+
+
+/* ---------------------------------------------------------
+   ŒUF ET NOUVEAU-NÉ
+   --------------------------------------------------------- */
+
+#zone-oeuf {
+    margin-top: 25px;
+}
+
+
+.oeuf {
+    position: relative;
+
+    max-width: 600px;
+
+    margin:
+        30px auto
+        0;
+
+    padding: 32px;
+
+    background:
+        radial-gradient(
+            circle at top,
+            #2e2821,
+            #181512 70%
+        );
+
+    border:
+        1px solid
+        var(--bordure-or);
+
+    border-radius: 4px;
+
+    text-align: center;
+
+    box-shadow:
+        var(--ombre-profonde),
+        inset 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+
+.oeuf::before,
+.oeuf::after {
+    content: "◆";
+
+    position: absolute;
+
+    top: 14px;
+
+    color: var(--or-sombre);
+
+    font-size: 0.65rem;
+}
+
+
+.oeuf::before {
+    left: 16px;
+}
+
+
+.oeuf::after {
+    right: 16px;
+}
+
+
+.icone-oeuf {
+    margin-bottom: 10px;
+
+    font-size: 4.5rem;
+
+    filter:
+        drop-shadow(
+            0 5px 10px
+            rgba(0, 0, 0, 0.6)
+        );
+}
+
+
+.oeuf h3 {
+    font-size: 1.5rem;
+}
+
+
+.oeuf input {
+    margin-top: 20px;
+    margin-bottom: 12px;
+}
+
+
+.oeuf button {
+    margin:
+        5px
+        4px;
+}
+
+
+/* Bouton pour relâcher */
+
+#bouton-relacher-bebe {
+    background:
+        linear-gradient(
+            to bottom,
+            #4d2729,
+            #32191b
+        );
+
+    border-color:
+        #704044;
+}
+
+
+#bouton-relacher-bebe:hover {
+    background:
+        linear-gradient(
+            to bottom,
+            #683238,
+            #431f23
+        );
+
+    border-color:
+        var(--rouge-clair);
+}
+
+
+/* ---------------------------------------------------------
+   ZONE DANGEREUSE : RECOMMENCER
+   --------------------------------------------------------- */
+
+.zone-danger {
+    margin-top: 60px;
+
+    padding: 25px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #211719,
+            #160f10
+        );
+
+    border:
+        1px solid
+        var(--rouge-sombre);
+
+    border-radius: 3px;
+
+    text-align: center;
+
+    box-shadow:
+        inset 0 0 25px rgba(0, 0, 0, 0.25);
+}
+
+
+.zone-danger h2 {
+    color: #a65a62;
+
+    font-size: 1.2rem;
+}
+
+
+#bouton-recommencer {
+    background:
+        linear-gradient(
+            to bottom,
+            #652c33,
+            #411b20
+        );
+
+    border-color:
+        #82414a;
+
+    color: #ead6d8;
+}
+
+
+#bouton-recommencer:hover {
+    background:
+        linear-gradient(
+            to bottom,
+            #803843,
+            #552229
+        );
+
+    border-color:
+        #aa5964;
+}
+
+
+/* ---------------------------------------------------------
+   BARRE DE DÉFILEMENT
+   --------------------------------------------------------- */
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+
+::-webkit-scrollbar-track {
+    background:
+        var(--fond-principal);
+}
+
+
+::-webkit-scrollbar-thumb {
+    background:
+        var(--bordure-sombre);
+
+    border:
+        2px solid
+        var(--fond-principal);
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+    background:
+        var(--bordure-claire);
+}
+
+
+/* ---------------------------------------------------------
+   SÉLECTION DE TEXTE
+   --------------------------------------------------------- */
+
+::selection {
+    background:
+        var(--or-sombre);
+
+    color:
+        #fff;
+}
+
+
+/* ---------------------------------------------------------
+   RESPONSIVE : TABLETTES
+   --------------------------------------------------------- */
+
+@media (max-width: 900px) {
+
+    body {
+        padding:
+            30px
+            18px
+            60px;
+    }
+
+
+    .liste-dragons-sauvages {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .candidat-sauvage {
+        max-width: 600px;
+
+        margin-left: auto;
+        margin-right: auto;
+
+        width: 100%;
+    }
+
+
+    #collection-dragons {
+        grid-template-columns:
+            repeat(
+                auto-fill,
+                minmax(240px, 1fr)
+            );
+    }
+}
+
+
+/* ---------------------------------------------------------
+   RESPONSIVE : TÉLÉPHONES
+   --------------------------------------------------------- */
+
+@media (max-width: 550px) {
+
+    body {
+        padding:
+            20px
+            12px
+            50px;
+
+        font-size: 17px;
+    }
+
+
+    h1 {
+        margin-bottom: 25px;
+    }
+
+
+    section {
+        padding: 20px 16px;
+    }
+
+    #zone-reproduction {
+        grid-template-columns: 1fr;
+}
+
+    #collection-dragons {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .candidat-sauvage {
+        padding: 18px;
+    }
+
+
+    .oeuf {
+        padding:
+            25px
+            18px;
+    }
+
+
+    button {
+        width: 100%;
+
+        margin-top: 6px;
+        margin-bottom: 6px;
+    }
+}
+
+.navigation-jeu {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.ecran-jeu {
+    display: none;
+}
+
+.ecran-jeu.actif {
+    display: block;
+}
+
+.bouton-navigation.actif {
+    font-weight: bold;
+}
+
+.compteur-actions {
+    width: fit-content;
+    margin: 0 auto 28px;
+    padding: 12px 24px;
+
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    border: 1px solid rgba(190, 151, 76, 0.45);
+    background: rgba(32, 27, 22, 0.75);
+}
+
+.titre-actions {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #c9ad70;
+}
+
+.symboles-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.symbole-action {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.symbole-action.disponible {
+    color: #c9a24f;
+    text-shadow:
+        0 0 6px rgba(201, 162, 79, 0.35);
+}
+
+.symbole-action.depensee {
+    color: #554b3d;
+}
+
+.texte-actions {
+    min-width: 38px;
+    font-size: 0.8rem;
+    color: #a89c88;
+}
+
+button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(0.7);
+}
+
+/* ================================= */
+/* REPRODUCTION COMPACTE             */
+/* ================================= */
+
+#ecran-reproduction {
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+#zone-reproduction {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 24px;
+
+    max-width: 700px;
+    margin: 30px auto 20px;
+}
+
+.selection-parent {
+    min-width: 0;
+}
+
+.selection-parent h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.selection-parent select {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+#bouton-reproduction {
+    display: block;
+    width: fit-content;
+    margin: 0 auto 30px;
+}
+
+/* ================================= */
+/* ÉVALUATION COMPACTE               */
+/* ================================= */
+
+#ecran-evaluation {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.zone-evaluation {
+    display: grid;
+
+    grid-template-columns:
+        minmax(220px, 2fr)
+        minmax(180px, 1fr)
+        auto;
+
+    gap: 18px;
+
+    align-items: end;
+
+    max-width: 800px;
+    margin: 30px auto;
+}
+
+.zone-evaluation > div {
+    min-width: 0;
+}
+
+.zone-evaluation label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.zone-evaluation select {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+#bouton-evaluation {
+    width: auto;
+    white-space: nowrap;
+}
+
+#dossier-genetique {
+    max-width: 500px;
+    margin: 30px auto;
+}
+
+.dossier-genetique {
+    padding: 20px;
+}
+
+.liste-evaluations p {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 30px;
+    margin: 8px 0;
+}
+
+.liste-evaluations strong {
+    min-width: 30px;
+    text-align: center;
+}
+
+@media (max-width: 700px) {
+
+    #zone-reproduction {
+        grid-template-columns: 1fr;
+    }
+
+    .zone-evaluation {
+        grid-template-columns: 1fr;
+    }
+
+    #bouton-evaluation {
+        width: 100%;
+    }
+
+}
+
+/* ================================= */
+/* GRILLE DE L'ÉLEVAGE               */
+/* ================================= */
+
+#ecran-elevage {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#collection-dragons {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(260px, 1fr)
+        );
+
+    gap: 20px;
+
+    align-items: start;
+}
+
+.carte-dragon {
+    width: auto;
+    max-width: none;
+    margin: 0;
+
+    box-sizing: border-box;
+}
+
+.carte-dragon {
+    padding: 18px;
+}
+
+.carte-dragon h3 {
+    margin-top: 0;
+    margin-bottom: 6px;
+}
+
+.carte-dragon p {
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+/* ================================= */
+/* MINI-GRILLE DES STATISTIQUES      */
+/* ================================= */
+
+.mini-grille-stats {
+    display: grid;
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 6px;
+
+    margin: 14px 0;
+}
+
+.mini-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    min-width: 0;
+
+    padding: 6px 8px;
+
+    border: 1px solid rgba(190, 151, 76, 0.18);
+
+    background:
+        rgba(0, 0, 0, 0.16);
+}
+
+.mini-stat-nom {
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+
+    color: #9f8b64;
+}
+
+.mini-stat strong {
+    font-size: 0.85rem;
+    color: #d7c39a;
+}
+
+.mini-stat:last-child {
+    grid-column: 2;
+}
+
+/* ================================= */
+/* EN-TÊTE COMPACT DES DRAGONS       */
+/* ================================= */
+
+.entete-carte-dragon {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+
+    gap: 12px;
+
+    padding-bottom: 9px;
+    margin-bottom: 8px;
+
+    border-bottom:
+        1px solid rgba(190, 151, 76, 0.18);
+}
+
+.entete-carte-dragon h3 {
+    margin: 0;
+    min-width: 0;
+}
+
+.identite-carte-dragon {
+    flex-shrink: 0;
+
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+
+    color: #a99368;
+}
+
+.espece-carte-dragon {
+    margin: 0 0 7px;
+
+    font-size: 0.9rem;
+    color: #b8ad9c;
+}
+
+.origine-carte-dragon {
+    margin: 0 0 12px;
+
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+
+    color: #7f7464;
+}
+
+/* ================================= */
+/* PANNEAU LATÉRAL DU DRAGON         */
+/* ================================= */
+
+.panneau-fiche-dragon {
+    position: fixed;
+
+    top: 0;
+    right: 0;
+
+    width: min(420px, 90vw);
+    height: 100vh;
+
+    z-index: 1000;
+
+    overflow-y: auto;
+
+    box-sizing: border-box;
+
+    background:
+        linear-gradient(
+            180deg,
+            #211c17,
+            #14110e
+        );
+
+    border-left:
+        1px solid rgba(190, 151, 76, 0.55);
+
+    box-shadow:
+        -12px 0 35px rgba(0, 0, 0, 0.55);
+		
+	transition:
+    transform 0.3s ease,
+    visibility 0.3s;
+}
+
+.panneau-fiche-dragon {
+    transform: translateX(100%);
+    visibility: hidden;
+}
+
+.panneau-fiche-dragon.ouvert {
+    transform: translateX(0);
+    visibility: visible;
+}
+
+/* ================================= */
+/* FOND DU PANNEAU LATÉRAL           */
+/* ================================= */
+
+.fond-panneau-dragon {
+    position: fixed;
+    inset: 0;
+
+    z-index: 999;
+
+    background:
+        rgba(0, 0, 0, 0.58);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 0.3s ease,
+        visibility 0.3s;
+}
+
+.fond-panneau-dragon.ouvert {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ================================= */
+/* CONTENU DU PANNEAU DRAGON         */
+/* ================================= */
+
+.fiche-detaillee {
+    padding: 28px;
+}
+
+.entete-fiche {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 20px;
+
+    padding-bottom: 20px;
+    margin-bottom: 24px;
+
+    border-bottom:
+        1px solid rgba(190, 151, 76, 0.35);
+}
+
+.identite-fiche {
+    min-width: 0;
+}
+
+.identite-fiche h2 {
+    margin: 0 0 7px;
+
+    font-size: 1.6rem;
+}
+
+.identite-fiche p {
+    margin: 0;
+
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+
+    color: #9f927e;
+}
+
+.bouton-fermer-fiche {
+    flex-shrink: 0;
+
+    width: auto;
+    min-width: 0;
+
+    margin: 0;
+    padding: 6px 10px;
+
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+
+    opacity: 0.7;
+}
+
+.bouton-fermer-fiche:hover {
+    opacity: 1;
+}
+
+.colonnes-fiche {
+    display: flex;
+    flex-direction: column;
+
+    gap: 24px;
+}
+
+.bloc-fiche {
+    width: 100%;
+    box-sizing: border-box;
+
+    padding: 0;
+
+    background: none;
+    border: none;
+}
+
+.bloc-fiche h3 {
+    margin: 0 0 12px;
+
+    padding-bottom: 8px;
+
+    border-bottom:
+        1px solid rgba(190, 151, 76, 0.2);
+
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+
+    color: #b99a5e;
+}
+
+.bloc-fiche p {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 20px;
+
+    margin: 0;
+    padding: 7px 0;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.04);
+}
+
+.bloc-fiche p:last-child {
+    border-bottom: none;
+}
+
+.bloc-fiche p span {
+    color: #9f9587;
+}
+
+.bloc-fiche p strong {
+    text-align: right;
+    color: #d4c19b;
+}
+
+/* ================================= */
+/* NAVIGATION ENTRE LES PARENTS      */
+/* ================================= */
+
+.lien-parent {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    width: auto;
+    min-width: 0;
+
+    margin: 0;
+    padding: 3px 0;
+
+    border: none;
+    background: none;
+
+    font: inherit;
+    font-weight: bold;
+
+    color: #c9ad70;
+
+    cursor: pointer;
+}
+
+.lien-parent:hover {
+    color: #e0c98f;
+}
+
+.lien-parent span {
+    transition:
+        transform 0.2s ease;
+}
+
+.lien-parent:hover span {
+    transform:
+        translateX(3px);
+}
+
+/* ================================= */
+/* ÉTAPE 5 — CADRE GÉNÉRAL DU JEU    */
+/* ================================= */
+
+body {
+    min-height: 100vh;
+}
+
+.entete-jeu {
+    width: min(1400px, calc(100% - 48px));
+
+    margin: 28px auto 0;
+    padding: 20px 24px;
+
+    box-sizing: border-box;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 30px;
+
+    border:
+        1px solid rgba(190, 151, 76, 0.28);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(38, 31, 24, 0.96),
+            rgba(19, 16, 13, 0.98)
+        );
+
+    box-shadow:
+        0 18px 45px rgba(0, 0, 0, 0.3);
+}
+
+.marque-jeu {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.entete-jeu h1 {
+    margin: 0;
+
+    font-size:
+        clamp(1.4rem, 2.5vw, 2.3rem);
+
+    line-height: 1;
+
+    letter-spacing: 0.08em;
+}
+
+.ornement-entete {
+    color: #a9833f;
+
+    font-size: 0.65rem;
+
+    opacity: 0.8;
+}
+
+.entete-jeu .compteur-actions {
+    flex-shrink: 0;
+
+    width: auto;
+    min-width: 210px;
+
+    margin: 0;
+}
+
+.entete-jeu + .navigation-jeu {
+    width: min(1400px, calc(100% - 48px));
+
+    margin:
+        -1px auto 42px;
+
+    padding: 10px 16px;
+
+    box-sizing: border-box;
+
+    border:
+        1px solid rgba(190, 151, 76, 0.2);
+
+    background:
+        rgba(15, 13, 11, 0.96);
+}
+
+.entete-jeu h1::before,
+.entete-jeu h1::after {
+    content: none;
+    display: none;
+}
+
+.entete-jeu {
+    padding: 16px 22px;
+}
+
+.marque-jeu {
+    gap: 14px;
+}
+
+.entete-jeu + .navigation-jeu {
+    margin-bottom: 34px;
+}
+
+/* ================================= */
+/* ÉTAPE 5B — NAVIGATION PAR ONGLETS */
+/* ================================= */
+
+.entete-jeu + .navigation-jeu {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+
+    gap: 0;
+
+    padding: 0 18px;
+}
+
+.entete-jeu + .navigation-jeu
+.bouton-navigation {
+    position: relative;
+
+    width: auto;
+    min-width: 0;
+
+    margin: 0;
+    padding: 16px 24px;
+
+    border: none;
+
+    background: transparent;
+
+    box-shadow: none;
+
+    color: #9f9587;
+
+    opacity: 1;
+}
+
+.entete-jeu + .navigation-jeu
+.bouton-navigation:hover {
+    background:
+        rgba(190, 151, 76, 0.05);
+
+    color: #d5bd86;
+}
+
+.entete-jeu + .navigation-jeu
+.bouton-navigation.actif {
+    background: transparent;
+
+    color: #d8bd7c;
+}
+
+.entete-jeu + .navigation-jeu
+.bouton-navigation.actif::after {
+    content: "";
+
+    position: absolute;
+
+    left: 20px;
+    right: 20px;
+    bottom: 0;
+
+    height: 2px;
+
+    background: #a9833f;
+
+    box-shadow:
+        0 0 10px rgba(169, 131, 63, 0.35);
+}
+
+/* ================================= */
+/* ÉTAPE 5C — LANGAGE VISUEL COMMUN  */
+/* ================================= */
+
+:root {
+    /* Fonds */
+
+    --fond-jeu: #0c0a08;
+
+    --fond-panneau:
+        rgba(27, 23, 19, 0.94);
+
+    --fond-carte:
+        rgba(31, 26, 21, 0.96);
+
+    --fond-interactif:
+        rgba(42, 34, 25, 0.92);
+
+
+    /* Or */
+
+    --or-principal: #c2a15e;
+
+    --or-clair: #ddc586;
+
+    --or-sombre: #80642f;
+
+
+    /* Textes */
+
+    --texte-principal: #d8d0c2;
+
+    --texte-secondaire: #9d9384;
+
+    --texte-discret: #71695f;
+
+
+    /* Bordures */
+
+    --bordure-fine:
+        rgba(194, 161, 94, 0.18);
+
+    --bordure-moyenne:
+        rgba(194, 161, 94, 0.34);
+
+    --bordure-forte:
+        rgba(194, 161, 94, 0.58);
+
+
+    /* Ombres */
+
+    --ombre-panneau:
+        0 18px 45px rgba(0, 0, 0, 0.28);
+
+    --ombre-carte:
+        0 10px 24px rgba(0, 0, 0, 0.22);
+}
+
+/* ================================= */
+/* PANNEAUX PRINCIPAUX               */
+/* ================================= */
+
+.zone-reproduction,
+.zone-evaluation,
+.dossier-genetique,
+.zone-danger {
+    box-sizing: border-box;
+
+    border:
+        1px solid var(--bordure-fine);
+
+    background:
+        var(--fond-panneau);
+
+    box-shadow:
+        var(--ombre-panneau);
+}
+
+.zone-danger {
+    border-color:
+        rgba(135, 45, 53, 0.55);
+
+    background:
+        rgba(35, 18, 20, 0.92);
+}
+
+/* ================================= */
+/* CARTES                            */
+/* ================================= */
+
+.carte-dragon {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(34, 29, 24, 0.98),
+            rgba(24, 20, 17, 0.98)
+        );
+
+    border:
+        1px solid var(--bordure-fine);
+
+    border-left:
+        3px solid var(--or-sombre);
+
+    box-shadow:
+        var(--ombre-carte);
+
+    transition:
+        transform 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.carte-dragon:hover {
+    transform:
+        translateY(-2px);
+
+    border-color:
+        var(--bordure-moyenne);
+
+    border-left-color:
+        var(--or-principal);
+
+    box-shadow:
+        0 15px 32px rgba(0, 0, 0, 0.32);
+}
+
+/* ================================= */
+/* CHAMPS ET MENUS DÉROULANTS        */
+/* ================================= */
+
+select,
+input[type="text"] {
+    box-sizing: border-box;
+
+    min-height: 42px;
+
+    padding:
+        10px 13px;
+
+    border:
+        1px solid var(--bordure-fine);
+
+    border-radius: 0;
+
+    outline: none;
+
+    background:
+        rgba(12, 10, 8, 0.88);
+
+    color:
+        var(--texte-principal);
+
+    font: inherit;
+
+    transition:
+        border-color 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+select:hover,
+input[type="text"]:hover {
+    border-color:
+        var(--bordure-moyenne);
+}
+
+select:focus,
+input[type="text"]:focus {
+    border-color:
+        var(--or-principal);
+
+    background:
+        rgba(17, 14, 11, 0.98);
+
+    box-shadow:
+        0 0 0 2px
+        rgba(194, 161, 94, 0.08);
+}
+
+/* ================================= */
+/* BOUTONS — BASE COMMUNE            */
+/* ================================= */
+
+button {
+    min-height: 38px;
+
+    padding:
+        9px 16px;
+
+    border-radius: 0;
+
+    font: inherit;
+    font-size: 0.72rem;
+    font-weight: bold;
+
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        color 0.18s ease,
+        transform 0.18s ease,
+        opacity 0.18s ease;
+}
+
+button:hover:not(:disabled) {
+    transform:
+        translateY(-1px);
+}
+
+button:active:not(:disabled) {
+    transform:
+        translateY(0);
+}
+
+button:disabled {
+    cursor: not-allowed;
+
+    opacity: 0.32;
+}
+
+button:not(.bouton-navigation):not(.lien-parent) {
+    border:
+        1px solid var(--bordure-moyenne);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(74, 59, 36, 0.92),
+            rgba(48, 39, 27, 0.96)
+        );
+
+    color:
+        var(--or-clair);
+}
+
+button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
+    border-color:
+        var(--bordure-forte);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(91, 72, 42, 0.96),
+            rgba(58, 46, 30, 0.98)
+        );
+}
+
+.bouton-fermer-fiche {
+    min-height: 0;
+
+    padding:
+        6px 9px;
+
+    background:
+        transparent !important;
+
+    border:
+        1px solid var(--bordure-fine) !important;
+
+    color:
+        var(--texte-secondaire) !important;
+}
+
+.bouton-fermer-fiche:hover {
+    border-color:
+        var(--bordure-moyenne) !important;
+
+    color:
+        var(--or-clair) !important;
+}
+
+/* ================================= */
+/* TITRES DE SECTION                 */
+/* ================================= */
+
+.ecran-jeu > h2 {
+    margin-bottom:
+        8px;
+
+    color:
+        var(--or-principal);
+
+    letter-spacing:
+        0.08em;
+}
+
+.ecran-jeu > h2 + p {
+    margin-top:
+        0;
+
+    color:
+        var(--texte-secondaire);
+}
+
+/* ================================= */
+/* 5D — IDENTITÉ DES ÉCRANS          */
+/* ================================= */
+
+.entete-ecran {
+    width: min(620px, 100%);
+
+    margin:
+        0 auto 32px;
+
+    text-align: center;
+}
+
+.surtitre-ecran {
+    margin:
+        0 0 7px;
+
+    color:
+        var(--texte-discret);
+
+    font-size:
+        0.65rem;
+
+    letter-spacing:
+        0.18em;
+
+    text-transform:
+        uppercase;
+}
+
+.entete-ecran h2 {
+    margin:
+        0;
+
+    color:
+        var(--or-principal);
+
+    font-size:
+        1.55rem;
+
+    letter-spacing:
+        0.08em;
+}
+
+.separateur-ecran {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    width: min(280px, 70%);
+
+    margin:
+        13px auto;
+}
+
+.separateur-ecran span {
+    flex: 1;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--bordure-moyenne)
+        );
+}
+
+.separateur-ecran span:last-child {
+    background:
+        linear-gradient(
+            90deg,
+            var(--bordure-moyenne),
+            transparent
+        );
+}
+
+.separateur-ecran i {
+    color:
+        var(--or-sombre);
+
+    font-size:
+        0.55rem;
+
+    font-style:
+        normal;
+}
+
+.entete-ecran #compteur-dragons {
+    margin:
+        0;
+
+    color:
+        var(--texte-secondaire);
+
+    font-size:
+        0.72rem;
+
+    letter-spacing:
+        0.1em;
+
+    text-transform:
+        uppercase;
+}
+
+.entete-elevage::before {
+    content: "I";
+
+    display: block;
+
+    width: 28px;
+    height: 28px;
+
+    margin:
+        0 auto 14px;
+
+    border:
+        1px solid var(--bordure-moyenne);
+
+    color:
+        var(--or-sombre);
+
+    font-size:
+        0.7rem;
+
+    line-height:
+        28px;
+
+    text-align:
+        center;
+
+    transform:
+        rotate(45deg);
+}
+
+.entete-elevage::before {
+    text-indent: -1px;
+}
+
+.description-ecran {
+    max-width: 520px;
+
+    margin:
+        0 auto;
+
+    color:
+        var(--texte-secondaire);
+
+    font-size:
+        0.86rem;
+
+    line-height:
+        1.6;
+}
+
+.entete-expedition {
+    position: relative;
+}
+
+.entete-expedition .separateur-ecran i {
+    color:
+        #786846;
+}
+
+.entete-expedition .surtitre-ecran {
+    color:
+        #827867;
+}
+
+/* ================================= */
+/* EXPÉDITION — ZONE DE RENCONTRE    */
+/* ================================= */
+
+#ecran-expedition #fiche-dragon {
+    position: relative;
+
+    width: min(1200px, 100%);
+    margin: 28px auto 0;
+    padding: 26px;
+
+    box-sizing: border-box;
+
+    border-top:
+        1px solid var(--bordure-fine);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(25, 22, 18, 0.55),
+            rgba(12, 10, 8, 0.15)
+        );
+}
+
+#ecran-expedition #fiche-dragon::before {
+    content: "RENCONTRES";
+
+    display: block;
+
+    width: max-content;
+
+    margin: 0 auto 24px;
+    padding: 0 14px;
+
+    color:
+        var(--texte-discret);
+
+    font-size:
+        0.62rem;
+
+    letter-spacing:
+        0.18em;
+}
+
+/* ================================= */
+/* REPRODUCTION — CHAMBRE DES LIGNÉES */
+/* ================================= */
+
+.entete-reproduction .surtitre-ecran {
+    color:
+        #8f7960;
+}
+
+.entete-reproduction .separateur-ecran i {
+    color:
+        #9d744e;
+}
+
+
+#ecran-reproduction #zone-reproduction {
+    position: relative;
+
+    width: min(860px, 100%);
+
+    margin:
+        30px auto 0;
+
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(0, 1fr);
+
+    gap: 42px;
+}
+
+#ecran-reproduction .selection-parent {
+    position: relative;
+
+    padding:
+        24px;
+
+    border:
+        1px solid var(--bordure-fine);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(34, 28, 23, 0.94),
+            rgba(22, 18, 15, 0.96)
+        );
+
+    box-shadow:
+        var(--ombre-carte);
+}
+
+
+#ecran-reproduction .selection-parent h3 {
+    margin:
+        0 0 18px;
+
+    padding-bottom:
+        12px;
+
+    border-bottom:
+        1px solid var(--bordure-fine);
+
+    color:
+        var(--or-principal);
+
+    font-size:
+        0.82rem;
+
+    letter-spacing:
+        0.14em;
+
+    text-align:
+        center;
+
+    text-transform:
+        uppercase;
+}
+
+#ecran-reproduction #zone-reproduction::after {
+    content:
+        "◆";
+
+    position:
+        absolute;
+
+    top:
+        50%;
+    left:
+        50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    z-index:
+        2;
+
+    width:
+        34px;
+    height:
+        34px;
+
+    border:
+        1px solid var(--bordure-moyenne);
+
+    background:
+        var(--fond-jeu);
+
+    color:
+        var(--or-sombre);
+
+    font-size:
+        0.55rem;
+
+    line-height:
+        34px;
+
+    text-align:
+        center;
+}
+
+#ecran-reproduction
+#bouton-reproduction {
+    display:
+        block;
+
+    width:
+        max-content;
+
+    margin:
+        22px auto 0;
+}
+
+@media (max-width: 700px) {
+
+    #ecran-reproduction
+    #zone-reproduction {
+        grid-template-columns:
+            1fr;
+
+        gap:
+            18px;
+    }
+
+
+    #ecran-reproduction
+    #zone-reproduction::after {
+        display:
+            none;
+    }
+
+}
+
+/* ================================= */
+/* REPRODUCTION — REGISTRE DE NAISSANCE */
+/* ================================= */
+
+#ecran-reproduction #zone-oeuf {
+    position: relative;
+
+    width: min(760px, 100%);
+
+    margin: 38px auto 0;
+
+    box-sizing: border-box;
+}
+
+#ecran-reproduction #zone-oeuf:not(:empty) {
+    padding:
+        58px 28px 28px;
+
+    border:
+        1px solid var(--bordure-fine);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(31, 26, 21, 0.88),
+            rgba(18, 15, 12, 0.96)
+        );
+
+    box-shadow:
+        var(--ombre-panneau);
+}
+
+#ecran-reproduction #zone-oeuf:not(:empty)::before {
+    content:
+        "DESCENDANCE";
+
+    position:
+        absolute;
+
+    top:
+        20px;
+    left:
+        50%;
+
+    transform:
+        translateX(-50%);
+
+    color:
+        var(--or-principal);
+
+    font-size:
+        0.68rem;
+
+    letter-spacing:
+        0.18em;
+
+    text-transform:
+        uppercase;
+}
+
+#ecran-reproduction #zone-oeuf:not(:empty)::after {
+    content:
+        "";
+
+    position:
+        absolute;
+
+    top:
+        42px;
+    left:
+        50%;
+
+    transform:
+        translateX(-50%);
+
+    width:
+        120px;
+    height:
+        1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--bordure-moyenne),
+            transparent
+        );
+}
+
+#ecran-reproduction #zone-oeuf:not(:empty) {
+    animation:
+        apparition-descendance
+        0.35s ease-out;
+}
+
+@keyframes apparition-descendance {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+
+}
+
+/* ================================= */
+/* 5D.4 — CABINET D'ÉTUDE            */
+/* ================================= */
+
+.entete-evaluation .surtitre-ecran {
+    color:
+        #7f8176;
+}
+
+.entete-evaluation .separateur-ecran i {
+    color:
+        #8b927d;
+}
+
+
+#ecran-evaluation .zone-evaluation {
+    width:
+        min(900px, 100%);
+
+    margin:
+        30px auto 0;
+
+    padding:
+        22px;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        minmax(180px, 1fr)
+        minmax(180px, 1fr)
+        auto;
+
+    align-items:
+        end;
+
+    gap:
+        16px;
+}
+
+#ecran-evaluation
+.zone-evaluation > div {
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        8px;
+
+    min-width:
+        0;
+}
+
+
+#ecran-evaluation
+.zone-evaluation label {
+    color:
+        var(--texte-secondaire);
+
+    font-size:
+        0.64rem;
+
+    letter-spacing:
+        0.12em;
+
+    text-transform:
+        uppercase;
+}
+
+
+#ecran-evaluation
+.zone-evaluation select {
+    width:
+        100%;
+}
+
+#ecran-evaluation
+#bouton-evaluation {
+    min-height:
+        42px;
+
+    white-space:
+        nowrap;
+}
+
+@media (max-width: 760px) {
+
+    #ecran-evaluation
+    .zone-evaluation {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    #ecran-evaluation
+    #bouton-evaluation {
+        width:
+            100%;
+    }
+
+}
+
+#ecran-evaluation
+#resultat-evaluation {
+    width:
+        min(700px, 100%);
+
+    margin:
+        26px auto 0;
+
+    box-sizing:
+        border-box;
+}
+
+
+#ecran-evaluation
+#resultat-evaluation:not(:empty) {
+    position:
+        relative;
+
+    padding:
+        54px 26px 24px;
+
+    border:
+        1px solid var(--bordure-moyenne);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(31, 29, 24, 0.96),
+            rgba(20, 19, 16, 0.98)
+        );
+
+    box-shadow:
+        var(--ombre-carte);
+
+    animation:
+        apparition-evaluation
+        0.25s ease-out;
+}
+
+#ecran-evaluation
+#resultat-evaluation:not(:empty)::before {
+    content:
+        "RÉSULTAT DE L'EXAMEN";
+
+    position:
+        absolute;
+
+    top:
+        18px;
+    left:
+        50%;
+
+    transform:
+        translateX(-50%);
+
+    color:
+        var(--texte-secondaire);
+
+    font-size:
+        0.62rem;
+
+    letter-spacing:
+        0.18em;
+
+    white-space:
+        nowrap;
+}
+
+@keyframes apparition-evaluation {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+
+}
+
+#ecran-evaluation
+#dossier-genetique {
+    width:
+        min(900px, 100%);
+
+    margin:
+        38px auto 0;
+
+    box-sizing:
+        border-box;
+}
+
+
+#ecran-evaluation
+#dossier-genetique:not(:empty) {
+    position:
+        relative;
+
+    padding:
+        58px 26px 26px;
+
+    border-top:
+        1px solid var(--bordure-moyenne);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(27, 25, 21, 0.72),
+            rgba(14, 13, 11, 0.3)
+        );
+}
+
+#ecran-evaluation
+#dossier-genetique:not(:empty)::before {
+    content:
+        "DOSSIER GÉNÉTIQUE";
+
+    position:
+        absolute;
+
+    top:
+        20px;
+    left:
+        50%;
+
+    transform:
+        translateX(-50%);
+
+    color:
+        var(--or-principal);
+
+    font-size:
+        0.72rem;
+
+    letter-spacing:
+        0.18em;
+
+    white-space:
+        nowrap;
+}
+
+/* ================================= */
+/* 5D.4 — NOTES GÉNÉTIQUES           */
+/* ================================= */
+
+.note-genetique {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 62px;
+    height: 62px;
+
+    margin: 14px auto;
+
+    border:
+        1px solid var(--bordure-moyenne);
+
+    background:
+        rgba(12, 10, 8, 0.72);
+
+    color:
+        var(--or-clair);
+
+    font-size:
+        2rem;
+
+    line-height:
+        1;
+
+    box-shadow:
+        inset 0 0 18px rgba(0, 0, 0, 0.35);
+}
+
+/* ================================= */
+/* DOSSIER GÉNÉTIQUE — ARCHIVES     */
+/* ================================= */
+
+.dossier-genetique {
+    width: 100%;
+}
+
+
+.entete-dossier-genetique {
+    margin-bottom: 24px;
+
+    text-align: center;
+}
+
+
+.entete-dossier-genetique > span {
+    color:
+        var(--texte-discret);
+
+    font-size:
+        0.6rem;
+
+    letter-spacing:
+        0.16em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.entete-dossier-genetique h3 {
+    margin:
+        7px 0 4px;
+
+    color:
+        var(--or-principal);
+
+    font-size:
+        1.25rem;
+
+    letter-spacing:
+        0.06em;
+}
+
+
+.entete-dossier-genetique p {
+    margin: 0;
+
+    color:
+        var(--texte-secondaire);
+
+    font-size:
+        0.76rem;
+}
+
+.liste-evaluations {
+    width:
+        min(520px, 100%);
+
+    margin:
+        0 auto;
+
+    border-top:
+        1px solid var(--bordure-fine);
+}
+
+
+.ligne-dossier-genetique {
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr auto;
+
+    align-items:
+        center;
+
+    min-height:
+        46px;
+
+    padding:
+        0 12px;
+
+    border-bottom:
+        1px solid var(--bordure-fine);
+}
+
+
+.nom-statistique-dossier {
+    color:
+        var(--texte-secondaire);
+
+    font-size:
+        0.7rem;
+
+    letter-spacing:
+        0.1em;
+
+    text-transform:
+        uppercase;
+}
+
+.note-dossier {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    width:
+        32px;
+
+    height:
+        32px;
+
+    border:
+        1px solid var(--bordure-fine);
+
+    background:
+        rgba(12, 10, 8, 0.55);
+
+    color:
+        var(--or-principal);
+
+    font-weight:
+        bold;
+}
+
+
+.note-dossier.note-s {
+    border-color:
+        rgba(218, 190, 119, 0.85);
+
+    color:
+        #ead59b;
+
+    box-shadow:
+        0 0 14px
+        rgba(194, 161, 94, 0.12);
+}
+
+
+.note-dossier.note-a {
+    border-color:
+        var(--bordure-forte);
+
+    color:
+        var(--or-clair);
+}
+
+
+.note-dossier.note-b {
+    color:
+        var(--or-principal);
+}
+
+
+.note-dossier.note-c {
+    color:
+        var(--texte-principal);
+}
+
+
+.note-dossier.note-d,
+.note-dossier.note-e,
+.note-dossier.note-f {
+    color:
+        var(--texte-secondaire);
+}
+
+
+.note-dossier.note-inconnue {
+    border-color:
+        rgba(255, 255, 255, 0.06);
+
+    color:
+        var(--texte-discret);
+
+    opacity:
+        0.55;
+}
+
+/* ================================= */
+/* SCORE DE PERFECTION               */
+/* ================================= */
+
+.perfection-dragon {
+    margin:
+        22px 0 28px;
+
+    padding:
+        18px 20px;
+
+    border:
+        1px solid var(--bordure-fine);
+
+    background:
+        rgba(12, 10, 8, 0.48);
+}
+
+
+.entete-perfection {
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    gap:
+        20px;
+}
+
+
+.entete-perfection span {
+    color:
+        var(--texte-secondaire);
+
+    font-size:
+        0.66rem;
+
+    letter-spacing:
+        0.12em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.entete-perfection strong {
+    color:
+        var(--or-clair);
+
+    font-size:
+        0.82rem;
+}
+
+.barre-perfection {
+    height:
+        5px;
+
+    margin:
+        14px 0 10px;
+
+    overflow:
+        hidden;
+
+    background:
+        rgba(255, 255, 255, 0.05);
+}
+
+
+.progression-perfection {
+    height:
+        100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--or-sombre),
+            var(--or-principal),
+            var(--or-clair)
+        );
+
+    transition:
+        width 0.45s ease;
+}
+
+
+.perfection-dragon > p {
+    margin:
+        0;
+
+    color:
+        var(--texte-discret);
+
+    font-size:
+        0.68rem;
+
+    text-align:
+        right;
+}
+
+/* ================================= */
+/* OUTILS DE TRI ET DE FILTRAGE      */
+/* ================================= */
+
+.outils-elevage {
+    display: grid;
+
+    grid-template-columns:
+        minmax(180px, 1.5fr)
+        minmax(130px, 1fr)
+        minmax(110px, 0.75fr)
+        minmax(190px, 1.35fr);
+
+    gap: 12px;
+
+    width: min(1000px, 100%);
+
+    margin:
+        28px auto 8px;
+
+    padding:
+        14px 16px;
+
+    border:
+        1px solid var(--bordure-fine);
+
+    background:
+        rgba(12, 10, 8, 0.42);
+}
+
+.outil-elevage {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    min-width: 0;
+}
+
+
+.outil-elevage label {
+    color:
+        var(--texte-discret);
+
+    font-size:
+        0.58rem;
+
+    letter-spacing:
+        0.14em;
+
+    text-transform:
+        uppercase;
+}
+
+.outil-elevage input,
+.outil-elevage select {
+    width: 100%;
+
+    height: 38px;
+
+    padding:
+        0 11px;
+
+    border:
+        1px solid var(--bordure-fine);
+
+    border-radius:
+        0;
+
+    outline:
+        none;
+
+    background:
+        rgba(8, 7, 6, 0.72);
+
+    color:
+        var(--texte-principal);
+
+    font-family:
+        inherit;
+
+    font-size:
+        0.72rem;
+}
+
+
+.outil-elevage input::placeholder {
+    color:
+        var(--texte-discret);
+
+    opacity:
+        0.65;
+}
+
+.outil-elevage input:focus,
+.outil-elevage select:focus {
+    border-color:
+        var(--bordure-forte);
+
+    background:
+        rgba(15, 12, 9, 0.88);
+}
+
+#compteur-dragons-affiches {
+    min-height:
+        16px;
+
+    margin:
+        8px auto 18px;
+
+    color:
+        var(--texte-discret);
+
+    font-size:
+        0.6rem;
+
+    letter-spacing:
+        0.1em;
+
+    text-align:
+        center;
+
+    text-transform:
+        uppercase;
+}
+
+@media (max-width: 900px) {
+
+    .outils-elevage {
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+}
+
+
+@media (max-width: 560px) {
+
+    .outils-elevage {
+        grid-template-columns:
+            1fr;
+    }
+
+}
+
+/* =================================
+   RARETÉ — EXPÉDITION COMPACTE
+================================= */
+
+.rarete-esthetique-expedition {
+    margin-top: 14px;
+    padding-top: 10px;
+
+    border-top:
+        1px solid
+        rgba(190, 155, 80, 0.18);
+}
+
+
+.score-rarete-expedition {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+
+.score-rarete-expedition strong {
+    font-size: 0.72rem;
+
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+
+    color: #a99a7b;
+}
+
+
+.etoiles-rarete {
+    letter-spacing: 0.08em;
+    color: #c5a65b;
+}
+
+/* ================================= */
+/* RARETÉ ESTHÉTIQUE — GRANDE FICHE */
+/* ================================= */
+
+.rarete-esthetique-fiche {
+    position: relative;
+}
+
+.rarete-esthetique-fiche .detail-rarete {
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(190, 155, 80, 0.16);
+}
+
+.rarete-esthetique-fiche .detail-rarete:first-of-type {
+    padding-top: 4px;
+}
+
+.detail-rarete-entete {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 7px;
+}
+
+.detail-rarete-entete span {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #a99779;
+}
+
+.detail-rarete-entete em {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-style: normal;
+    color: #c6a65b;
+}
+
+.rarete-esthetique-fiche .detail-rarete > strong {
+    display: block;
+    font-size: 1rem;
+    font-weight: normal;
+    color: #e0d5bd;
+}
+
+.explication-rarete {
+    margin: 7px 0 0;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: #817766;
+    font-style: italic;
+}
+
+.score-rarete-fiche {
+    margin-top: 18px;
+    padding: 15px 0 4px;
+    border-top: 1px solid rgba(190, 155, 80, 0.32);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+}
+
+.score-rarete-fiche .etoiles-rarete {
+    font-size: 1.15rem;
+    letter-spacing: 0.12em;
+    color: #c6a65b;
+}
+
+.score-rarete-fiche > strong {
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #d4bd82;
+}
+
+.rarete-indisponible {
+    color: #817766;
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
+/* ================================= */
+/* ALBINISME — FICHE DÉTAILLÉE      */
+/* ================================= */
+
+.mutation-albinisme .detail-rarete-entete em,
+.mutation-detectee .detail-rarete-entete em {
+    color: #d4bd82;
+}
+
+.mutation-detectee {
+    position: relative;
+    margin-top: 8px;
+}
+
+.couleurs-hereditaires {
+    margin-top: 18px;
+    padding: 15px;
+
+    border: 1px solid rgba(190, 155, 80, 0.22);
+    background: rgba(190, 155, 80, 0.035);
+}
+
+.titre-couleurs-hereditaires {
+    display: block;
+    margin-bottom: 12px;
+
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+
+    color: #a99779;
+}
+
+.couleurs-hereditaires p {
+    display: flex;
+    justify-content: space-between;
+
+    margin: 7px 0;
+}
+
+.couleurs-hereditaires p span {
+    color: #817766;
+}
+
+.couleurs-hereditaires p strong {
+    color: #d8cdb5;
+}
+
+.couleurs-hereditaires small {
+    display: block;
+    margin-top: 12px;
+
+    font-size: 0.72rem;
+    line-height: 1.45;
+    font-style: italic;
+
+    color: #756c5e;
+}
+
+/* ================================= */
+/* PASTILLE IRIDESCENTE              */
+/* ================================= */
+
+.pastille-iridescente {
+    background:
+        linear-gradient(
+            135deg,
+            #d9f3ef 0%,
+            #b9d8e8 20%,
+            #d4bde7 40%,
+            #f0c6d8 60%,
+            #f1dfb5 80%,
+            #c7e4d5 100%
+        ) !important;
+
+    box-shadow:
+        0 0 0 1px rgba(235, 225, 195, 0.55),
+        0 0 8px rgba(205, 220, 220, 0.22);
+}
+
+.groupe-pastilles-yeux {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.apparence-carte {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+    margin-bottom: 12px;
+}
+
+
+.ligne-apparence {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+.groupe-pastilles-yeux {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ================================= */
+/* SUCCÈS — PRESTIGE DE L'ÉLEVEUR    */
+/* ================================= */
+
+#tableau-succes {
+    width: min(1000px, 100%);
+
+    margin:
+        32px auto 0;
+}
+
+
+.carte-prestige {
+    position: relative;
+
+    padding:
+        34px 42px;
+
+    border:
+        1px solid var(--bordure-moyenne);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(42, 35, 25, 0.75),
+            rgba(17, 15, 12, 0.9)
+        );
+
+    text-align: center;
+}
+
+
+.carte-prestige::before {
+    content: "◆";
+
+    position: absolute;
+
+    top: -9px;
+    left: 50%;
+
+    padding:
+        0 12px;
+
+    background:
+        var(--fond-principal);
+
+    color:
+        var(--or-sombre);
+
+    font-size:
+        0.75rem;
+
+    transform:
+        translateX(-50%);
+}
+
+
+.surtitre-prestige {
+    margin:
+        0 0 8px;
+
+    color:
+        var(--texte-discret);
+
+    font-size:
+        0.65rem;
+
+    letter-spacing:
+        0.18em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.carte-prestige h3 {
+    margin:
+        0;
+
+    color:
+        var(--texte-principal);
+
+    font-size:
+        1.8rem;
+
+    font-weight:
+        normal;
+}
+
+
+.score-prestige {
+    margin:
+        14px 0 24px;
+
+    color:
+        var(--or-sombre);
+
+    font-size:
+        1.35rem;
+}
+
+
+.score-prestige span {
+    color:
+        var(--texte-secondaire);
+
+    font-size:
+        0.75rem;
+
+    letter-spacing:
+        0.08em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.barre-progression-rang {
+    width: 100%;
+    height: 7px;
+
+    overflow: hidden;
+
+    border:
+        1px solid var(--bordure-fine);
+
+    background:
+        rgba(0, 0, 0, 0.35);
+}
+
+
+.remplissage-progression-rang {
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            #6f5935,
+            #b08a4e
+        );
+
+    transition:
+        width 0.5s ease;
+}
+
+
+.details-progression-rang {
+    display: flex;
+
+    justify-content:
+        space-between;
+
+    margin-top:
+        9px;
+
+    color:
+        var(--texte-discret);
+
+    font-size:
+        0.68rem;
+
+    letter-spacing:
+        0.06em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.texte-progression-rang {
+    margin:
+        22px 0 0;
+
+    color:
+        var(--texte-secondaire);
+
+    font-size:
+        0.82rem;
+}
+
+
+.texte-progression-rang strong {
+    color:
+        var(--texte-principal);
+
+    font-weight:
+        normal;
+}
+
+/* ================================= */
+/* SUCCÈS — TABLEAU DES TROPHÉES     */
+/* ================================= */
+
+#liste-succes {
+    width: min(1100px, 100%);
+    margin: 52px auto 0;
+}
+
+
+/* ========================= */
+/* CATÉGORIE                 */
+/* ========================= */
+
+.categorie-succes {
+    margin-bottom: 54px;
+}
+
+
+.entete-categorie-succes {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    margin-bottom: 20px;
+}
+
+
+.entete-categorie-succes::after {
+    content: "";
+
+    flex: 1;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--bordure-moyenne),
+            transparent
+        );
+}
+
+
+.entete-categorie-succes h3 {
+    margin: 0;
+
+    color: var(--texte-principal);
+
+    font-size: 1.05rem;
+    font-weight: normal;
+
+    letter-spacing: 0.12em;
+
+    text-transform: uppercase;
+}
+
+
+.entete-categorie-succes span {
+    order: 3;
+
+    min-width: 54px;
+
+    padding: 5px 10px;
+
+    border:
+        1px solid var(--bordure-fine);
+
+    color: var(--texte-discret);
+
+    font-size: 0.7rem;
+
+    letter-spacing: 0.08em;
+
+    text-align: center;
+}
+
+
+/* ========================= */
+/* GRILLE                    */
+/* ========================= */
+
+.grille-succes {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 12px;
+}
+
+
+/* ========================= */
+/* CARTE                     */
+/* ========================= */
+
+.carte-succes {
+    position: relative;
+
+    display: grid;
+
+    grid-template-columns:
+        54px minmax(0, 1fr);
+
+    min-height: 112px;
+
+    overflow: hidden;
+
+    border:
+        1px solid var(--bordure-fine);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(28, 25, 20, 0.92),
+            rgba(14, 13, 11, 0.96)
+        );
+
+    transition:
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.carte-succes::after {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    right: 0;
+
+    width: 32px;
+    height: 32px;
+
+    border-top:
+        1px solid rgba(176, 138, 78, 0.18);
+
+    border-right:
+        1px solid rgba(176, 138, 78, 0.18);
+}
+
+
+/* ========================= */
+/* COLONNE D'ÉTAT            */
+/* ========================= */
+
+.icone-etat-succes {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-right:
+        1px solid var(--bordure-fine);
+
+    font-size: 1.1rem;
+}
+
+
+/* ========================= */
+/* CONTENU                   */
+/* ========================= */
+
+.contenu-succes {
+    padding: 18px 20px;
+}
+
+
+.titre-succes {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 18px;
+}
+
+
+.titre-succes h4 {
+    margin: 0;
+
+    color: var(--texte-principal);
+
+    font-size: 0.95rem;
+    font-weight: normal;
+
+    letter-spacing: 0.03em;
+}
+
+
+.titre-succes span {
+    flex-shrink: 0;
+
+    padding: 3px 7px;
+
+    border:
+        1px solid var(--bordure-fine);
+
+    color: var(--texte-discret);
+
+    font-size: 0.62rem;
+
+    letter-spacing: 0.05em;
+
+    text-transform: uppercase;
+}
+
+
+.contenu-succes p {
+    margin:
+        10px 0 0;
+
+    color: var(--texte-secondaire);
+
+    font-size: 0.78rem;
+
+    line-height: 1.55;
+}
+
+
+/* ========================= */
+/* SUCCÈS DÉBLOQUÉ           */
+/* ========================= */
+
+.carte-succes.succes-debloque {
+    border-color:
+        rgba(176, 138, 78, 0.55);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(61, 48, 29, 0.72),
+            rgba(20, 17, 13, 0.96)
+        );
+}
+
+
+.succes-debloque
+.icone-etat-succes {
+    color: #c29a58;
+
+    background:
+        rgba(176, 138, 78, 0.08);
+}
+
+
+.succes-debloque
+.titre-succes h4 {
+    color: #d4b374;
+}
+
+
+.succes-debloque
+.titre-succes span {
+    border-color:
+        rgba(176, 138, 78, 0.45);
+
+    color: #c29a58;
+}
+
+
+.carte-succes.succes-debloque:hover {
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(205, 164, 94, 0.8);
+}
+
+
+/* ========================= */
+/* SUCCÈS VERROUILLÉ         */
+/* ========================= */
+
+.carte-succes.succes-verrouille {
+    opacity: 0.62;
+}
+
+
+.succes-verrouille
+.icone-etat-succes {
+    color: var(--texte-discret);
+}
+
+
+.succes-verrouille
+.titre-succes h4 {
+    color: var(--texte-secondaire);
+}
+
+
+.succes-verrouille
+.contenu-succes p {
+    color: var(--texte-discret);
+}
+
+
+/* ========================= */
+/* RESPONSIVE                */
+/* ========================= */
+
+@media (max-width: 760px) {
+
+    .grille-succes {
+        grid-template-columns: 1fr;
+    }
+
+
+    .carte-succes {
+        grid-template-columns:
+            46px minmax(0, 1fr);
+    }
+
+
+    .contenu-succes {
+        padding:
+            16px;
+    }
+
+
+    .titre-succes {
+        gap: 10px;
+    }
+
+}
+
+/* ================================= */
+/* GESTION DE LA PARTIE              */
+/* ================================= */
+
+.gestion-partie {
+    width: min(900px, 100%);
+
+    margin:
+        80px auto 0;
+
+    padding:
+        34px;
+
+    box-sizing:
+        border-box;
+}
+
+
+/* ================================= */
+/* BLOCS DE GESTION                  */
+/* ================================= */
+
+.bloc-gestion-partie {
+    width: min(680px, 100%);
+
+    margin:
+        0 auto;
+
+    padding:
+        26px;
+
+    box-sizing:
+        border-box;
+
+    border:
+        1px solid var(--bordure-fine);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(31, 26, 21, 0.92),
+            rgba(19, 16, 13, 0.96)
+        );
+
+    box-shadow:
+        var(--ombre-carte);
+
+    text-align:
+        left;
+}
+
+
+.bloc-gestion-partie h3 {
+    margin:
+        0 0 12px;
+
+    padding-bottom:
+        12px;
+
+    border-bottom:
+        1px solid var(--bordure-fine);
+
+    color:
+        var(--or-principal);
+
+    font-size:
+        0.9rem;
+
+    letter-spacing:
+        0.12em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.bloc-gestion-partie h4 {
+    margin:
+        30px 0 8px;
+
+    color:
+        var(--texte-secondaire);
+
+    font-size:
+        0.68rem;
+
+    letter-spacing:
+        0.14em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.bloc-gestion-partie p {
+    color:
+        var(--texte-secondaire);
+
+    font-size:
+        0.86rem;
+}
+
+
+/* ================================= */
+/* ÉTAT DE SYNCHRONISATION           */
+/* ================================= */
+
+.etat-synchronisation {
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    margin:
+        0 0 12px;
+
+    color:
+        var(--texte-discret);
+
+    font-size:
+        0.68rem !important;
+
+    letter-spacing:
+        0.1em;
+
+    text-transform:
+        uppercase;
+}
+
+
+.etat-synchronisation::before {
+    content:
+        "";
+
+    width:
+        6px;
+
+    height:
+        6px;
+
+    flex-shrink:
+        0;
+
+    border-radius:
+        50%;
+
+    background:
+        var(--or-sombre);
+
+    box-shadow:
+        0 0 8px
+        rgba(194, 161, 94, 0.25);
+}
+
+
+/* ================================= */
+/* LABELS                            */
+/* ================================= */
+
+.bloc-gestion-partie label {
+    display:
+        block;
+
+    margin:
+        22px 0 8px;
+
+    color:
+        var(--texte-secondaire);
+
+    font-size:
+        0.64rem;
+
+    letter-spacing:
+        0.12em;
+
+    text-transform:
+        uppercase;
+}
+
+
+/* ================================= */
+/* CODE DE SAUVEGARDE                */
+/* ================================= */
+
+.ligne-code-sauvegarde,
+.ligne-recuperation-partie {
+    display:
+        grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        auto;
+
+    gap:
+        10px;
+
+    align-items:
+        stretch;
+}
+
+
+.ligne-code-sauvegarde input,
+.ligne-recuperation-partie input {
+    min-width:
+        0;
+}
+
+
+.ligne-code-sauvegarde button,
+.ligne-recuperation-partie button {
+    min-width:
+        120px;
+}
+
+
+/* Code personnel : aspect registre */
+
+#code-sauvegarde-joueur {
+    color:
+        var(--or-clair);
+
+    font-family:
+        "Cinzel",
+        Georgia,
+        serif;
+
+    font-size:
+        0.9rem;
+
+    letter-spacing:
+        0.16em;
+
+    text-align:
+        center;
+
+    cursor:
+        default;
+}
+
+
+/* ================================= */
+/* SÉPARATION DE LA RÉCUPÉRATION     */
+/* ================================= */
+
+.bloc-gestion-partie h4 {
+    position:
+        relative;
+
+    padding-top:
+        26px;
+}
+
+
+.bloc-gestion-partie h4::before {
+    content:
+        "";
+
+    position:
+        absolute;
+
+    top:
+        0;
+
+    left:
+        0;
+
+    right:
+        0;
+
+    height:
+        1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--bordure-fine),
+            transparent
+        );
+}
+
+
+/* ================================= */
+/* ZONE DANGEREUSE                   */
+/* ================================= */
+
+.gestion-partie .zone-danger {
+    width:
+        min(680px, 100%);
+
+    margin:
+        24px auto 0;
+
+    padding:
+        24px 26px;
+
+    border:
+        1px solid
+        rgba(135, 45, 53, 0.48);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(38, 20, 22, 0.9),
+            rgba(23, 13, 14, 0.96)
+        );
+
+    text-align:
+        left;
+
+    box-shadow:
+        inset 0 0 28px
+        rgba(0, 0, 0, 0.2);
+}
+
+
+.gestion-partie .zone-danger h3 {
+    color:
+        #b96b73;
+
+    border-bottom-color:
+        rgba(135, 45, 53, 0.35);
+}
+
+
+.gestion-partie .zone-danger p {
+    margin-bottom:
+        18px;
+}
+
+
+.gestion-partie #bouton-recommencer {
+    width:
+        auto;
+
+    border-color:
+        rgba(148, 65, 76, 0.65);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(101, 44, 51, 0.95),
+            rgba(65, 27, 32, 0.98)
+        );
+
+    color:
+        #ead6d8;
+}
+
+
+.gestion-partie #bouton-recommencer:hover {
+    border-color:
+        #aa5964;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(128, 56, 67, 0.98),
+            rgba(85, 34, 41, 1)
+        );
+}
+
+
+/* ================================= */
+/* RESPONSIVE                        */
+/* ================================= */
+
+@media (max-width: 650px) {
+
+    .gestion-partie {
+        margin-top:
+            55px;
+
+        padding:
+            24px 16px;
+    }
+
+
+    .bloc-gestion-partie {
+        padding:
+            22px 18px;
+    }
+
+
+    .ligne-code-sauvegarde,
+    .ligne-recuperation-partie {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .ligne-code-sauvegarde button,
+    .ligne-recuperation-partie button {
+        width:
+            100%;
+
+        min-width:
+            0;
+    }
+
+
+    .gestion-partie .zone-danger {
+        padding:
+            22px 18px;
+    }
+
+
+    .gestion-partie #bouton-recommencer {
+        width:
+            100%;
+    }
+
+}

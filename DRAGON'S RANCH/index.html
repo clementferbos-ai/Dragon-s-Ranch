@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Élevage de Dragons</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+
+<body>
+
+    <header class="entete-jeu">
+
+    <div class="marque-jeu">
+
+        <h1>
+            Dragon's ranch
+        </h1>
+
+        <span class="ornement-entete">
+            ◆
+        </span>
+
+    </div>
+
+<div id="compteur-actions" class="compteur-actions">
+
+    <span class="titre-actions">
+        Actions du jour
+    </span>
+
+    <div id="symboles-actions" class="symboles-actions">
+    </div>
+
+    <span id="texte-actions" class="texte-actions">
+        5 / 5
+    </span>
+
+</div>
+
+</header>
+
+    <nav class="navigation-jeu">
+
+        <button
+            class="bouton-navigation actif"
+            data-ecran="ecran-elevage"
+        >
+            Élevage
+        </button>
+
+        <button
+            class="bouton-navigation"
+            data-ecran="ecran-expedition"
+        >
+            Expédition
+        </button>
+
+        <button
+            class="bouton-navigation"
+            data-ecran="ecran-reproduction"
+        >
+            Reproduction
+        </button>
+
+        <button
+            class="bouton-navigation"
+            data-ecran="ecran-evaluation"
+        >
+            Évaluation
+        </button>
+		
+		<button
+			class="bouton-navigation"
+			data-ecran="ecran-succes"
+>
+			Succès
+		</button>
+
+    </nav>
+
+
+    <!-- ============================= -->
+    <!-- ÉCRAN 1 : ÉLEVAGE             -->
+    <!-- ============================= -->
+
+    <div
+        id="ecran-elevage"
+        class="ecran-jeu actif"
+    >
+
+        <div class="entete-ecran entete-elevage">
+
+    <p class="surtitre-ecran">
+        Registre du ranch
+    </p>
+
+    <h2>
+        Mon élevage
+    </h2>
+
+    <div class="separateur-ecran">
+        <span></span>
+        <i>◆</i>
+        <span></span>
+    </div>
+
+    <p id="compteur-dragons">
+        0 dragon
+    </p>
+
+</div>
+
+	<div class="outils-elevage">
+
+    <div class="outil-elevage outil-recherche">
+
+        <label for="recherche-dragon">
+            Rechercher
+        </label>
+
+        <input
+            type="search"
+            id="recherche-dragon"
+            placeholder="Nom du dragon..."
+            autocomplete="off"
+        >
+
+    </div>
+
+
+    <div class="outil-elevage">
+
+        <label for="filtre-espece">
+            Espèce
+        </label>
+
+        <select id="filtre-espece">
+
+            <option value="toutes">
+                Toutes
+            </option>
+
+            <option value="Vouivre">
+                Vouivre
+            </option>
+
+            <option value="Wyrm">
+                Wyrm
+            </option>
+
+            <option value="Hydre">
+                Hydre
+            </option>
+
+            <option value="Dragon européen">
+                Dragon européen
+            </option>
+
+            <option value="Dragon oriental">
+                Dragon oriental
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="outil-elevage">
+
+        <label for="filtre-sexe">
+            Sexe
+        </label>
+
+        <select id="filtre-sexe">
+
+            <option value="tous">
+                Tous
+            </option>
+
+            <option value="Mâle">
+                Mâles
+            </option>
+
+            <option value="Femelle">
+                Femelles
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="outil-elevage">
+
+        <label for="tri-dragons">
+            Trier par
+        </label>
+
+        <select id="tri-dragons">
+
+            <option value="arrivee">
+                Ordre d'arrivée
+            </option>
+
+            <option value="nom-az">
+                Nom : A → Z
+            </option>
+
+            <option value="nom-za">
+                Nom : Z → A
+            </option>
+
+            <option value="score-desc">
+                Score : meilleur d'abord
+            </option>
+
+            <option value="score-asc">
+                Score : plus faible d'abord
+            </option>
+
+            <option value="generation-desc">
+                Génération : récente d'abord
+            </option>
+
+            <option value="generation-asc">
+                Génération : ancienne d'abord
+            </option>
+
+        </select>
+
+    </div>
+
+</div>
+
+	<p id="compteur-dragons-affiches"></p>
+
+        <div id="collection-dragons">
+            <p>Ton élevage est vide.</p>
+        </div>
+
+		<div
+    id="fond-panneau-dragon"
+    class="fond-panneau-dragon"
+></div>
+
+        <aside
+    id="panneau-fiche-dragon"
+    class="panneau-fiche-dragon"
+>
+    <div id="fiche-detaillee-dragon"></div>
+</aside>
+
+    </div>
+
+
+    <!-- ============================= -->
+    <!-- ÉCRAN 2 : EXPÉDITION          -->
+    <!-- ============================= -->
+
+    <div
+        id="ecran-expedition"
+        class="ecran-jeu"
+    >
+
+        <div class="entete-ecran entete-expedition">
+
+    <p class="surtitre-ecran">
+        Aux frontières du domaine
+    </p>
+
+    <h2>
+        Expédition
+    </h2>
+
+    <div class="separateur-ecran">
+        <span></span>
+        <i>◆</i>
+        <span></span>
+    </div>
+
+    <p class="description-ecran">
+        Explore les terres sauvages à la recherche de nouveaux dragons !
+    </p>
+
+</div>
+
+        <button id="bouton-generation">
+            Chercher des dragons sauvages
+        </button>
+
+        <div id="fiche-dragon">
+
+            <p>
+                Aucun dragon sauvage rencontré.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================= -->
+    <!-- ÉCRAN 3 : REPRODUCTION        -->
+    <!-- ============================= -->
+
+    <div
+        id="ecran-reproduction"
+        class="ecran-jeu"
+    >
+
+        <div class="entete-ecran entete-reproduction">
+
+    <p class="surtitre-ecran">
+        Chambre des lignées
+    </p>
+
+    <h2>
+        Reproduction
+    </h2>
+
+    <div class="separateur-ecran">
+        <span></span>
+        <i>◆</i>
+        <span></span>
+    </div>
+
+    <p class="description-ecran">
+        Unis deux lignées et façonne les générations à venir.
+    </p>
+
+</div>
+
+        <div id="zone-reproduction">
+
+            <div class="selection-parent">
+
+                <h3>Père</h3>
+
+                <select id="selection-pere">
+
+                    <option value="">
+                        Choisir un mâle
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="selection-parent">
+
+                <h3>Mère</h3>
+
+                <select id="selection-mere">
+
+                    <option value="">
+                        Choisir une femelle
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <button id="bouton-reproduction">
+            Produire un œuf
+        </button>
+
+
+        <div id="zone-oeuf"></div>
+
+    </div>
+
+
+    <!-- ============================= -->
+    <!-- ÉCRAN 4 : ÉVALUATION          -->
+    <!-- ============================= -->
+
+    <div
+        id="ecran-evaluation"
+        class="ecran-jeu"
+    >
+
+        <section id="section-evaluation">
+
+        <div class="entete-ecran entete-evaluation">
+
+    <p class="surtitre-ecran">
+        Cabinet d’étude
+    </p>
+
+    <h2>
+        Évaluation génétique
+    </h2>
+
+    <div class="separateur-ecran">
+        <span></span>
+        <i>◆</i>
+        <span></span>
+    </div>
+
+    <p class="description-ecran">
+        Étudie les lignées et révèle le potentiel caché de tes dragons.
+    </p>
+
+</div>  
+
+
+            <div class="zone-evaluation">
+
+                <div>
+
+                    <label for="selection-dragon-evaluation">
+                        Dragon à évaluer
+                    </label>
+
+                    <select id="selection-dragon-evaluation">
+
+                        <option value="">
+                            Choisir un dragon
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div>
+
+                    <label for="selection-statistique-evaluation">
+                        Statistique à évaluer
+                    </label>
+
+                    <select id="selection-statistique-evaluation">
+
+                        <option value="">
+                            Choisir une statistique
+                        </option>
+
+                        <option value="attaque">
+                            Attaque
+                        </option>
+
+                        <option value="defense">
+                            Défense
+                        </option>
+
+                        <option value="endurance">
+                            Endurance
+                        </option>
+
+                        <option value="taille">
+                            Taille
+                        </option>
+
+                        <option value="intelligence">
+                            Intelligence
+                        </option>
+
+                        <option value="magie">
+                            Magie
+                        </option>
+
+                        <option value="vitesse">
+                            Vitesse
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <button id="bouton-evaluation">
+                    Évaluer
+                </button>
+
+            </div>
+
+
+            <div id="resultat-evaluation"></div>
+
+            <div id="dossier-genetique"></div>
+
+        </section>
+
+    </div>
+	
+	<!-- ============================= -->
+<!-- ÉCRAN 5 : SUCCÈS              -->
+<!-- ============================= -->
+
+<div
+    id="ecran-succes"
+    class="ecran-jeu"
+>
+
+    <div class="entete-ecran entete-succes">
+
+        <p class="surtitre-ecran">
+            Chronique de l'élevage
+        </p>
+
+        <h2>
+            Succès
+        </h2>
+
+        <div class="separateur-ecran">
+            <span></span>
+            <i>◆</i>
+            <span></span>
+        </div>
+
+        <p class="description-ecran">
+            Les accomplissements et titres obtenus
+            au fil de ton élevage.
+        </p>
+
+    </div>
+
+    <div id="tableau-succes">
+	<div id="resume-succes">
+	</div>
+	<div id="liste-succes">
+	</div>
+    </div>
+
+</div>
+
+<!-- ============================= -->
+<!-- GESTION DE LA PARTIE          -->
+<!-- ============================= -->
+
+<section class="gestion-partie">
+
+    <div class="entete-ecran">
+
+        <p class="surtitre-ecran">
+            Archives du ranch
+        </p>
+
+        <h2>
+            Gestion de la partie
+        </h2>
+
+        <div class="separateur-ecran">
+            <span></span>
+            <i>◆</i>
+            <span></span>
+        </div>
+
+    </div>
+
+
+    <!-- SAUVEGARDE EN LIGNE -->
+
+    <div class="bloc-gestion-partie">
+
+        <h3>
+            Sauvegarde en ligne
+        </h3>
+
+        <p
+            id="etat-synchronisation"
+            class="etat-synchronisation"
+            aria-live="polite"
+        >
+            Synchronisation…
+        </p>
+
+        <p>
+            Ta partie est sauvegardée automatiquement.
+            Conserve ce code pour la retrouver sur
+            un autre appareil ou navigateur.
+        </p>
+
+
+        <label for="code-sauvegarde-joueur">
+            Ton code de récupération
+        </label>
+
+        <div class="ligne-code-sauvegarde">
+
+            <input
+                id="code-sauvegarde-joueur"
+                type="text"
+                readonly
+            >
+
+            <button
+                id="bouton-copier-code"
+                type="button"
+            >
+                Copier
+            </button>
+
+        </div>
+
+
+        <h4>
+            Récupérer une partie existante
+        </h4>
+
+        <p>
+            Colle le code de récupération
+            de la partie que tu souhaites charger.
+        </p>
+
+        <div class="ligne-recuperation-partie">
+
+            <input
+                id="champ-code-recuperation"
+                type="text"
+                placeholder="Code de récupération"
+                autocomplete="off"
+            >
+
+            <button
+                id="bouton-recuperer-partie"
+                type="button"
+            >
+                Récupérer
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ZONE DANGEREUSE -->
+
+    <div class="bloc-gestion-partie zone-danger">
+
+        <h3>
+            Recommencer
+        </h3>
+
+        <p>
+            Cette action supprime la progression
+            de la partie actuelle.
+        </p>
+
+        <button
+            id="bouton-recommencer"
+            type="button"
+        >
+            Recommencer une partie
+        </button>
+
+    </div>
+
+</section>
+
+    <script src="game.js"></script>
+
+</body>
+
+</html>
