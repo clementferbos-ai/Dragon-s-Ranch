@@ -158,7 +158,7 @@ async function sauvegarderPartieDistante() {
 
         const reponse =
             await fetch(
-                "/.netlify/functions/sauvegarder",
+                "/api/sauvegarder",
                 {
                     method: "POST",
 
@@ -241,7 +241,7 @@ async function chargerPartieDistante() {
 
         const reponse =
             await fetch(
-                "/.netlify/functions/charger",
+                "/api/charger",
                 {
                     method: "POST",
 
@@ -341,7 +341,7 @@ async function recupererPartieAvecCode(
 
         const reponse =
             await fetch(
-                "/.netlify/functions/charger",
+                "/api/charger",
                 {
                     method: "POST",
 
@@ -2186,7 +2186,7 @@ async function recupererDonneesDistantes(
 
     const reponse =
         await fetch(
-            "/.netlify/functions/charger",
+            "/api/charger",
             {
                 method: "POST",
 

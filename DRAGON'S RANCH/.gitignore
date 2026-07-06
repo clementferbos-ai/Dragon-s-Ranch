@@ -1,2 +1,13 @@
-# Local Netlify folder
+# Dependencies
+node_modules
+
+# Vercel
+.vercel
+
+# Local env / secrets
+.env
+.env.local
+*.env
+
+# Local Netlify folder (legacy)
 .netlify
