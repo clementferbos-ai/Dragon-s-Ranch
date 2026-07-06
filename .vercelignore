@@ -1,0 +1,5 @@
+# Fichiers privés / dev — exclus du déploiement Vercel (donc non servis sur le web)
+saves/
+*.docx
+tuto turso.txt
+TOKEN TURSO.txt
