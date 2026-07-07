@@ -1529,30 +1529,6 @@ function debloquerSucces(idSucces) {
     return true;
 }
 
-function calculerPointsSucces() {
-
-    return succesDebloques.reduce(
-        function (total, idSucces) {
-
-            const succes =
-                catalogueSucces[idSucces];
-
-
-            if (!succes) {
-                return total;
-            }
-
-
-            return (
-                total
-                + succes.points
-            );
-
-        },
-        0
-    );
-}
-
 function obtenirTitreEleveur() {
 
     const points =
@@ -5376,9 +5352,18 @@ function afficherFicheDetaillee(dragon) {
                     </p>
 
                 </div>
+				
 
             </div>
-
+			
+			<button
+    class="bouton-danger"
+	type="button"
+    onclick="relacherDragon('${dragon.id}')"
+>
+    Relâcher ce dragon
+</button>
+			
         </div>
     `;
 
@@ -5489,6 +5474,81 @@ function afficherFicheDetaillee(dragon) {
 
         };
 
+}
+
+function dragonADesDescendants(idDragon) {
+    return collectionDragons.some(
+        function (dragon) {
+            if (!dragon.parents) {
+                return false;
+            }
+
+            return (
+                dragon.parents.pere === idDragon
+                || dragon.parents.mere === idDragon
+            );
+        }
+    );
+}
+
+
+function relacherDragon(idDragon) {
+    const dragon =
+        collectionDragons.find(
+            function (dragon) {
+                return dragon.id === idDragon;
+            }
+        );
+
+    if (!dragon) {
+        return;
+    }
+
+    const nomDragon =
+        dragon.nom && dragon.nom.trim() !== ""
+            ? dragon.nom
+            : "ce dragon";
+
+    const aDesDescendants =
+        dragonADesDescendants(idDragon);
+
+    let message =
+        "Relâcher "
+        + nomDragon
+        + " ?\n\n"
+        + "Cette action retirera le dragon de ton élevage.";
+
+    if (aDesDescendants) {
+        message +=
+            "\n\nCe dragon apparaît dans la lignée d'autres dragons. "
+            + "Ses descendants resteront dans ton élevage, mais sa fiche ne sera plus disponible.";
+    }
+
+    message +=
+        "\n\nCette action est définitive.";
+
+    const confirmation =
+        confirm(message);
+
+    if (!confirmation) {
+        return;
+    }
+
+    collectionDragons =
+        collectionDragons.filter(
+            function (dragon) {
+                return dragon.id !== idDragon;
+            }
+        );
+
+    idDragonFicheOuverte = null;
+
+    afficherCollection();
+    afficherParentsDisponibles();
+    afficherDragonsEvaluables();
+    verifierSucces();
+    sauvegarderPartie();
+	
 }
 
 function afficherCollection() {

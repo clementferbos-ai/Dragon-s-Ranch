@@ -4506,3 +4506,29 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
     }
 
 }
+
+.bouton-danger {
+    margin-top: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #5f1f28,
+            #3a1117
+        );
+
+    color: #f1d6d6;
+
+    border: 1px solid #8d3a45;
+
+    cursor: pointer;
+}
+
+.bouton-danger:hover {
+    background:
+        linear-gradient(
+            145deg,
+            #7a2a35,
+            #4a171f
+        );
+}
