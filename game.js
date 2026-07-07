@@ -10,12 +10,12 @@ let statistiquesSucces = {
 
 };
 
-const MAX_ACTIONS_PAR_JOUR = 5;
+const MAX_ACTIONS_PAR_JOUR = 8;
 
-let actionsRestantes =
-    MAX_ACTIONS_PAR_JOUR;
+let actionsRestantes = MAX_ACTIONS_PAR_JOUR;
 
 let dateDernierRenouvellement = null;
+let heureDernierRenouvellement = null;
 
 let idDragonFicheOuverte = null;
 
@@ -79,7 +79,10 @@ function creerDonneesSauvegarde() {
             actionsRestantes,
 
         dateDernierRenouvellement:
-            dateDernierRenouvellement
+            dateDernierRenouvellement,
+		
+		heureDernierRenouvellement: 
+			heureDernierRenouvellement
 
     };
 
@@ -2468,6 +2471,15 @@ function appliquerDonneesSauvegarde(
             sauvegarde.dateDernierRenouvellement;
 
     }
+	
+	if (
+		sauvegarde.heureDernierRenouvellement
+		!== undefined
+	) {
+		
+		heureDernierRenouvellement = 
+		sauvegarde.heureDernierRenouvellement;
+}
 
 
     verifierSucces();
@@ -3683,25 +3695,82 @@ function obtenirDateAujourdhui() {
     return `${annee}-${mois}-${jour}`;
 }
 
+function obtenirDateLocale(date) {
+    return (
+        date.getFullYear()
+        + "-"
+        + String(date.getMonth() + 1).padStart(2, "0")
+        + "-"
+        + String(date.getDate()).padStart(2, "0")
+    );
+}
+
+function obtenirHeureLocale(date) {
+    const heurePile = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        date.getHours(),
+        0,
+        0,
+        0
+    );
+
+    return heurePile.toISOString();
+}
+
 function verifierRenouvellementActions() {
+    const maintenant = new Date();
 
-    const aujourdHui =
-        obtenirDateAujourdhui();
+    const dateAujourdhui =
+        obtenirDateLocale(maintenant);
 
+    const heureActuelle =
+        obtenirHeureLocale(maintenant);
 
-    if (
-        dateDernierRenouvellement
-        !== aujourdHui
-    ) {
-
-        actionsRestantes =
-            MAX_ACTIONS_PAR_JOUR;
-
-        dateDernierRenouvellement =
-            aujourdHui;
+    if (dateDernierRenouvellement !== dateAujourdhui) {
+        actionsRestantes = MAX_ACTIONS_PAR_JOUR;
+        dateDernierRenouvellement = dateAujourdhui;
+        heureDernierRenouvellement = heureActuelle;
 
         sauvegarderPartie();
+        return;
+    }
 
+    if (heureDernierRenouvellement === null) {
+        heureDernierRenouvellement = heureActuelle;
+        sauvegarderPartie();
+        return;
+    }
+
+    const derniereHeure =
+        new Date(heureDernierRenouvellement);
+
+    const differenceMs =
+        maintenant.getTime() - derniereHeure.getTime();
+
+    const heuresPassees =
+        Math.floor(differenceMs / (1000 * 60 * 60));
+
+    if (
+        heuresPassees > 0
+        && actionsRestantes < MAX_ACTIONS_PAR_JOUR
+    ) {
+        actionsRestantes = Math.min(
+            MAX_ACTIONS_PAR_JOUR,
+            actionsRestantes + heuresPassees
+        );
+
+        const nouvelleHeure =
+            new Date(
+                derniereHeure.getTime()
+                + heuresPassees * 60 * 60 * 1000
+            );
+
+        heureDernierRenouvellement =
+            nouvelleHeure.toISOString();
+
+        sauvegarderPartie();
     }
 }
 
