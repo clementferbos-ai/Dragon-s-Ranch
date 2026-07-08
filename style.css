@@ -4658,3 +4658,22 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
 .apercu-parent .bouton-fiche-parent:active {
     transform: translateY(0);
 }
+
+.fond-genealogie.ouvert {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.fenetre-genealogie.ouverte {
+    display: block;
+    position: fixed;
+    inset: 5%;
+    z-index: 2001;
+    padding: 30px;
+    overflow: auto;
+    background: #17130f;
+    border: 1px solid #8c7138;
+    color: #e8dfcc;
+}
