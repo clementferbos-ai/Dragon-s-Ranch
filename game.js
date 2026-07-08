@@ -5983,6 +5983,20 @@ document
         afficherCollection
     );
 
+    document
+    .getElementById("filtre-couleur")
+    .addEventListener(
+        "change",
+        afficherCollection
+    );
+
+
+document
+    .getElementById("filtre-rarete")
+    .addEventListener(
+        "change",
+        afficherCollection
+    );
 
 document
     .getElementById("tri-dragons")
