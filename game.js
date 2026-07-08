@@ -6103,9 +6103,10 @@ function afficherApercuParent(
 
 
             <button
-                class="bouton-fiche bouton-fiche-parent"
+                class="bouton-fiche-parent"
                 type="button"
-            >
+                data-id="${dragon.id}"
+>
                 Voir la fiche
             </button>
 
@@ -6114,19 +6115,41 @@ function afficherApercuParent(
 
 
     const bouton =
-        zone.querySelector(
-            ".bouton-fiche-parent"
+    zone.querySelector(
+        ".bouton-fiche-parent"
+    );
+
+
+bouton.onclick =
+    function () {
+
+        const idDragon =
+            bouton.dataset.id;
+
+
+        const dragonSelectionne =
+            collectionDragons.find(
+                function (dragonCollection) {
+
+                    return (
+                        dragonCollection.id
+                        === idDragon
+                    );
+
+                }
+            );
+
+
+        if (!dragonSelectionne) {
+            return;
+        }
+
+
+        afficherFicheDetaillee(
+            dragonSelectionne
         );
 
-
-    bouton.addEventListener(
-        "click",
-        function () {
-
-            afficherFicheDetaillee(dragon);
-
-        }
-    );
+    };
 
 }
 
