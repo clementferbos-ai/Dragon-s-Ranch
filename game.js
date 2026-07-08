@@ -5567,6 +5567,17 @@ function afficherCollection() {
         document.getElementById(
             "filtre-sexe"
         ).value;
+    
+    const filtreCouleur =
+    document.getElementById(
+        "filtre-couleur"
+    ).value;
+
+
+const filtreRarete =
+    document.getElementById(
+        "filtre-rarete"
+    ).value;
 
 
     const tri =
@@ -5623,6 +5634,43 @@ function afficherCollection() {
             );
 
     }
+
+    if (filtreCouleur !== "toutes") {
+
+    dragonsAffiches =
+        dragonsAffiches.filter(
+            function (dragon) {
+
+                return (
+                    dragon.apparence
+                    &&
+                    dragon.apparence.familleEcailles
+                    === filtreCouleur
+                );
+
+            }
+        );
+
+}
+
+
+if (filtreRarete !== "toutes") {
+
+    dragonsAffiches =
+        dragonsAffiches.filter(
+            function (dragon) {
+
+                return (
+                    dragon.rareteEsthetique
+                    &&
+                    dragon.rareteEsthetique.etoiles
+                    === Number(filtreRarete)
+                );
+
+            }
+        );
+
+}
 	
 	    if (tri === "nom-az") {
 
