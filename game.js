@@ -2603,11 +2603,6 @@ localStorage.removeItem(
 
 
 document.getElementById(
-    "selection-statistique-evaluation"
-).value = "";
-
-
-document.getElementById(
     "resultat-evaluation"
 ).innerHTML = "";
 
@@ -4355,33 +4350,12 @@ function choisirDragonAEvaluer() {
 
 
     afficherDossierGenetique(dragon);
-	
-	const selectionStatistique =
+
+
     document.getElementById(
-        "selection-statistique-evaluation"
-    );
+        "resultat-evaluation"
+    ).innerHTML = "";
 
-
-Array.from(
-    selectionStatistique.options
-).forEach(function (option) {
-
-    if (option.value === "") {
-        return;
-    }
-
-
-    const dejaEvaluee =
-        dragon &&
-        dragon.evaluations &&
-        dragon.evaluations[option.value]
-        !== undefined;
-
-
-    option.disabled =
-        dejaEvaluee;
-
-});
 }
 
 function evaluerDragon() {
@@ -4392,19 +4366,10 @@ function evaluerDragon() {
         ).value;
 
 
-    const statistique =
-        document.getElementById(
-            "selection-statistique-evaluation"
-        ).value;
-
-
-    if (
-        idDragon === "" ||
-        statistique === ""
-    ) {
+    if (idDragon === "") {
 
         alert(
-            "Tu dois choisir un dragon et une statistique."
+            "Tu dois choisir un dragon."
         );
 
         return;
@@ -4421,82 +4386,101 @@ function evaluerDragon() {
     if (!dragon.evaluations) {
 
         dragon.evaluations = {};
+
     }
 
 
-    if (
-        dragon.evaluations[statistique]
-        !== undefined
-    ) {
+    const statistiques = [
+        "attaque",
+        "defense",
+        "endurance",
+        "taille",
+        "intelligence",
+        "magie",
+        "vitesse"
+    ];
+
+
+    const evaluationComplete =
+        statistiques.every(
+            statistique =>
+                dragon.evaluations[statistique]
+                !== undefined
+        );
+
+
+    if (evaluationComplete) {
 
         alert(
-            "Cette statistique a déjà été évaluée."
+            "Le profil génétique de ce dragon est déjà entièrement évalué."
         );
 
         return;
     }
 
-	if (!depenserAction()) {
 
-    alert(
-        "Tu n'as plus d'action disponible aujourd'hui."
-    );
+    if (!depenserAction()) {
 
-    return;
-}
-
-    const note =
-        obtenirNoteGenetique(
-            dragon.genes[statistique]
+        alert(
+            "Tu n'as plus d'action disponible aujourd'hui."
         );
 
+        return;
+    }
 
-    dragon.evaluations[statistique] =
-        note;
+
+    statistiques.forEach(
+        function (statistique) {
+
+            dragon.evaluations[statistique] =
+                obtenirNoteGenetique(
+                    dragon.genes[statistique]
+                );
+
+        }
+    );
 
 
     sauvegarderPartie();
-	
-	afficherDossierGenetique(dragon);
-	
-	if (
-    idDragonFicheOuverte
-    === dragon.id
-) {
 
-    afficherFicheDetaillee(dragon);
 
-}
+    afficherDossierGenetique(dragon);
+
+
+    if (
+        idDragonFicheOuverte
+        === dragon.id
+    ) {
+
+        afficherFicheDetaillee(dragon);
+
+    }
+
 
     const resultat =
-    document.getElementById(
-        "resultat-evaluation"
-    );
+        document.getElementById(
+            "resultat-evaluation"
+        );
 
 
-resultat.innerHTML = `
-    <div class="resultat-genetique">
+    resultat.innerHTML = `
+        <div class="resultat-genetique">
 
-        <h3>
-            ${dragon.nom}
-        </h3>
+            <h3>
+                ${dragon.nom}
+            </h3>
 
-        <p class="statistique-evaluee">
-            ${obtenirNomStatistique(statistique)}
-        </p>
+            <p class="statistique-evaluee">
+                Profil génétique complet révélé
+            </p>
 
-        <div
-            class="note-genetique note-${note.toLowerCase()}"
-        >
-            ${note}
+            <p class="interpretation-note">
+                Les sept potentiels génétiques sont désormais connus.
+            </p>
+
         </div>
+    `;
 
-        <p class="interpretation-note">
-            ${obtenirInterpretationNote(note)}
-        </p>
-
-    </div>
-`;
 }
 
 function afficherFicheDetaillee(dragon) {
