@@ -4532,3 +4532,129 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
             #4a171f
         );
 }
+
+/* =================================
+   APERÇUS DES PARENTS
+   ================================= */
+
+.apercu-parent {
+    margin-top: 14px;
+}
+
+.apercu-parent:empty {
+    display: none;
+}
+
+.apercu-parent .carte-dragon {
+    min-height: 240px;
+    padding: 22px 20px 18px;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.025),
+            rgba(0, 0, 0, 0.08)
+        );
+
+    border: 1px solid rgba(183, 148, 78, 0.32);
+    border-left: 3px solid rgba(183, 148, 78, 0.8);
+}
+
+.apercu-parent .entete-carte-dragon {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    padding-bottom: 14px;
+    margin-bottom: 14px;
+
+    border-bottom: 1px solid rgba(183, 148, 78, 0.22);
+}
+
+.apercu-parent .entete-carte-dragon h3 {
+    margin: 0;
+
+    font-size: 1rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.apercu-parent .entete-carte-dragon span {
+    font-size: 1.35rem;
+    opacity: 0.85;
+}
+
+.apercu-parent .carte-dragon > p {
+    margin: 0 0 14px;
+
+    opacity: 0.72;
+    font-size: 0.95rem;
+}
+
+.apercu-parent .apparence-dragon {
+    margin-top: auto;
+    padding-top: 14px;
+
+    border-top: 1px solid rgba(183, 148, 78, 0.18);
+}
+
+.apercu-parent .ligne-apparence {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin: 7px 0;
+}
+
+.apercu-parent .bouton-fiche-parent {
+    width: fit-content;
+
+    margin-top: 16px;
+    padding: 10px 16px;
+
+    border: 1px solid rgba(183, 148, 78, 0.55);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(183, 148, 78, 0.22),
+            rgba(183, 148, 78, 0.10)
+        );
+
+    color: inherit;
+    font-family: inherit;
+
+    font-size: 0.78rem;
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.apercu-parent .bouton-fiche-parent:hover {
+    border-color: rgba(183, 148, 78, 0.9);
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(183, 148, 78, 0.32),
+            rgba(183, 148, 78, 0.16)
+        );
+
+    transform: translateY(-1px);
+}
+
+.apercu-parent .bouton-fiche-parent:active {
+    transform: translateY(0);
+}

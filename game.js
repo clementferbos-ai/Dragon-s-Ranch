@@ -5988,6 +5988,14 @@ function afficherParentsDisponibles() {
         </option>
     `;
 
+    document.getElementById(
+    "apercu-pere"
+    ).innerHTML = "";
+
+
+    document.getElementById(
+    "apercu-mere"
+    ).innerHTML = "";
 
     collectionDragons.forEach(function (dragon) {
 
