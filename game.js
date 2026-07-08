@@ -6014,6 +6014,151 @@ function afficherParentsDisponibles() {
     });
 }
 
+function afficherApercuParent(
+    idDragon,
+    idZone
+) {
+
+    const zone =
+        document.getElementById(idZone);
+
+
+    if (idDragon === "") {
+
+        zone.innerHTML = "";
+
+        return;
+    }
+
+
+    const dragon =
+        collectionDragons.find(
+            function (dragon) {
+
+                return dragon.id === idDragon;
+
+            }
+        );
+
+
+    if (!dragon) {
+
+        zone.innerHTML = "";
+
+        return;
+    }
+
+
+    zone.innerHTML = `
+
+        <div class="carte-dragon">
+
+            <div class="entete-carte-dragon">
+
+                <h3>
+                    ${dragon.nom}
+                </h3>
+
+                <span>
+                    ${dragon.sexe === "Mâle" ? "♂" : "♀"}
+                </span>
+
+            </div>
+
+
+            <p>
+                ${dragon.espece}
+                ·
+                G${dragon.generation}
+            </p>
+
+
+            <div class="apparence-dragon">
+
+                <div class="ligne-apparence">
+
+                    <span>
+                        Écailles :
+                    </span>
+
+                    <span
+                        class="pastille-couleur ${obtenirClassePastilleEcailles(dragon)}"
+                        style="background-color: ${dragon.apparence.ecailles};"
+                    ></span>
+
+                </div>
+
+
+                <div class="ligne-apparence">
+
+                    <span>
+                        Yeux :
+                    </span>
+
+                    ${genererAffichageYeux(dragon)}
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="bouton-fiche bouton-fiche-parent"
+                type="button"
+            >
+                Voir la fiche
+            </button>
+
+        </div>
+    `;
+
+
+    const bouton =
+        zone.querySelector(
+            ".bouton-fiche-parent"
+        );
+
+
+    bouton.addEventListener(
+        "click",
+        function () {
+
+            afficherFicheDetaillee(dragon);
+
+        }
+    );
+
+}
+
+document
+    .getElementById("selection-pere")
+    .addEventListener(
+        "change",
+        function () {
+
+            afficherApercuParent(
+                this.value,
+                "apercu-pere"
+            );
+
+        }
+    );
+
+
+document
+    .getElementById("selection-mere")
+    .addEventListener(
+        "change",
+        function () {
+
+            afficherApercuParent(
+                this.value,
+                "apercu-mere"
+            );
+
+        }
+    );
+
 function reproduireDragons() {
 
     if (oeufEnAttente === true) {
