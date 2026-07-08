@@ -5338,15 +5338,24 @@ function afficherFicheDetaillee(dragon) {
                 </div>
 				
 
-            </div>
-			
-			<button
-    class="bouton-danger"
-	type="button"
-    onclick="relacherDragon('${dragon.id}')"
->
-    Relâcher ce dragon
-</button>
+                        </div>
+
+
+            <button
+                id="bouton-voir-genealogie"
+                type="button"
+            >
+                Voir la généalogie
+            </button>
+
+
+            <button
+                class="bouton-danger"
+                type="button"
+                onclick="relacherDragon('${dragon.id}')"
+            >
+                Relâcher ce dragon
+            </button>
 			
         </div>
     `;
@@ -5406,6 +5415,34 @@ function afficherFicheDetaillee(dragon) {
         }
     );
 
+        // =================================
+    // BOUTON GÉNÉALOGIE
+    // =================================
+
+    const boutonGenealogie =
+        document.getElementById(
+            "bouton-voir-genealogie"
+        );
+
+
+    boutonGenealogie.addEventListener(
+        "click",
+        function () {
+
+            const arbre =
+                construireArbreGenealogique(
+                    dragon,
+                    2
+                );
+
+
+            console.log(
+                "ARBRE GÉNÉALOGIQUE :",
+                arbre
+            );
+
+        }
+    );
 
     // =================================
     // BOUTON FERMER
@@ -6724,6 +6761,127 @@ secondOeil:
     };
 }
 
+function creerEmpreinteGenealogique(dragon) {
+
+    return {
+
+        id: dragon.id,
+
+        nom: dragon.nom,
+
+        espece: dragon.espece,
+
+        sexe: dragon.sexe,
+
+        generation: dragon.generation,
+
+        parents: dragon.parents
+            ? structuredClone(dragon.parents)
+            : null
+
+    };
+}
+
+function resoudreAncetre(empreinte) {
+
+    if (!empreinte) {
+        return null;
+    }
+
+
+    const dragonVivant =
+        collectionDragons.find(
+            function (dragon) {
+
+                return (
+                    dragon.id
+                    === empreinte.id
+                );
+
+            }
+        );
+
+
+    if (dragonVivant) {
+
+        return dragonVivant;
+
+    }
+
+
+    return empreinte;
+}
+
+function construireArbreGenealogique(
+    dragon,
+    profondeurMax,
+    profondeurActuelle = 0
+) {
+
+    if (!dragon) {
+        return null;
+    }
+
+
+    const noeud = {
+
+        dragon: dragon,
+
+        pere: null,
+
+        mere: null
+
+    };
+
+
+    if (
+        profondeurActuelle
+        >= profondeurMax
+    ) {
+
+        return noeud;
+
+    }
+
+
+    if (!dragon.parents) {
+
+        return noeud;
+
+    }
+
+
+    const pere =
+        resoudreAncetre(
+            dragon.parents.pere
+        );
+
+
+    const mere =
+        resoudreAncetre(
+            dragon.parents.mere
+        );
+
+
+    noeud.pere =
+        construireArbreGenealogique(
+            pere,
+            profondeurMax,
+            profondeurActuelle + 1
+        );
+
+
+    noeud.mere =
+        construireArbreGenealogique(
+            mere,
+            profondeurMax,
+            profondeurActuelle + 1
+        );
+
+
+    return noeud;
+}
+
 function creerBebe(pere, mere) {
 
     const genes = {
@@ -6837,17 +6995,17 @@ function creerBebe(pere, mere) {
 
         parents: {
 
-            pere: {
-                id: pere.id,
-                nom: pere.nom
-            },
+            pere:
+            creerEmpreinteGenealogique(
+                pere
+        ),
 
-            mere: {
-                id: mere.id,
-                nom: mere.nom
-            }
+            mere:
+            creerEmpreinteGenealogique(
+                mere
+        )
 
-        },
+},
 
 		genes: genes,
 
