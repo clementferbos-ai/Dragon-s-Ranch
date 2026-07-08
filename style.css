@@ -4659,21 +4659,312 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
     transform: translateY(0);
 }
 
-.fond-genealogie.ouvert {
+/* =================================
+   GÉNÉALOGIE
+================================= */
+
+.fond-genealogie {
     position: fixed;
     inset: 0;
+
     z-index: 2000;
-    background: rgba(0, 0, 0, 0.8);
+
+    background:
+        rgba(5, 4, 3, 0.88);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0.25s ease;
 }
 
-.fenetre-genealogie.ouverte {
-    display: block;
+
+.fond-genealogie.ouvert {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* =================================
+   FENÊTRE
+================================= */
+
+.fenetre-genealogie {
     position: fixed;
-    inset: 5%;
+
+    top: 50%;
+    left: 50%;
+
     z-index: 2001;
-    padding: 30px;
+
+    width: min(1180px, 90vw);
+    height: min(720px, 86vh);
+
+    transform:
+        translate(-50%, -48%);
+
+    padding: 32px 42px;
+
     overflow: auto;
-    background: #17130f;
-    border: 1px solid #8c7138;
-    color: #e8dfcc;
+
+    background:
+        linear-gradient(
+            145deg,
+            #18130f,
+            #100d0a
+        );
+
+    border:
+        1px solid #80652e;
+
+    box-shadow:
+        0 24px 80px rgba(0, 0, 0, 0.75),
+        inset 0 0 40px rgba(180, 135, 55, 0.03);
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease,
+        visibility 0.25s ease;
+}
+
+
+.fenetre-genealogie.ouverte {
+    opacity: 1;
+    visibility: visible;
+
+    transform:
+        translate(-50%, -50%);
+}
+
+
+/* =================================
+   EN-TÊTE
+================================= */
+
+.entete-genealogie {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: flex-start;
+
+    gap: 30px;
+
+    padding-bottom: 22px;
+
+    border-bottom:
+        1px solid rgba(177, 139, 64, 0.35);
+}
+
+
+.surtitre-genealogie {
+    margin: 0 0 8px;
+
+    color: #8f7c58;
+
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+
+#titre-genealogie {
+    margin: 0;
+
+    color: #c7a85d;
+
+    font-size: 1.7rem;
+    font-weight: normal;
+
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+
+#bouton-fermer-genealogie {
+    flex-shrink: 0;
+
+    padding: 10px 18px;
+
+    border:
+        1px solid #6f5728;
+
+    background:
+        rgba(111, 87, 40, 0.15);
+
+    color: #cbb57b;
+
+    font-family: inherit;
+
+    cursor: pointer;
+}
+
+
+/* =================================
+   ARBRE
+================================= */
+
+.contenu-genealogie {
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1fr
+        1fr;
+
+    align-items: center;
+
+    min-width: 920px;
+    min-height: 500px;
+
+    padding: 40px 20px;
+}
+
+
+.generation-genealogie {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: space-around;
+
+    height: 100%;
+}
+
+
+/* =================================
+   CARTES
+================================= */
+
+.carte-genealogique {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 7px;
+
+    width: 210px;
+
+    margin: 0 auto;
+    padding: 16px 18px;
+
+    box-sizing: border-box;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(44, 35, 24, 0.9),
+            rgba(23, 18, 13, 0.95)
+        );
+
+    border:
+        1px solid rgba(159, 123, 55, 0.65);
+
+    box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.35);
+}
+
+
+.carte-genealogique strong {
+    color: #d1b66f;
+
+    font-size: 1rem;
+    font-weight: normal;
+
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+
+.carte-genealogique span {
+    color: #b8aa91;
+
+    font-size: 0.82rem;
+}
+
+
+.carte-genealogique small {
+    color: #786d5c;
+
+    font-size: 0.72rem;
+}
+
+
+/* Dragon dont on consulte l'arbre */
+
+.generation-genealogie:first-child
+.carte-genealogique {
+    border-color: #c39a43;
+
+    box-shadow:
+        0 0 0 1px rgba(195, 154, 67, 0.15),
+        0 10px 30px rgba(0, 0, 0, 0.45);
+}
+
+
+/* Ancêtre inconnu */
+
+.carte-genealogique.inconnue {
+    min-height: 86px;
+
+    justify-content: center;
+
+    border-style: dashed;
+
+    opacity: 0.35;
+}
+
+
+.carte-genealogique.inconnue span {
+    text-align: center;
+
+    font-style: italic;
+}
+
+
+/* =================================
+   LIGNES DE FILIATION
+================================= */
+
+.generation-genealogie:not(:last-child)
+.carte-genealogique::after {
+    content: "";
+
+    position: absolute;
+
+    top: 50%;
+    left: 100%;
+
+    width: 45px;
+    height: 1px;
+
+    background:
+        rgba(161, 126, 58, 0.6);
+}
+
+
+/* =================================
+   RESPONSIVE
+================================= */
+
+@media (max-width: 900px) {
+
+    .fenetre-genealogie {
+        width: 94vw;
+        height: 90vh;
+
+        padding: 24px;
+    }
+
+
+    .contenu-genealogie {
+        min-width: 850px;
+    }
+
 }
