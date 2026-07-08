@@ -6767,6 +6767,10 @@ function creerEmpreinteGenealogique(dragon) {
 
         generation: dragon.generation,
 
+        apparence: dragon.apparence
+        ? structuredClone(dragon.apparence)
+        : null,
+
         parents: dragon.parents
             ? structuredClone(dragon.parents)
             : null
@@ -6909,6 +6913,22 @@ function creerCarteGenealogique(noeud) {
             <small>
                 ${dragon.espece}
             </small>
+
+        <div class="couleurs-genealogie">
+
+    <span
+        class="pastille-couleur"
+        style="background-color: ${dragon.apparence?.ecailles || "#555"};"
+        title="Écailles"
+    ></span>
+
+    <span
+        class="pastille-couleur"
+        style="background-color: ${dragon.apparence?.yeux || "#555"};"
+        title="Yeux"
+    ></span>
+
+</div>
 
         </div>
     `;

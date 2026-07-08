@@ -5001,4 +5001,26 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
         min-width: 850px;
     }
 
+.couleurs-genealogie {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+
+    margin-top: 5px;
+}
+
+
+.couleurs-genealogie .pastille-couleur {
+    width: 16px;
+    height: 16px;
+
+    border-radius: 50%;
+
+    border:
+        1px solid rgba(220, 195, 130, 0.45);
+
+    box-shadow:
+        inset 0 0 4px rgba(0, 0, 0, 0.45);
+}
+
 }
