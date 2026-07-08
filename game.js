@@ -5429,17 +5429,9 @@ function afficherFicheDetaillee(dragon) {
         "click",
         function () {
 
-            const arbre =
-                construireArbreGenealogique(
-                    dragon,
-                    2
-                );
-
-
-            console.log(
-                "ARBRE GÉNÉALOGIQUE :",
-                arbre
-            );
+         afficherGenealogie(
+    dragon
+);   
 
         }
     );
@@ -6880,6 +6872,152 @@ function construireArbreGenealogique(
 
 
     return noeud;
+}
+
+function creerCarteGenealogique(noeud) {
+
+    if (!noeud || !noeud.dragon) {
+
+        return `
+            <div class="carte-genealogique inconnue">
+                <span>Ancêtre inconnu</span>
+            </div>
+        `;
+    }
+
+
+    const dragon =
+        noeud.dragon;
+
+
+    return `
+        <div
+            class="carte-genealogique"
+            data-dragon-id="${dragon.id}"
+        >
+
+            <strong>
+                ${dragon.nom}
+            </strong>
+
+            <span>
+                ${dragon.sexe === "Mâle" ? "♂" : "♀"}
+                ·
+                G${dragon.generation}
+            </span>
+
+            <small>
+                ${dragon.espece}
+            </small>
+
+        </div>
+    `;
+}
+
+function afficherGenealogie(dragon) {
+
+    const fenetre =
+        document.getElementById(
+            "fenetre-genealogie"
+        );
+
+    const fond =
+        document.getElementById(
+            "fond-genealogie"
+        );
+
+    const contenu =
+        document.getElementById(
+            "contenu-genealogie"
+        );
+
+    const titre =
+        document.getElementById(
+            "titre-genealogie"
+        );
+
+
+    const arbre =
+        construireArbreGenealogique(
+            dragon,
+            2
+        );
+
+
+    titre.textContent =
+        "Généalogie de "
+        + dragon.nom;
+
+
+    contenu.innerHTML = `
+
+        <div class="generation-genealogie">
+
+            ${creerCarteGenealogique(
+                arbre.dragon
+                    ? arbre
+                    : null
+            )}
+
+        </div>
+
+
+        <div class="generation-genealogie">
+
+            ${creerCarteGenealogique(
+                arbre.pere
+            )}
+
+            ${creerCarteGenealogique(
+                arbre.mere
+            )}
+
+        </div>
+
+
+        <div class="generation-genealogie">
+
+            ${creerCarteGenealogique(
+                arbre.pere
+                    ? arbre.pere.pere
+                    : null
+            )}
+
+            ${creerCarteGenealogique(
+                arbre.pere
+                    ? arbre.pere.mere
+                    : null
+            )}
+
+            ${creerCarteGenealogique(
+                arbre.mere
+                    ? arbre.mere.pere
+                    : null
+            )}
+
+            ${creerCarteGenealogique(
+                arbre.mere
+                    ? arbre.mere.mere
+                    : null
+            )}
+
+        </div>
+
+    `;
+
+
+    fenetre.classList.add(
+        "ouverte"
+    );
+
+    fond.classList.add(
+        "ouvert"
+    );
+
+    fenetre.setAttribute(
+        "aria-hidden",
+        "false"
+    );
 }
 
 function creerBebe(pere, mere) {
