@@ -6951,6 +6951,12 @@ function afficherGenealogie(dragon) {
 
     contenu.innerHTML = `
 
+         <svg
+            id="lignes-genealogie"
+            class="lignes-genealogie"
+            aria-hidden="true"
+        ></svg>
+
         <div class="generation-genealogie">
 
             ${creerCarteGenealogique(
@@ -7017,6 +7023,219 @@ function afficherGenealogie(dragon) {
     fenetre.setAttribute(
         "aria-hidden",
         "false"
+    );
+
+    requestAnimationFrame(
+    function () {
+
+        tracerLignesGenealogie();
+
+    }
+);
+}
+
+function tracerLignesGenealogie() {
+
+    const contenu =
+        document.getElementById(
+            "contenu-genealogie"
+        );
+
+    const svg =
+        document.getElementById(
+            "lignes-genealogie"
+        );
+
+    const generations =
+        contenu.querySelectorAll(
+            ".generation-genealogie"
+        );
+
+
+    if (
+        !svg
+        || generations.length < 3
+    ) {
+        return;
+    }
+
+
+    svg.innerHTML = "";
+
+
+    const rectangleContenu =
+        contenu.getBoundingClientRect();
+
+
+    svg.setAttribute(
+        "width",
+        contenu.scrollWidth
+    );
+
+    svg.setAttribute(
+        "height",
+        contenu.scrollHeight
+    );
+
+
+    function centreDroit(element) {
+
+        const rectangle =
+            element.getBoundingClientRect();
+
+        return {
+
+            x:
+                rectangle.right
+                - rectangleContenu.left,
+
+            y:
+                rectangle.top
+                - rectangleContenu.top
+                + rectangle.height / 2
+
+        };
+    }
+
+
+    function centreGauche(element) {
+
+        const rectangle =
+            element.getBoundingClientRect();
+
+        return {
+
+            x:
+                rectangle.left
+                - rectangleContenu.left,
+
+            y:
+                rectangle.top
+                - rectangleContenu.top
+                + rectangle.height / 2
+
+        };
+    }
+
+
+    function tracerBranche(
+        parent,
+        enfants
+    ) {
+
+        if (!parent) {
+            return;
+        }
+
+
+        const depart =
+            centreDroit(parent);
+
+
+        const arrivees =
+            enfants
+                .filter(Boolean)
+                .map(centreGauche);
+
+
+        if (arrivees.length === 0) {
+            return;
+        }
+
+
+        const xJonction =
+            (
+                depart.x
+                + Math.min(
+                    ...arrivees.map(
+                        point => point.x
+                    )
+                )
+            ) / 2;
+
+
+        let chemin =
+            `M ${depart.x} ${depart.y} `
+            + `H ${xJonction} `;
+
+
+        arrivees.forEach(
+            function (arrivee) {
+
+                chemin +=
+                    `M ${xJonction} ${depart.y} `
+                    + `V ${arrivee.y} `
+                    + `H ${arrivee.x} `;
+
+            }
+        );
+
+
+        const path =
+            document.createElementNS(
+                "http://www.w3.org/2000/svg",
+                "path"
+            );
+
+
+        path.setAttribute(
+            "d",
+            chemin
+        );
+
+
+        svg.appendChild(
+            path
+        );
+
+    }
+
+
+    const dragon =
+        generations[0]
+            .querySelectorAll(
+                ".carte-genealogique"
+            );
+
+
+    const parents =
+        generations[1]
+            .querySelectorAll(
+                ".carte-genealogique"
+            );
+
+
+    const grandsParents =
+        generations[2]
+            .querySelectorAll(
+                ".carte-genealogique"
+            );
+
+
+    tracerBranche(
+        dragon[0],
+        [
+            parents[0],
+            parents[1]
+        ]
+    );
+
+
+    tracerBranche(
+        parents[0],
+        [
+            grandsParents[0],
+            grandsParents[1]
+        ]
+    );
+
+
+    tracerBranche(
+        parents[1],
+        [
+            grandsParents[2],
+            grandsParents[3]
+        ]
     );
 }
 
