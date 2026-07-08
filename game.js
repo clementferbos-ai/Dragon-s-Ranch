@@ -7031,6 +7031,78 @@ function afficherGenealogie(dragon) {
 
     `;
 
+    const cartes =
+    contenu.querySelectorAll(
+        ".carte-genealogique[data-dragon-id]"
+    );
+
+
+cartes.forEach(
+    function (carte) {
+
+        const idDragon =
+            carte.dataset.dragonId;
+
+
+        const dragonCollection =
+            collectionDragons.find(
+                function (dragon) {
+
+                    return (
+                        dragon.id
+                        === idDragon
+                    );
+
+                }
+            );
+
+
+        if (!dragonCollection) {
+
+            carte.classList.add(
+                "historique"
+            );
+
+            return;
+        }
+
+
+        // Le dragon racine est déjà celui
+        // dont la fiche est ouverte.
+
+        if (
+            dragonCollection.id
+            === dragon.id
+        ) {
+
+            carte.classList.add(
+                "racine"
+            );
+
+            return;
+        }
+
+
+        carte.classList.add(
+            "cliquable"
+        );
+
+
+        carte.addEventListener(
+            "click",
+            function () {
+
+                fermerGenealogie();
+
+                afficherFicheDetaillee(
+                    dragonCollection
+                );
+
+            }
+        );
+
+    }
+);
 
     fenetre.classList.add(
         "ouverte"
@@ -7052,6 +7124,32 @@ function afficherGenealogie(dragon) {
 
     }
 );
+}
+
+function fermerGenealogie() {
+
+    const fenetre =
+        document.getElementById(
+            "fenetre-genealogie"
+        );
+
+    const fond =
+        document.getElementById(
+            "fond-genealogie"
+        );
+
+    fenetre.classList.remove(
+        "ouverte"
+    );
+
+    fond.classList.remove(
+        "ouvert"
+    );
+
+    fenetre.setAttribute(
+        "aria-hidden",
+        "true"
+    );
 }
 
 function tracerLignesGenealogie() {
@@ -7825,6 +7923,29 @@ boutonsNavigation.forEach(
 
     }
 );
+
+// =================================
+// FERMETURE DE LA GÉNÉALOGIE
+// =================================
+
+document
+    .getElementById(
+        "bouton-fermer-genealogie"
+    )
+    .addEventListener(
+        "click",
+        fermerGenealogie
+    );
+
+
+document
+    .getElementById(
+        "fond-genealogie"
+    )
+    .addEventListener(
+        "click",
+        fermerGenealogie
+    );
 
 mettreAJourInterfaceSauvegarde();
 
