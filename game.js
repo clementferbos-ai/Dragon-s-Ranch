@@ -7950,3 +7950,36 @@ document
 mettreAJourInterfaceSauvegarde();
 
 synchroniserPartieAuDemarrage();
+
+document
+    .querySelectorAll(
+        'input[name="mode-reproduction"]'
+    )
+    .forEach(option => {
+
+        option.addEventListener(
+            "change",
+            mettreAJourModeReproduction
+        );
+
+    });
+
+
+function mettreAJourModeReproduction() {
+
+    const modeSelectionne =
+        document.querySelector(
+            'input[name="mode-reproduction"]:checked'
+        );
+
+    const choixStatistique =
+        document.getElementById(
+            "choix-statistique-ciblee"
+        );
+
+    const transmissionCiblee =
+        modeSelectionne.value === "ciblee";
+
+    choixStatistique.hidden =
+        !transmissionCiblee;
+}
