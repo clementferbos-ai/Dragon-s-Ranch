@@ -4578,9 +4578,22 @@ function afficherFicheDetaillee(dragon) {
 
                 <div class="identite-fiche">
 
-                    <h2>
-                        ${dragon.nom}
-                    </h2>
+                    <div class="nom-dragon-fiche">
+
+                <h2>
+                    ${dragon.nom}
+                </h2>
+
+                <button
+                    id="bouton-renommer-dragon"
+                    class="bouton-renommer-dragon"
+                    type="button"
+                    title="Renommer ce dragon"
+                >
+                    ✎
+                </button>
+
+                </div>  
 
                     <p>
                         ${dragon.espece}
