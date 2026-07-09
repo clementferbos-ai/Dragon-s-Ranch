@@ -5535,7 +5535,6 @@ boutonValiderNom.addEventListener(
 
     }
 );
-);
 
     // =================================
     // BOUTON FERMER
