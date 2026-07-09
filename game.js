@@ -5548,6 +5548,8 @@ afficherFicheDetaillee(
 
     }
 );
+    }
+);
 
     // =================================
     // BOUTON FERMER
@@ -5577,8 +5579,6 @@ afficherFicheDetaillee(
 
         }
     );
-}
-);
 
 
     // =================================
