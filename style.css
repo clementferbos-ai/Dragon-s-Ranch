@@ -3572,6 +3572,23 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
     gap: 6px;
 }
 
+.pastille-opalescente {
+    background:
+        linear-gradient(
+            135deg,
+            #fffaf2 0%,
+            #f3e6f5 20%,
+            #dcecf4 40%,
+            #f8e4e8 60%,
+            #e5f1e7 80%,
+            #fff7e6 100%
+        ) !important;
+
+    box-shadow:
+        0 0 0 1px rgba(255, 245, 225, 0.75),
+        0 0 10px rgba(245, 225, 240, 0.35);
+}
+
 /* ================================= */
 /* SUCCÈS — PRESTIGE DE L'ÉLEVEUR    */
 /* ================================= */

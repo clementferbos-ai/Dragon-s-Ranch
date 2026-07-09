@@ -2785,6 +2785,11 @@ const rareteMutations = {
     iridescence: {
         nom: "Iridescence",
         points: 5
+    },
+
+    opalescence: {
+        nom: "Opalescence",
+        points: 5
     }
 
 };
@@ -2927,15 +2932,34 @@ function formaterNomCouleur(couleur) {
 function obtenirClassePastilleEcailles(dragon) {
 
     if (
-        dragon
-        && dragon.apparence
-        && dragon.apparence.mutationEsthetique
+        !dragon
+        || !dragon.apparence
+    ) {
+
+        return "";
+
+    }
+
+
+    if (
+        dragon.apparence.mutationEsthetique
             === "iridescence"
     ) {
 
         return "pastille-iridescente";
 
     }
+
+
+    if (
+        dragon.apparence.mutationEsthetique
+            === "opalescence"
+    ) {
+
+        return "pastille-opalescente";
+
+    }
+
 
     return "";
 }
@@ -3220,7 +3244,8 @@ function genererApparenceSauvage(espece) {
     const mutationsPossibles = [
         "albinisme",
         "iridescence",
-        "heterochromie"
+        "heterochromie",
+        "opalescence"
     ];
 
 
@@ -4834,7 +4859,118 @@ function afficherFicheDetaillee(dragon) {
             `
 
             : dragon.apparence.mutationEsthetique
-                === "iridescence"
+    === "opalescence"
+
+    ? `
+
+        <div class="detail-rarete mutation-opalescence">
+
+            <div class="detail-rarete-entete">
+                <span>Écailles</span>
+                <em>Opalescentes</em>
+            </div>
+
+            <strong>
+                Reflets nacrés
+            </strong>
+
+            <p class="explication-rarete">
+                Les écailles présentent des reflets laiteux
+                et pastel qui masquent leur couleur naturelle.
+            </p>
+
+        </div>
+
+
+        <div class="detail-rarete">
+
+            <div class="detail-rarete-entete">
+
+                <span>
+                    Yeux
+                </span>
+
+                <em>
+                    ${formaterNomCouleur(
+                        dragon.rareteEsthetique
+                            .yeux.niveau
+                    )}
+                </em>
+
+            </div>
+
+            <strong>
+                ${formaterNomCouleur(
+                    dragon.apparence.familleYeux
+                )}
+            </strong>
+
+        </div>
+
+
+        <div class="detail-rarete mutation-detectee">
+
+            <div class="detail-rarete-entete">
+                <span>Mutation</span>
+                <em>Exceptionnelle</em>
+            </div>
+
+            <strong>
+                Opalescence
+            </strong>
+
+            <p class="explication-rarete">
+                Mutation chromatique rarissime donnant
+                aux écailles des reflets nacrés.
+            </p>
+
+        </div>
+
+
+        <div class="couleurs-hereditaires">
+
+            <span class="titre-couleurs-hereditaires">
+                Couleur héréditaire
+            </span>
+
+            <p>
+                <span>Écailles</span>
+
+                <strong>
+                    ${formaterNomCouleur(
+                        dragon.apparence.familleEcailles
+                    )}
+                </strong>
+            </p>
+
+            <small>
+                Cette couleur reste transmissible
+                à la descendance.
+            </small>
+
+        </div>
+
+
+        <div class="score-rarete-fiche">
+
+            <span class="etoiles-rarete">
+                ${genererEtoiles(
+                    dragon.rareteEsthetique.etoiles
+                )}
+            </span>
+
+            <strong>
+                ${obtenirLibelleRarete(
+                    dragon.rareteEsthetique.etoiles
+                )}
+            </strong>
+
+        </div>
+
+    `
+
+    : dragon.apparence.mutationEsthetique
+        === "iridescence"
 
                 ? `
 
@@ -6680,7 +6816,8 @@ function genererMutationEsthetiqueBebe(
     const mutationsPossibles = [
         "albinisme",
         "iridescence",
-        "heterochromie"
+        "heterochromie",
+        "opalescence"
     ];
 
 
@@ -6861,6 +6998,15 @@ function genererApparenceBebe(
             "rgb(185, 45, 55)";
 
     }
+
+    if (
+    mutationEsthetique === "opalescence"
+) {
+
+    couleurEcaillesVisible =
+        "rgb(225, 220, 235)";
+
+}
 	
 	if (
     mutationEsthetique === "iridescence"
