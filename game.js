@@ -999,6 +999,14 @@ stabiliser_albinisme: {
     points: 3
 },
 
+obtenir_opalescence: {
+    nom: "Reflets de nacre",
+    description:
+        "Obtenir un dragon opalescent.",
+    categorie: "esthetique",
+    points: 2
+},
+
 stabiliser_heterochromie: {
     nom: "Deux regards, une lignée",
     description:
@@ -1850,6 +1858,14 @@ collectionDragons.forEach(
                 );
             }
 
+            if (
+    mutation === "opalescence"
+) {
+
+    debloquerSucces(
+        "obtenir_opalescence"
+    );
+}
 
             if (
                 mutation === "heterochromie"
