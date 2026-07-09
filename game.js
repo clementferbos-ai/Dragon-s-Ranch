@@ -6335,6 +6335,28 @@ const coutReproduction =
         ? 2
         : 1;
 
+let statistiqueCiblee = null;
+
+if (modeReproduction === "ciblee") {
+
+    const choixStatistique =
+        document.querySelector(
+            'input[name="statistique-ciblee"]:checked'
+        );
+
+    if (!choixStatistique) {
+
+        alert(
+            "Tu dois choisir une statistique à transmettre."
+        );
+
+        return;
+    }
+
+    statistiqueCiblee =
+        choixStatistique.value;
+}
+
 
 if (actionsRestantes < coutReproduction) {
 
@@ -6358,7 +6380,11 @@ for (
 
 }
 
-    const bebe = creerBebe(pere, mere);
+    const bebe = creerBebe(
+    pere,
+    mere,
+    statistiqueCiblee
+);
 
     oeufEnAttente = true;
      mettreAJourBoutonsActions();
@@ -7381,87 +7407,125 @@ function tracerLignesGenealogie() {
     );
 }
 
-function creerBebe(pere, mere) {
+function creerBebe(
+    pere,
+    mere,
+    statistiqueCiblee = null
+) {
+
+    function transmettre(
+        genesParent,
+        statistique
+    ) {
+
+        if (
+            statistique ===
+            statistiqueCiblee
+        ) {
+
+            return Math.max(
+                ...genesParent
+            );
+        }
+
+        return transmettreGene(
+            genesParent
+        );
+    }
 
     const genes = {
 
-        attaque: [
-            transmettreGene(
-                pere.genes.attaque
-            ),
+    attaque: [
+        transmettre(
+            pere.genes.attaque,
+            "attaque"
+        ),
 
-            transmettreGene(
-                mere.genes.attaque
-            )
-        ],
-
-
-        defense: [
-            transmettreGene(
-                pere.genes.defense
-            ),
-
-            transmettreGene(
-                mere.genes.defense
-            )
-        ],
+        transmettre(
+            mere.genes.attaque,
+            "attaque"
+        )
+    ],
 
 
-        endurance: [
-            transmettreGene(
-                pere.genes.endurance
-            ),
+    defense: [
+        transmettre(
+            pere.genes.defense,
+            "defense"
+        ),
 
-            transmettreGene(
-                mere.genes.endurance
-            )
-        ],
-
-
-        taille: [
-            transmettreGene(
-                pere.genes.taille
-            ),
-
-            transmettreGene(
-                mere.genes.taille
-            )
-        ],
+        transmettre(
+            mere.genes.defense,
+            "defense"
+        )
+    ],
 
 
-        intelligence: [
-            transmettreGene(
-                pere.genes.intelligence
-            ),
+    endurance: [
+        transmettre(
+            pere.genes.endurance,
+            "endurance"
+        ),
 
-            transmettreGene(
-                mere.genes.intelligence
-            )
-        ],
-
-
-        magie: [
-            transmettreGene(
-                pere.genes.magie
-            ),
-
-            transmettreGene(
-                mere.genes.magie
-            )
-        ],
+        transmettre(
+            mere.genes.endurance,
+            "endurance"
+        )
+    ],
 
 
-        vitesse: [
-            transmettreGene(
-                pere.genes.vitesse
-            ),
+    taille: [
+        transmettre(
+            pere.genes.taille,
+            "taille"
+        ),
 
-            transmettreGene(
-                mere.genes.vitesse
-            )
-        ]
+        transmettre(
+            mere.genes.taille,
+            "taille"
+        )
+    ],
 
-    };
+
+    intelligence: [
+        transmettre(
+            pere.genes.intelligence,
+            "intelligence"
+        ),
+
+        transmettre(
+            mere.genes.intelligence,
+            "intelligence"
+        )
+    ],
+
+
+    magie: [
+        transmettre(
+            pere.genes.magie,
+            "magie"
+        ),
+
+        transmettre(
+            mere.genes.magie,
+            "magie"
+        )
+    ],
+
+
+    vitesse: [
+        transmettre(
+            pere.genes.vitesse,
+            "vitesse"
+        ),
+
+        transmettre(
+            mere.genes.vitesse,
+            "vitesse"
+        )
+    ]
+
+};
 	
 	const mutation =
 		appliquerMutation(genes);
