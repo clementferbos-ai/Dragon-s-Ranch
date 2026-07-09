@@ -3272,7 +3272,7 @@ function genererApparenceSauvage(espece) {
 
 
     const mutationEsthetique =
-    "opalescence";
+    "iridescent";
 
 
     // =========================
