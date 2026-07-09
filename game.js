@@ -3272,13 +3272,7 @@ function genererApparenceSauvage(espece) {
 
 
     const mutationEsthetique =
-        mutationsReussies.length > 0
-
-            ? choisirAuHasard(
-                mutationsReussies
-            )
-
-            : null;
+    "opalescence";
 
 
     // =========================
