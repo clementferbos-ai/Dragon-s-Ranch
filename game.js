@@ -6325,13 +6325,37 @@ function reproduireDragons() {
         return;
     }
 
-if (!depenserAction()) {
+const modeReproduction =
+    document.querySelector(
+        'input[name="mode-reproduction"]:checked'
+    ).value;
+
+const coutReproduction =
+    modeReproduction === "ciblee"
+        ? 2
+        : 1;
+
+
+if (actionsRestantes < coutReproduction) {
 
     alert(
-        "Tu n'as plus d'action disponible aujourd'hui."
+        modeReproduction === "ciblee"
+            ? "La transmission ciblée nécessite 2 actions."
+            : "Tu n'as plus d'action disponible."
     );
 
     return;
+}
+
+
+for (
+    let i = 0;
+    i < coutReproduction;
+    i++
+) {
+
+    depenserAction();
+
 }
 
     const bebe = creerBebe(pere, mere);
