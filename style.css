@@ -5049,61 +5049,106 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
    ================================= */
 
 .choix-mode-reproduction {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    justify-content: center;
     gap: 12px;
-    margin: 20px 0;
+    margin: 18px auto;
+    max-width: 650px;
 }
 
 .option-reproduction {
+    flex: 1;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 
-    padding: 14px;
+    padding: 12px 16px;
 
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    border: 1px solid #5c4725;
+    background: #18140f;
 
     cursor: pointer;
+}
+
+.option-reproduction:hover {
+    border-color: #b58a42;
+}
+
+.option-reproduction input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    min-width: 16px;
+    margin: 0;
+
+    accent-color: #b58a42;
 }
 
 .option-reproduction span {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
+    text-align: left;
+}
+
+.option-reproduction strong {
+    color: #d4b06a;
+    font-size: 0.95rem;
 }
 
 .option-reproduction small {
-    opacity: 0.7;
+    color: #8f877b;
+    font-size: 0.78rem;
 }
 
 
-/* Choix de la statistique */
+/* =================================
+   CHOIX DE LA STATISTIQUE
+   ================================= */
 
 #choix-statistique-ciblee {
-    margin: 15px 0 20px;
-    padding: 15px;
+    max-width: 650px;
+    margin: 0 auto 18px;
+    padding: 14px 18px;
 
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    border: 1px solid #5c4725;
+    background: #18140f;
 }
 
 #choix-statistique-ciblee p {
-    margin-top: 0;
-    font-weight: bold;
+    margin: 0 0 12px;
+
+    color: #d4b06a;
+    font-size: 0.9rem;
+    text-align: center;
 }
 
 #choix-statistique-ciblee label {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
 
-    margin: 5px;
-    padding: 8px 12px;
+    margin: 4px;
+    padding: 7px 10px;
 
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    border: 1px solid #4d4131;
+    background: #100d09;
+
+    color: #c8c0b5;
+    font-size: 0.85rem;
 
     cursor: pointer;
+}
+
+#choix-statistique-ciblee label:hover {
+    border-color: #b58a42;
+    color: #d4b06a;
+}
+
+#choix-statistique-ciblee input[type="radio"] {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    margin: 0;
+
+    accent-color: #b58a42;
 }
