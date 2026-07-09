@@ -4456,7 +4456,6 @@ function evaluerDragon() {
 
     }
 
-
     const resultat =
         document.getElementById(
             "resultat-evaluation"
@@ -5562,6 +5561,8 @@ boutonValiderNom.addEventListener(
 
         }
     );
+}
+);
 
 
     // =================================
