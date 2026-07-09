@@ -5450,6 +5450,28 @@ function afficherFicheDetaillee(dragon) {
     );
 
     // =================================
+// BOUTON RENOMMER LE DRAGON
+// =================================
+
+const boutonRenommer =
+    document.getElementById(
+        "bouton-renommer-dragon"
+    );
+
+
+boutonRenommer.addEventListener(
+    "click",
+    function () {
+
+        console.log(
+            "Clic sur renommer :",
+            dragon.nom
+        );
+
+    }
+);
+
+    // =================================
     // BOUTON FERMER
     // =================================
 
