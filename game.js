@@ -5523,12 +5523,28 @@ boutonValiderNom.addEventListener(
 
 
         dragon.nom =
-            nouveauNom;
+    nouveauNom;
 
 
-        afficherFicheDetaillee(
-            dragon
-        );
+// Met à jour toutes les zones qui affichent les dragons
+
+afficherCollection();
+
+afficherParentsDisponibles();
+
+afficherDragonsEvaluables();
+
+
+// Sauvegarde le nouveau nom
+
+sauvegarderPartie();
+
+
+// Réaffiche la grande fiche avec le nouveau nom
+
+afficherFicheDetaillee(
+    dragon
+);
 
     }
 );
