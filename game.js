@@ -5463,10 +5463,44 @@ boutonRenommer.addEventListener(
     "click",
     function () {
 
-        console.log(
-            "Clic sur renommer :",
-            dragon.nom
-        );
+        const zoneNom =
+    document.querySelector(
+        ".nom-dragon-fiche"
+    );
+
+
+zoneNom.innerHTML = `
+
+    <input
+        id="champ-nouveau-nom"
+        class="champ-nouveau-nom"
+        type="text"
+        maxlength="20"
+    >
+
+    <button
+        id="bouton-valider-nom"
+        class="bouton-valider-nom"
+        type="button"
+    >
+        ✓
+    </button>
+
+`;
+    const champNouveauNom =
+    document.getElementById(
+        "champ-nouveau-nom"
+    );
+
+
+champNouveauNom.value =
+    dragon.nom;
+
+
+champNouveauNom.focus();
+
+
+champNouveauNom.select();
 
     }
 );
