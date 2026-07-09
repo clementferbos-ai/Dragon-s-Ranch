@@ -3574,19 +3574,19 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
 
 .pastille-opalescente {
     background:
-        linear-gradient(
-            135deg,
-            #fffaf2 0%,
-            #f3e6f5 20%,
-            #dcecf4 40%,
-            #f8e4e8 60%,
-            #e5f1e7 80%,
-            #fff7e6 100%
+        radial-gradient(
+            circle at 30% 25%,
+            #ffffff 0%,
+            #fffdf8 25%,
+            #e8f4f3 50%,
+            #eadff0 75%,
+            #fffaf0 100%
         ) !important;
 
     box-shadow:
-        0 0 0 1px rgba(255, 245, 225, 0.75),
-        0 0 10px rgba(245, 225, 240, 0.35);
+        inset 0 0 4px rgba(255, 255, 255, 0.9),
+        0 0 0 1px rgba(220, 210, 225, 0.8),
+        0 0 8px rgba(235, 225, 245, 0.45);
 }
 
 /* ================================= */
