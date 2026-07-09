@@ -5164,9 +5164,9 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
 }
 
 .bouton-renommer-dragon {
-    padding: 0;
-    border: none;
-    background: none;
+    padding: 0 !important;
+    border: none !important;
+    background: none !important;
     color: #8f8267;
     font-size: 14px;
     line-height: 1;
