@@ -1015,6 +1015,14 @@ stabiliser_heterochromie: {
     points: 3
 },
 
+stabiliser_opalescence: {
+    nom: "Héritage de nacre",
+    description:
+        "Obtenir un dragon opalescent de génération 5.",
+    categorie: "esthetique",
+    points: 3
+},
+
 toutes_especes: {
     nom: "Bestiaire vivant",
     description:
@@ -1935,6 +1943,18 @@ if (dragon.generation >= 5) {
             "stabiliser_heterochromie"
         );
     }
+    
+    // Opalescence
+
+if (
+    mutation
+        === "opalescence"
+) {
+
+    debloquerSucces(
+        "stabiliser_opalescence"
+    );
+}
 
 }
 
