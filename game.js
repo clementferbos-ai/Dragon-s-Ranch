@@ -5503,6 +5503,38 @@ champNouveauNom.focus();
 champNouveauNom.select();
 
     }
+
+    const boutonValiderNom =
+    document.getElementById(
+        "bouton-valider-nom"
+    );
+
+
+boutonValiderNom.addEventListener(
+    "click",
+    function () {
+
+        const nouveauNom =
+            champNouveauNom.value.trim();
+
+
+        if (nouveauNom === "") {
+
+            return;
+
+        }
+
+
+        dragon.nom =
+            nouveauNom;
+
+
+        afficherFicheDetaillee(
+            dragon
+        );
+
+    }
+);
 );
 
     // =================================
