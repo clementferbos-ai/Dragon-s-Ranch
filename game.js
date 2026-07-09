@@ -5502,8 +5502,6 @@ champNouveauNom.focus();
 
 champNouveauNom.select();
 
-    }
-
     const boutonValiderNom =
     document.getElementById(
         "bouton-valider-nom"
