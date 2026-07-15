@@ -5100,8 +5100,88 @@ function afficherFicheDetaillee(dragon) {
                     ${
     dragon.rareteEsthetique
 
-        ? dragon.apparence.mutationEsthetique
-            === "albinisme"
+        ? estDragonUnique(dragon)
+
+            ? `
+
+                <div class="detail-rarete">
+
+                    <div class="detail-rarete-entete">
+
+                        <span>
+                            Écailles
+                        </span>
+
+                        <em>
+                            Unique
+                        </em>
+
+                    </div>
+
+                    <strong>
+                        ${obtenirNomEcaillesAffiche(dragon)}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-rarete">
+
+                    <div class="detail-rarete-entete">
+
+                        <span>
+                            Yeux
+                        </span>
+
+                        <em>
+                            Unique
+                        </em>
+
+                    </div>
+
+                    <strong>
+                        ${obtenirNomYeuxAffiche(dragon)}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-rarete mutation-detectee">
+
+                    <div class="detail-rarete-entete">
+
+                        <span>
+                            Particularité
+                        </span>
+
+                        <em>
+                            Unique
+                        </em>
+
+                    </div>
+
+                    <strong>
+                        ${obtenirNomMutationAffiche(dragon)}
+                    </strong>
+
+                    <p class="explication-rarete">
+                        Cette particularité esthétique
+                        n'existe sur aucun dragon naturel.
+                    </p>
+
+                </div>
+
+
+                <div class="score-rarete-fiche">
+
+                    ${affichageRareteDragon}
+
+                </div>
+
+            `
+
+            : dragon.apparence.mutationEsthetique
+                === "albinisme"
 
             ? `
 
