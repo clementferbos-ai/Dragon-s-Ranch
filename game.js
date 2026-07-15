@@ -1581,12 +1581,22 @@ function obtenirTitreEleveur() {
 
 function verifierSucces() {
 
+    const dragonsEligiblesSucces =
+        collectionDragons.filter(
+            function (dragon) {
+
+                return !estDragonUnique(dragon);
+
+            }
+        );
+
+
     // =========================
     // COLLECTION
     // =========================
 
     const nombreDragons =
-        collectionDragons.length;
+        dragonsEligiblesSucces.length;
 
 
     if (nombreDragons >= 10) {
@@ -1670,7 +1680,7 @@ if (nombreEleves >= 500) {
 // GÉNÉRATIONS
 // =========================
 
-collectionDragons.forEach(
+dragonsEligiblesSucces.forEach(
     function (dragon) {
 
         const generation =
@@ -1720,7 +1730,7 @@ collectionDragons.forEach(
 // SCORES TOTAUX
 // =========================
 
-collectionDragons.forEach(
+dragonsEligiblesSucces.forEach(
     function (dragon) {
 
         const score =
@@ -1763,7 +1773,7 @@ collectionDragons.forEach(
 // POTENTIELS S
 // =========================
 
-collectionDragons.forEach(
+dragonsEligiblesSucces.forEach(
     function (dragon) {
 
         const nombrePotentielsS =
@@ -1818,7 +1828,7 @@ collectionDragons.forEach(
     // ESTHÉTIQUE
     // =========================
 
-    collectionDragons.forEach(
+    dragonsEligiblesSucces.forEach(
         function (dragon) {
 
             if (!dragon.apparence) {
@@ -1972,7 +1982,7 @@ const toutesLesEspeces =
 
 const especesPossedees =
     new Set(
-        collectionDragons.map(
+        dragonsEligiblesSucces.map(
             dragon => dragon.espece
         )
     );
@@ -2003,7 +2013,7 @@ const possedeCoupleChaqueEspece =
         function (espece) {
 
             const possedeMale =
-                collectionDragons.some(
+                dragonsEligiblesSucces.some(
                     dragon =>
                         dragon.espece === espece
                         && dragon.sexe === "Mâle"
@@ -2011,7 +2021,7 @@ const possedeCoupleChaqueEspece =
 
 
             const possedeFemelle =
-                collectionDragons.some(
+                dragonsEligiblesSucces.some(
                     dragon =>
                         dragon.espece === espece
                         && dragon.sexe === "Femelle"
@@ -2052,7 +2062,7 @@ const possedeToutesLesRaretes =
             return niveauxRarete.every(
                 function (niveau) {
 
-                    return collectionDragons.some(
+                    return dragonsEligiblesSucces.some(
                         function (dragon) {
 
                             return (
@@ -2089,7 +2099,7 @@ const possedeG5ChaqueEspece =
     toutesLesEspeces.every(
         function (espece) {
 
-            return collectionDragons.some(
+            return dragonsEligiblesSucces.some(
                 function (dragon) {
 
                     return (
@@ -2118,7 +2128,7 @@ if (possedeG5ChaqueEspece) {
 // =========================
 
 const possedeDragonParfait =
-    collectionDragons.some(
+    dragonsEligiblesSucces.some(
         function (dragon) {
 
             const score =
@@ -2168,7 +2178,7 @@ if (possedeDragonParfait) {
 // =========================
 
 const nombreDragonsNommes =
-    collectionDragons.filter(
+    dragonsEligiblesSucces.filter(
         function (dragon) {
 
             return (
@@ -2957,6 +2967,284 @@ function calculerRareteEsthetique(
                 ? rareteMutations[mutation]
                 : null
     };
+}
+
+// =================================
+// DRAGONS UNIQUES
+// =================================
+
+function estDragonUnique(dragon) {
+
+    return Boolean(
+        dragon
+        && dragon.dragonUnique
+        && dragon.dragonUnique.id
+    );
+}
+
+
+function obtenirIdentifiantDragonUnique(dragon) {
+
+    if (!estDragonUnique(dragon)) {
+
+        return null;
+
+    }
+
+
+    return dragon.dragonUnique.id;
+}
+
+
+function obtenirTitreDragonUnique(dragon) {
+
+    if (!estDragonUnique(dragon)) {
+
+        return null;
+
+    }
+
+
+    return dragon.dragonUnique.titre
+        || "Unique";
+}
+
+function creerChambord() {
+
+    const genes = {
+
+        attaque: [19, 18],
+
+        defense: [20, 19],
+
+        endurance: [18, 18],
+
+        taille: [20, 20],
+
+        intelligence: [19, 18],
+
+        magie: [19, 19],
+
+        vitesse: [18, 17]
+
+    };
+
+
+    const dragon = {
+
+        id: crypto.randomUUID(),
+
+        nom: "Chambord",
+
+        espece: "Européen",
+
+        sexe: "Mâle",
+
+        origine: "Cadeau",
+
+        generation: 0,
+
+        parents: {
+
+            pere: null,
+
+            mere: null
+
+        },
+
+
+        dragonUnique: {
+
+            id: "chambord-cadeau-2026",
+
+            titre:
+                "Dragon unique distribué à celle qui a su procurer des vacances au développeur"
+
+        },
+
+
+        genes: genes,
+
+
+        statistiques: {
+
+            attaque:
+                calculerStatistique(
+                    genes.attaque
+                ),
+
+            defense:
+                calculerStatistique(
+                    genes.defense
+                ),
+
+            endurance:
+                calculerStatistique(
+                    genes.endurance
+                ),
+
+            taille:
+                calculerStatistique(
+                    genes.taille
+                ),
+
+            intelligence:
+                calculerStatistique(
+                    genes.intelligence
+                ),
+
+            magie:
+                calculerStatistique(
+                    genes.magie
+                ),
+
+            vitesse:
+                calculerStatistique(
+                    genes.vitesse
+                )
+
+        },
+
+
+        apparence: {
+
+            familleEcailles:
+                "blanc",
+
+            nuanceEcailles:
+                100,
+
+            ecailles:
+                "rgb(245, 242, 232)",
+
+
+            familleYeux:
+                "or-mouchete",
+
+            nuanceYeux:
+                100,
+
+            yeux:
+                "rgb(212, 175, 55)",
+
+
+            familleSecondOeil:
+                null,
+
+            nuanceSecondOeil:
+                null,
+
+            secondOeil:
+                null,
+
+
+            mutationEsthetique:
+                "dorure-royale"
+
+        }
+
+    };
+
+
+    dragon.rareteEsthetique = {
+
+        points: 999,
+
+        etoiles: 5,
+
+        ecailles: {
+
+            nom: "Blanche",
+
+            rarete: "Unique"
+
+        },
+
+        yeux: {
+
+            nom: "Or moucheté",
+
+            rarete: "Unique"
+
+        },
+
+        mutation: {
+
+            nom: "Dorure royale",
+
+            rarete: "Unique"
+
+        }
+
+    };
+
+
+    return dragon;
+}
+
+function obtenirNomEcaillesAffiche(dragon) {
+
+    if (
+        estDragonUnique(dragon)
+        && dragon.rareteEsthetique
+        && dragon.rareteEsthetique.ecailles
+    ) {
+
+        return dragon
+            .rareteEsthetique
+            .ecailles
+            .nom;
+
+    }
+
+
+    return formaterNomCouleur(
+        dragon.apparence.familleEcailles
+    );
+}
+
+
+function obtenirNomYeuxAffiche(dragon) {
+
+    if (
+        estDragonUnique(dragon)
+        && dragon.rareteEsthetique
+        && dragon.rareteEsthetique.yeux
+    ) {
+
+        return dragon
+            .rareteEsthetique
+            .yeux
+            .nom;
+
+    }
+
+
+    return formaterNomCouleur(
+        dragon.apparence.familleYeux
+    );
+}
+
+
+function obtenirNomMutationAffiche(dragon) {
+
+    if (
+        estDragonUnique(dragon)
+        && dragon.rareteEsthetique
+        && dragon.rareteEsthetique.mutation
+    ) {
+
+        return dragon
+            .rareteEsthetique
+            .mutation
+            .nom;
+
+    }
+
+
+    return formaterNomCouleur(
+        dragon.apparence.mutationEsthetique
+    );
 }
 
 function formaterNomCouleur(couleur) {
@@ -4610,6 +4898,33 @@ function afficherFicheDetaillee(dragon) {
 	const pourcentagePerfection =
     calculerPourcentagePerfection(dragon);
 
+    const affichageRareteDragon =
+    estDragonUnique(dragon)
+
+        ? `
+            <span class="rarete-dragon-unique">
+                ◆ UNIQUE
+            </span>
+
+            <strong>
+                ${obtenirTitreDragonUnique(dragon)}
+            </strong>
+        `
+
+        : `
+            <span class="etoiles-rarete">
+                ${genererEtoiles(
+                    dragon.rareteEsthetique.etoiles
+                )}
+            </span>
+
+            <strong>
+                ${obtenirLibelleRarete(
+                    dragon.rareteEsthetique.etoiles
+                )}
+            </strong>
+        `;
+
     // Noms des parents.
 
     const nomPere =
@@ -4849,24 +5164,20 @@ function afficherFicheDetaillee(dragon) {
                     </span>
 
                     <p>
-                        <span>Écailles</span>
+    <span>Écailles</span>
 
-                        <strong>
-                            ${formaterNomCouleur(
-                                dragon.apparence.familleEcailles
-                            )}
-                        </strong>
-                    </p>
+    <strong>
+        ${obtenirNomEcaillesAffiche(dragon)}
+    </strong>
+</p>
 
-                    <p>
-                        <span>Yeux</span>
+<p>
+    <span>Yeux</span>
 
-                        <strong>
-                            ${formaterNomCouleur(
-                                dragon.apparence.familleYeux
-                            )}
-                        </strong>
-                    </p>
+    <strong>
+        ${obtenirNomYeuxAffiche(dragon)}
+    </strong>
+</p>
 
                     <small>
                         Ces couleurs restent transmissibles
@@ -4878,19 +5189,9 @@ function afficherFicheDetaillee(dragon) {
 
                 <div class="score-rarete-fiche">
 
-                    <span class="etoiles-rarete">
-                        ${genererEtoiles(
-                            dragon.rareteEsthetique.etoiles
-                        )}
-                    </span>
+    ${affichageRareteDragon}
 
-                    <strong>
-                        ${obtenirLibelleRarete(
-                            dragon.rareteEsthetique.etoiles
-                        )}
-                    </strong>
-
-                </div>
+</div>
 
             `
 
@@ -4936,9 +5237,7 @@ function afficherFicheDetaillee(dragon) {
             </div>
 
             <strong>
-                ${formaterNomCouleur(
-                    dragon.apparence.familleYeux
-                )}
+                ${obtenirNomYeuxAffiche(dragon)}
             </strong>
 
         </div>
@@ -4989,19 +5288,9 @@ function afficherFicheDetaillee(dragon) {
 
         <div class="score-rarete-fiche">
 
-            <span class="etoiles-rarete">
-                ${genererEtoiles(
-                    dragon.rareteEsthetique.etoiles
-                )}
-            </span>
+    ${affichageRareteDragon}
 
-            <strong>
-                ${obtenirLibelleRarete(
-                    dragon.rareteEsthetique.etoiles
-                )}
-            </strong>
-
-        </div>
+</div>
 
     `
 
@@ -5047,9 +5336,7 @@ function afficherFicheDetaillee(dragon) {
                         </div>
 
                         <strong>
-                            ${formaterNomCouleur(
-                                dragon.apparence.familleYeux
-                            )}
+                            ${obtenirNomYeuxAffiche(dragon)}
                         </strong>
 
                     </div>
@@ -5100,19 +5387,9 @@ function afficherFicheDetaillee(dragon) {
 
                     <div class="score-rarete-fiche">
 
-                        <span class="etoiles-rarete">
-                            ${genererEtoiles(
-                                dragon.rareteEsthetique.etoiles
-                            )}
-                        </span>
+    ${affichageRareteDragon}
 
-                        <strong>
-                            ${obtenirLibelleRarete(
-                                dragon.rareteEsthetique.etoiles
-                            )}
-                        </strong>
-
-                    </div>
+</div>
 
                 `
 
@@ -5153,9 +5430,7 @@ function afficherFicheDetaillee(dragon) {
     <div class="yeux-heterochromes-fiche">
 
         <span>
-            ${formaterNomCouleur(
-                dragon.apparence.familleYeux
-            )}
+            ${obtenirNomYeuxAffiche(dragon)}
         </span>
 
         <span class="separateur-yeux">
@@ -5205,9 +5480,7 @@ function afficherFicheDetaillee(dragon) {
         <span>Yeux</span>
 
         <strong>
-            ${formaterNomCouleur(
-                dragon.apparence.familleYeux
-            )}
+            ${obtenirNomYeuxAffiche(dragon)}
         </strong>
     </p>
 
@@ -5220,17 +5493,7 @@ function afficherFicheDetaillee(dragon) {
 
 <div class="score-rarete-fiche">
 
-    <span class="etoiles-rarete">
-        ${genererEtoiles(
-            dragon.rareteEsthetique.etoiles
-        )}
-    </span>
-
-    <strong>
-        ${obtenirLibelleRarete(
-            dragon.rareteEsthetique.etoiles
-        )}
-    </strong>
+    ${affichageRareteDragon}
 
 </div>
 
@@ -5346,25 +5609,9 @@ function afficherFicheDetaillee(dragon) {
 
                     <div class="score-rarete-fiche">
 
-                        <span class="etoiles-rarete">
+    ${affichageRareteDragon}
 
-                            ${genererEtoiles(
-                                dragon.rareteEsthetique
-                                    .etoiles
-                            )}
-
-                        </span>
-
-                        <strong>
-
-                            ${obtenirLibelleRarete(
-                                dragon.rareteEsthetique
-                                    .etoiles
-                            )}
-
-                        </strong>
-
-                    </div>
+</div>
 
                 `
 
