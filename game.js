@@ -7625,24 +7625,33 @@ function obtenirGenerations(arbre) {
 
     const generations = [];
 
-    function parcourir(noeud, niveau) {
+    function remplir(noeud, niveau, position) {
 
         if (!generations[niveau]) {
             generations[niveau] = [];
         }
 
-        generations[niveau].push(noeud);
+        generations[niveau][position] = noeud;
 
         if (!noeud) {
             return;
         }
 
-        parcourir(noeud.pere, niveau + 1);
-        parcourir(noeud.mere, niveau + 1);
+        remplir(
+            noeud.pere,
+            niveau + 1,
+            position * 2
+        );
+
+        remplir(
+            noeud.mere,
+            niveau + 1,
+            position * 2 + 1
+        );
 
     }
 
-    parcourir(arbre, 0);
+    remplir(arbre, 0, 0);
 
     return generations;
 
