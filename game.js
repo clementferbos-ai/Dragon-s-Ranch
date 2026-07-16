@@ -7694,7 +7694,7 @@ function afficherGenealogie(dragon) {
         + dragon.nom;
 
 
-    let html = `
+let html = `
 
 <svg
     id="lignes-genealogie"
@@ -7704,16 +7704,29 @@ function afficherGenealogie(dragon) {
 
 `;
 
-const nombreCases =
-    Math.pow(2, generations.indexOf(generation));
+generations.forEach(function(generation, niveau) {
 
-for (let i = 0; i < nombreCases; i++) {
+    html += `
+        <div class="generation-genealogie">
+    `;
 
-    html += creerCarteGenealogique(
-        generation[i] ?? null
-    );
+    const nombreCases = Math.pow(2, niveau);
 
-}
+    for (let i = 0; i < nombreCases; i++) {
+
+        html += creerCarteGenealogique(
+            generation[i] ?? null
+        );
+
+    }
+
+    html += `
+        </div>
+    `;
+
+});
+
+contenu.innerHTML = html;
 
 contenu.innerHTML = html;
 
