@@ -7704,32 +7704,16 @@ function afficherGenealogie(dragon) {
 
 `;
 
-generations.forEach(
+const nombreCases =
+    Math.pow(2, generations.indexOf(generation));
 
-    function (generation) {
+for (let i = 0; i < nombreCases; i++) {
 
-        html += `
-            <div class="generation-genealogie">
-        `;
+    html += creerCarteGenealogique(
+        generation[i] ?? null
+    );
 
-        generation.forEach(
-
-            function (noeud) {
-
-                html +=
-                    creerCarteGenealogique(noeud);
-
-            }
-
-        );
-
-        html += `
-            </div>
-        `;
-
-    }
-
-);
+}
 
 contenu.innerHTML = html;
 
