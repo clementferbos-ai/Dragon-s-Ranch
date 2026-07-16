@@ -5100,88 +5100,8 @@ function afficherFicheDetaillee(dragon) {
                     ${
     dragon.rareteEsthetique
 
-        ? estDragonUnique(dragon)
-
-            ? `
-
-                <div class="detail-rarete">
-
-                    <div class="detail-rarete-entete">
-
-                        <span>
-                            Écailles
-                        </span>
-
-                        <em>
-                            Unique
-                        </em>
-
-                    </div>
-
-                    <strong>
-                        ${obtenirNomEcaillesAffiche(dragon)}
-                    </strong>
-
-                </div>
-
-
-                <div class="detail-rarete">
-
-                    <div class="detail-rarete-entete">
-
-                        <span>
-                            Yeux
-                        </span>
-
-                        <em>
-                            Unique
-                        </em>
-
-                    </div>
-
-                    <strong>
-                        ${obtenirNomYeuxAffiche(dragon)}
-                    </strong>
-
-                </div>
-
-
-                <div class="detail-rarete mutation-detectee">
-
-                    <div class="detail-rarete-entete">
-
-                        <span>
-                            Particularité
-                        </span>
-
-                        <em>
-                            Unique
-                        </em>
-
-                    </div>
-
-                    <strong>
-                        ${obtenirNomMutationAffiche(dragon)}
-                    </strong>
-
-                    <p class="explication-rarete">
-                        Cette particularité esthétique
-                        n'existe sur aucun dragon naturel.
-                    </p>
-
-                </div>
-
-
-                <div class="score-rarete-fiche">
-
-                    ${affichageRareteDragon}
-
-                </div>
-
-            `
-
-            : dragon.apparence.mutationEsthetique
-                === "albinisme"
+        ? dragon.apparence.mutationEsthetique
+            === "albinisme"
 
             ? `
 
@@ -7565,7 +7485,6 @@ function construireArbreGenealogique(
     return noeud;
 }
 
-
 function creerCarteGenealogique(noeud) {
 
     if (!noeud || !noeud.dragon) {
@@ -7622,41 +7541,6 @@ function creerCarteGenealogique(noeud) {
     `;
 }
 
-function creerBrancheGenealogique(noeud) {
-
-    if (!noeud) {
-        return "";
-    }
-
-    const aDesParents =
-        noeud.pere || noeud.mere;
-
-    return `
-
-        <div class="branche-genealogique">
-
-            ${creerCarteGenealogique(noeud)}
-
-            ${
-                aDesParents
-                    ? `
-                        <div class="parents-genealogie">
-
-                            ${creerBrancheGenealogique(noeud.pere)}
-
-                            ${creerBrancheGenealogique(noeud.mere)}
-
-                        </div>
-                    `
-                    : ""
-            }
-
-        </div>
-
-    `;
-
-}
-
 function afficherGenealogie(dragon) {
 
     const fenetre =
@@ -7683,18 +7567,76 @@ function afficherGenealogie(dragon) {
     const arbre =
         construireArbreGenealogique(
             dragon,
-            3
+            2
         );
-    
+
+
     titre.textContent =
         "Généalogie de "
         + dragon.nom;
 
 
-contenu.innerHTML =
-    creerBrancheGenealogique(arbre);
+    contenu.innerHTML = `
 
-contenu.innerHTML = html;
+         <svg
+            id="lignes-genealogie"
+            class="lignes-genealogie"
+            aria-hidden="true"
+        ></svg>
+
+        <div class="generation-genealogie">
+
+            ${creerCarteGenealogique(
+                arbre.dragon
+                    ? arbre
+                    : null
+            )}
+
+        </div>
+
+
+        <div class="generation-genealogie">
+
+            ${creerCarteGenealogique(
+                arbre.pere
+            )}
+
+            ${creerCarteGenealogique(
+                arbre.mere
+            )}
+
+        </div>
+
+
+        <div class="generation-genealogie">
+
+            ${creerCarteGenealogique(
+                arbre.pere
+                    ? arbre.pere.pere
+                    : null
+            )}
+
+            ${creerCarteGenealogique(
+                arbre.pere
+                    ? arbre.pere.mere
+                    : null
+            )}
+
+            ${creerCarteGenealogique(
+                arbre.mere
+                    ? arbre.mere.pere
+                    : null
+            )}
+
+            ${creerCarteGenealogique(
+                arbre.mere
+                    ? arbre.mere.mere
+                    : null
+            )}
+
+        </div>
+
+    `;
 
     const cartes =
     contenu.querySelectorAll(
@@ -7973,41 +7915,53 @@ function tracerLignesGenealogie() {
 
     }
 
-    for (
-    let niveau = 0;
-    niveau < generations.length - 1;
-    niveau++
-) {
 
-    const generationActuelle =
-        generations[niveau]
+    const dragon =
+        generations[0]
             .querySelectorAll(
                 ".carte-genealogique"
             );
 
-    const generationSuivante =
-        generations[niveau + 1]
+
+    const parents =
+        generations[1]
             .querySelectorAll(
                 ".carte-genealogique"
             );
 
-    generationActuelle.forEach(
 
-        function (carte, index) {
-
-            tracerBranche(
-                carte,
-                [
-                    generationSuivante[index * 2],
-                    generationSuivante[index * 2 + 1]
-                ]
+    const grandsParents =
+        generations[2]
+            .querySelectorAll(
+                ".carte-genealogique"
             );
 
-        }
 
+    tracerBranche(
+        dragon[0],
+        [
+            parents[0],
+            parents[1]
+        ]
     );
 
-}
+
+    tracerBranche(
+        parents[0],
+        [
+            grandsParents[0],
+            grandsParents[1]
+        ]
+    );
+
+
+    tracerBranche(
+        parents[1],
+        [
+            grandsParents[2],
+            grandsParents[3]
+        ]
+    );
 }
 
 function creerBebe(
