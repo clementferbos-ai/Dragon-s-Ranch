@@ -8001,53 +8001,41 @@ function tracerLignesGenealogie() {
 
     }
 
+    for (
+    let niveau = 0;
+    niveau < generations.length - 1;
+    niveau++
+) {
 
-    const dragon =
-        generations[0]
+    const generationActuelle =
+        generations[niveau]
             .querySelectorAll(
                 ".carte-genealogique"
             );
 
-
-    const parents =
-        generations[1]
+    const generationSuivante =
+        generations[niveau + 1]
             .querySelectorAll(
                 ".carte-genealogique"
             );
 
+    generationActuelle.forEach(
 
-    const grandsParents =
-        generations[2]
-            .querySelectorAll(
-                ".carte-genealogique"
+        function (carte, index) {
+
+            tracerBranche(
+                carte,
+                [
+                    generationSuivante[index * 2],
+                    generationSuivante[index * 2 + 1]
+                ]
             );
 
+        }
 
-    tracerBranche(
-        dragon[0],
-        [
-            parents[0],
-            parents[1]
-        ]
     );
 
-
-    tracerBranche(
-        parents[0],
-        [
-            grandsParents[0],
-            grandsParents[1]
-        ]
-    );
-
-
-    tracerBranche(
-        parents[1],
-        [
-            grandsParents[2],
-            grandsParents[3]
-        ]
-    );
+}
 }
 
 function creerBebe(
