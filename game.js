@@ -7621,6 +7621,33 @@ function creerCarteGenealogique(noeud) {
     `;
 }
 
+function obtenirGenerations(arbre) {
+
+    const generations = [];
+
+    function parcourir(noeud, niveau) {
+
+        if (!generations[niveau]) {
+            generations[niveau] = [];
+        }
+
+        generations[niveau].push(noeud);
+
+        if (!noeud) {
+            return;
+        }
+
+        parcourir(noeud.pere, niveau + 1);
+        parcourir(noeud.mere, niveau + 1);
+
+    }
+
+    parcourir(arbre, 0);
+
+    return generations;
+
+}
+
 function afficherGenealogie(dragon) {
 
     const fenetre =
@@ -7649,74 +7676,53 @@ function afficherGenealogie(dragon) {
             dragon,
             2
         );
-
+    
+    const generations =
+        obtenirGenerations(arbre);
 
     titre.textContent =
         "Généalogie de "
         + dragon.nom;
 
 
-    contenu.innerHTML = `
+    let html = `
 
-         <svg
-            id="lignes-genealogie"
-            class="lignes-genealogie"
-            aria-hidden="true"
-        ></svg>
+<svg
+    id="lignes-genealogie"
+    class="lignes-genealogie"
+    aria-hidden="true"
+></svg>
 
-        <div class="generation-genealogie">
+`;
 
-            ${creerCarteGenealogique(
-                arbre.dragon
-                    ? arbre
-                    : null
-            )}
+generations.forEach(
 
-        </div>
+    function (generation) {
 
+        html += `
+            <div class="generation-genealogie">
+        `;
 
-        <div class="generation-genealogie">
+        generation.forEach(
 
-            ${creerCarteGenealogique(
-                arbre.pere
-            )}
+            function (noeud) {
 
-            ${creerCarteGenealogique(
-                arbre.mere
-            )}
+                html +=
+                    creerCarteGenealogique(noeud);
 
-        </div>
+            }
 
+        );
 
-        <div class="generation-genealogie">
+        html += `
+            </div>
+        `;
 
-            ${creerCarteGenealogique(
-                arbre.pere
-                    ? arbre.pere.pere
-                    : null
-            )}
+    }
 
-            ${creerCarteGenealogique(
-                arbre.pere
-                    ? arbre.pere.mere
-                    : null
-            )}
+);
 
-            ${creerCarteGenealogique(
-                arbre.mere
-                    ? arbre.mere.pere
-                    : null
-            )}
-
-            ${creerCarteGenealogique(
-                arbre.mere
-                    ? arbre.mere.mere
-                    : null
-            )}
-
-        </div>
-
-    `;
+contenu.innerHTML = html;
 
     const cartes =
     contenu.querySelectorAll(
