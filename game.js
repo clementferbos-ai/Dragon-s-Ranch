@@ -7565,6 +7565,7 @@ function construireArbreGenealogique(
     return noeud;
 }
 
+
 function creerCarteGenealogique(noeud) {
 
     if (!noeud || !noeud.dragon) {
@@ -7621,39 +7622,38 @@ function creerCarteGenealogique(noeud) {
     `;
 }
 
-function obtenirGenerations(arbre) {
+function creerBrancheGenealogique(noeud) {
 
-    const generations = [];
-
-    function remplir(noeud, niveau, position) {
-
-        if (!generations[niveau]) {
-            generations[niveau] = [];
-        }
-
-        generations[niveau][position] = noeud;
-
-        if (!noeud) {
-            return;
-        }
-
-        remplir(
-            noeud.pere,
-            niveau + 1,
-            position * 2
-        );
-
-        remplir(
-            noeud.mere,
-            niveau + 1,
-            position * 2 + 1
-        );
-
+    if (!noeud) {
+        return "";
     }
 
-    remplir(arbre, 0, 0);
+    const aDesParents =
+        noeud.pere || noeud.mere;
 
-    return generations;
+    return `
+
+        <div class="branche-genealogique">
+
+            ${creerCarteGenealogique(noeud)}
+
+            ${
+                aDesParents
+                    ? `
+                        <div class="parents-genealogie">
+
+                            ${creerBrancheGenealogique(noeud.pere)}
+
+                            ${creerBrancheGenealogique(noeud.mere)}
+
+                        </div>
+                    `
+                    : ""
+            }
+
+        </div>
+
+    `;
 
 }
 
@@ -7686,47 +7686,13 @@ function afficherGenealogie(dragon) {
             3
         );
     
-    const generations =
-        obtenirGenerations(arbre);
-
     titre.textContent =
         "Généalogie de "
         + dragon.nom;
 
 
-let html = `
-
-<svg
-    id="lignes-genealogie"
-    class="lignes-genealogie"
-    aria-hidden="true"
-></svg>
-
-`;
-
-generations.forEach(function(generation, niveau) {
-
-    html += `
-        <div class="generation-genealogie">
-    `;
-
-    const nombreCases = Math.pow(2, niveau);
-
-    for (let i = 0; i < nombreCases; i++) {
-
-        html += creerCarteGenealogique(
-            generation[i] ?? null
-        );
-
-    }
-
-    html += `
-        </div>
-    `;
-
-});
-
-contenu.innerHTML = html;
+contenu.innerHTML =
+    creerBrancheGenealogique(arbre);
 
 contenu.innerHTML = html;
 
