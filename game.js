@@ -7674,7 +7674,7 @@ function afficherGenealogie(dragon) {
     const arbre =
         construireArbreGenealogique(
             dragon,
-            2
+            3
         );
     
     const generations =
