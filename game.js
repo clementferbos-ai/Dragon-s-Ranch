@@ -599,73 +599,6 @@ function afficherEtatSynchronisation(
 
 }
 
-function exporterSauvegarde() {
-
-    const donneesSauvegarde =
-        creerDonneesSauvegarde();
-
-
-    const contenu =
-        JSON.stringify(
-            donneesSauvegarde,
-            null,
-            2
-        );
-
-
-    const fichier =
-        new Blob(
-            [contenu],
-            {
-                type:
-                    "application/json"
-            }
-        );
-
-
-    const url =
-        URL.createObjectURL(
-            fichier
-        );
-
-
-    const lien =
-        document.createElement(
-            "a"
-        );
-
-
-    const date =
-        new Date()
-            .toISOString()
-            .slice(0, 10);
-
-
-    lien.href =
-        url;
-
-
-    lien.download =
-        `sauvegarde-dragons-${date}.json`;
-
-
-    document.body.appendChild(
-        lien
-    );
-
-
-    lien.click();
-
-
-    lien.remove();
-
-
-    URL.revokeObjectURL(
-        url
-    );
-
-}
-
 const catalogueSucces = {
 
     // =========================
@@ -1543,40 +1476,6 @@ function debloquerSucces(idSucces) {
 
 
     return true;
-}
-
-function obtenirTitreEleveur() {
-
-    const points =
-        calculerPointsSucces();
-
-
-    if (points >= 50) {
-        return "Légende draconique";
-    }
-
-
-    if (points >= 35) {
-        return "Grand maître";
-    }
-
-
-    if (points >= 20) {
-        return "Maître éleveur";
-    }
-
-
-    if (points >= 10) {
-        return "Éleveur confirmé";
-    }
-
-
-    if (points >= 5) {
-        return "Apprenti éleveur";
-    }
-
-
-    return "Éleveur novice";
 }
 
 function verifierSucces() {
@@ -2522,67 +2421,6 @@ function appliquerDonneesSauvegarde(
 
 }
 
-function chargerPartie() {
-
-    const sauvegardeTexte =
-        localStorage.getItem(
-            "elevageDragons"
-        );
-
-
-    if (sauvegardeTexte !== null) {
-
-        try {
-
-            const sauvegarde =
-                JSON.parse(
-                    sauvegardeTexte
-                );
-
-
-            appliquerDonneesSauvegarde(
-                sauvegarde
-            );
-
-
-            console.log(
-                "SAUVEGARDE LOCALE CHARGÉE"
-            );
-
-
-            return;
-
-        }
-
-        catch (erreur) {
-
-            console.error(
-                "ÉCHEC DU CHARGEMENT LOCAL :",
-                erreur
-            );
-
-        }
-
-    }
-
-
-    // Aucune sauvegarde locale :
-    // on initialise simplement le jeu.
-
-    verifierSucces();
-
-    verifierRenouvellementActions();
-
-    afficherActions();
-
-    afficherCollection();
-
-    afficherParentsDisponibles();
-
-    afficherDragonsEvaluables();
-
-}
-
 function recommencerPartie() {
 
     const confirmation = confirm(
@@ -2983,19 +2821,6 @@ function estDragonUnique(dragon) {
 }
 
 
-function obtenirIdentifiantDragonUnique(dragon) {
-
-    if (!estDragonUnique(dragon)) {
-
-        return null;
-
-    }
-
-
-    return dragon.dragonUnique.id;
-}
-
-
 function obtenirTitreDragonUnique(dragon) {
 
     if (!estDragonUnique(dragon)) {
@@ -3225,27 +3050,6 @@ function obtenirNomYeuxAffiche(dragon) {
     );
 }
 
-
-function obtenirNomMutationAffiche(dragon) {
-
-    if (
-        estDragonUnique(dragon)
-        && dragon.rareteEsthetique
-        && dragon.rareteEsthetique.mutation
-    ) {
-
-        return dragon
-            .rareteEsthetique
-            .mutation
-            .nom;
-
-    }
-
-
-    return formaterNomCouleur(
-        dragon.apparence.mutationEsthetique
-    );
-}
 
 function formaterNomCouleur(couleur) {
 
@@ -4203,79 +4007,6 @@ function depenserAction() {
     return true;
 }
 
-function couleurAleatoire() {
-
-    const rouge = nombreAleatoire(0, 255);
-    const vert = nombreAleatoire(0, 255);
-    const bleu = nombreAleatoire(0, 255);
-
-    return `rgb(${rouge}, ${vert}, ${bleu})`;
-}
-
-function faireVarierComposante(valeur) {
-
-    const variation =
-        nombreAleatoire(-15, 15);
-
-    const resultat =
-        valeur + variation;
-
-    return Math.max(
-        0,
-        Math.min(255, resultat)
-    );
-}
-
-
-function heriterCouleur(couleurPere, couleurMere) {
-
-    const valeursPere =
-        couleurPere.match(/\d+/g).map(Number);
-
-    const valeursMere =
-        couleurMere.match(/\d+/g).map(Number);
-
-    const tirageHeritage =
-        nombreAleatoire(1, 100);
-
-    let rouge;
-    let vert;
-    let bleu;
-
-    if (tirageHeritage <= 40) {
-
-        rouge = valeursPere[0];
-        vert = valeursPere[1];
-        bleu = valeursPere[2];
-
-    } else if (tirageHeritage <= 80) {
-
-        rouge = valeursMere[0];
-        vert = valeursMere[1];
-        bleu = valeursMere[2];
-
-    } else {
-
-        rouge = Math.round(
-            (valeursPere[0] + valeursMere[0]) / 2
-        );
-
-        vert = Math.round(
-            (valeursPere[1] + valeursMere[1]) / 2
-        );
-
-        bleu = Math.round(
-            (valeursPere[2] + valeursMere[2]) / 2
-        );
-    }
-
-    rouge = faireVarierComposante(rouge);
-    vert = faireVarierComposante(vert);
-    bleu = faireVarierComposante(bleu);
-
-    return `rgb(${rouge}, ${vert}, ${bleu})`;
-}
-
 function afficherDragonsSauvages() {
 
     const fiche =
@@ -4492,40 +4223,6 @@ function obtenirNoteGenetique(genes) {
     }
 
     return "F";
-}
-
-function obtenirInterpretationNote(note) {
-
-    const interpretations = {
-        S: "Potentiel exceptionnel",
-        A: "Potentiel remarquable",
-        B: "Bon potentiel",
-        C: "Potentiel moyen",
-        D: "Potentiel faible",
-        E: "Potentiel très faible",
-        F: "Potentiel médiocre"
-    };
-
-
-    return (
-        interpretations[note]
-        || "Potentiel inconnu"
-    );
-}
-
-function obtenirNomStatistique(statistique) {
-
-    const noms = {
-        attaque: "Attaque",
-        defense: "Défense",
-        endurance: "Endurance",
-        taille: "Taille",
-        intelligence: "Intelligence",
-        magie: "Magie",
-        vitesse: "Vitesse"
-    };
-
-    return noms[statistique];
 }
 
 function afficherDossierGenetique(dragon) {
