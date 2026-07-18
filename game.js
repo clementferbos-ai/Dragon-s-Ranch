@@ -2479,7 +2479,7 @@ localStorage.removeItem(
     MAX_ACTIONS_PAR_JOUR;
 
 	dateDernierRenouvellement =
-		obtenirDateAujourdhui();
+		obtenirDateLocale(new Date());
 	
 	document.getElementById(
     "selection-dragon-evaluation"
@@ -3792,31 +3792,6 @@ function choisirAuHasard(liste) {
     const position = nombreAleatoire(0, liste.length - 1);
 
     return liste[position];
-}
-
-function obtenirDateAujourdhui() {
-
-    const maintenant =
-        new Date();
-
-
-    const annee =
-        maintenant.getFullYear();
-
-
-    const mois =
-        String(
-            maintenant.getMonth() + 1
-        ).padStart(2, "0");
-
-
-    const jour =
-        String(
-            maintenant.getDate()
-        ).padStart(2, "0");
-
-
-    return `${annee}-${mois}-${jour}`;
 }
 
 function obtenirDateLocale(date) {
