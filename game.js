@@ -7032,7 +7032,35 @@ secondOeil:
     };
 }
 
+function nettoyerGenealogie() {
+
+    for (const dragon of collectionDragons) {
+
+        if (!dragon.parents) {
+            continue;
+        }
+
+        for (const role of ["pere", "mere"]) {
+
+            const parent = dragon.parents[role];
+
+            if (!parent) {
+                continue;
+            }
+
+            delete parent.parents;
+
+        }
+
+    }
+
+}
+
 function creerEmpreinteGenealogique(dragon) {
+
+    if (!dragon) {
+        return null;
+    }
 
     return {
 
@@ -7046,15 +7074,13 @@ function creerEmpreinteGenealogique(dragon) {
 
         generation: dragon.generation,
 
-        apparence: dragon.apparence
-        ? structuredClone(dragon.apparence)
-        : null,
-
-        parents: dragon.parents
-            ? structuredClone(dragon.parents)
-            : null
+        apparence:
+            dragon.apparence
+                ? structuredClone(dragon.apparence)
+                : null
 
     };
+
 }
 
 function resoudreAncetre(empreinte) {
@@ -7063,28 +7089,17 @@ function resoudreAncetre(empreinte) {
         return null;
     }
 
-
     const dragonVivant =
         collectionDragons.find(
-            function (dragon) {
-
-                return (
-                    dragon.id
-                    === empreinte.id
-                );
-
-            }
+            dragon => dragon.id === empreinte.id
         );
 
-
     if (dragonVivant) {
-
         return dragonVivant;
-
     }
 
-
     return empreinte;
+
 }
 
 function construireArbreGenealogique(
@@ -7119,24 +7134,25 @@ function construireArbreGenealogique(
     }
 
 
-    if (!dragon.parents) {
+    if (
+    !dragon.parents ||
+    (
+        !dragon.parents.pere &&
+        !dragon.parents.mere
+    )
+) {
+    return noeud;
+}
 
-        return noeud;
+const pere =
+    resoudreAncetre(
+        dragon.parents.pere
+    );
 
-    }
-
-
-    const pere =
-        resoudreAncetre(
-            dragon.parents.pere
-        );
-
-
-    const mere =
-        resoudreAncetre(
-            dragon.parents.mere
-        );
-
+const mere =
+    resoudreAncetre(
+        dragon.parents.mere
+    );
 
     noeud.pere =
         construireArbreGenealogique(
@@ -8022,6 +8038,8 @@ function garderBebe() {
 	verifierSucces();
 
     sauvegarderPartie();
+
+    nettoyerGenealogie();
 
     dragonActuel = null;
 
