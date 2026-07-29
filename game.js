@@ -6667,7 +6667,10 @@ function appliquerMutation(
     // 1 % par génération
     // maximum 35 %
 
-    const chanceMutation = 100;
+    const chanceMutation = Math.min(
+    generationMoyenne,
+    35
+);
 
     if (
         nombreAleatoire(1,100)
