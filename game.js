@@ -6735,24 +6735,16 @@ function appliquerMutation(
 
 );
 
-    const meilleursGenes =
-    genesModifiables.filter(
+    const meilleureValeur =
+    genes[
+        genesModifiables[0].statistique
+    ][
+        genesModifiables[0].index
+    ];
 
-        g =>
-
-        genes[g.statistique][g.index]
-
-        ===
-
-        genesModifiables[0]
-            ? genes[
-                genesModifiables[0].statistique
-              ][
-                genesModifiables[0].index
-              ]
-
-            : 0
-
+const meilleursGenes =
+    genesModifiables.filter(g =>
+        genes[g.statistique][g.index] === meilleureValeur
     );
 
 const cible =
