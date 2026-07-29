@@ -6620,98 +6620,144 @@ function transmettreGene(genesParent) {
 
 console.log("VERSION MUTATION CHARGÉE");
 
-function appliquerMutation(genes) {
+function appliquerMutation(
+    genes,
+    generationMoyenne
+) {
 
-    const tirage =
-		nombreAleatoire(1, 100);
+    // Chance de mutation :
+    // 1 % par génération
+    // maximum 35 %
 
+    const chanceMutation =
+        Math.min(
+            generationMoyenne,
+            35
+        );
 
-    let typeMutation = null;
-    let amplitude = 0;
-
-
-    if (tirage <= 2) {
-
-        typeMutation = "majeure";
-        amplitude = 2;
-
-    } else if (tirage <= 10) {
-
-        typeMutation = "mineure";
-        amplitude = 1;
-
-    } else {
+    if (
+        nombreAleatoire(1,100)
+        > chanceMutation
+    ) {
 
         return null;
+
     }
 
 
-    const statistiquesPossibles = [
-        "attaque",
-        "defense",
-        "endurance",
-        "taille",
-        "intelligence",
-        "magie",
-        "vitesse"
-    ];
+    const genesModifiables = [];
 
 
-    const statistiqueChoisie =
-        choisirAuHasard(
-            statistiquesPossibles
-        );
+    for (const statistique in genes) {
+
+        for (
+            let i = 0;
+            i < 2;
+            i++
+        ) {
+
+            if (
+                genes[statistique][i]
+                < 20
+            ) {
+
+                genesModifiables.push({
+
+                    statistique,
+
+                    index:i
+
+                });
+
+            }
+
+        }
+
+    }
 
 
-    const indexGene =
-        nombreAleatoire(0, 1);
+    if (
+        genesModifiables.length
+        === 0
+    ) {
 
+        return null;
 
-    const direction =
-        choisirAuHasard([
-            -1,
-            1
-        ]);
+    }
+
+    genesModifiables.sort(
+
+    (a,b)=>
+
+    (
+
+        genes[b.statistique][b.index]
+
+        -
+
+        genes[a.statistique][a.index]
+
+    )
+
+);
+
+    const meilleursGenes =
+    genesModifiables.filter(
+
+        g =>
+
+        genes[g.statistique][g.index]
+
+        ===
+
+        genesModifiables[0]
+            ? genes[
+                genesModifiables[0].statistique
+              ][
+                genesModifiables[0].index
+              ]
+
+            : 0
+
+    );
+
+const cible =
+    choisirAuHasard(
+        meilleursGenes
+    );
 
 
     const ancienneValeur =
-        genes[statistiqueChoisie][indexGene];
+        genes[
+            cible.statistique
+        ][
+            cible.index
+        ];
 
 
-    const nouvelleValeur =
-        Math.max(
-            1,
-            Math.min(
-                20,
-                ancienneValeur
-                + direction * amplitude
-            )
-        );
-
-
-    genes[statistiqueChoisie][indexGene] =
-        nouvelleValeur;
+    genes[
+        cible.statistique
+    ][
+        cible.index
+    ]++;
 
 
     return {
 
-        type: typeMutation,
+        type:
+            "amélioration",
 
         statistique:
-            statistiqueChoisie,
+            cible.statistique,
 
         ancienGene:
             ancienneValeur,
 
         nouveauGene:
-            nouvelleValeur,
-
-        origineGene:
-            indexGene === 0
-                ? "père"
-                : "mère"
+            ancienneValeur + 1
 
     };
+
 }
 
 function heriterFamilleCouleur(
@@ -7658,25 +7704,61 @@ function creerBebe(
     statistiqueCiblee = null
 ) {
 
-    function transmettre(
-        genesParent,
-        statistique
+function transmettre(
+    genesParent,
+    statistique
+) {
+
+    if (
+        statistique ===
+        statistiqueCiblee
     ) {
 
-        if (
-            statistique ===
-            statistiqueCiblee
-        ) {
-
-            return Math.max(
-                ...genesParent
-            );
-        }
-
-        return transmettreGene(
-            genesParent
+        return Math.max(
+            ...genesParent
         );
+
     }
+
+    const meilleurGene =
+        Math.max(...genesParent);
+
+    const autreGene =
+        Math.min(...genesParent);
+
+    const generationMoyenne =
+        Math.round(
+            (
+                pere.generation
+                +
+                mere.generation
+            ) / 2
+        );
+
+    const chanceBonGene =
+        Math.min(
+            50,
+            generationMoyenne
+        );
+
+    if (
+        nombreAleatoire(1,100)
+        <= chanceBonGene
+    ) {
+
+        return meilleurGene;
+
+    }
+
+    return choisirAuHasard([
+
+        meilleurGene,
+
+        autreGene
+
+    ]);
+
+}
 
     const genes = {
 
@@ -7772,8 +7854,24 @@ function creerBebe(
 
 };
 	
-	const mutation =
-		appliquerMutation(genes);
+	const generationMoyenne = Math.round(
+
+    (
+        pere.generation
+        +
+        mere.generation
+    ) / 2
+
+);
+
+const mutation =
+    appliquerMutation(
+
+        genes,
+
+        generationMoyenne
+
+);
 
 	console.log(
     "TEST IMMÉDIAT MUTATION :",
