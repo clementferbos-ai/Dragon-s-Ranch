@@ -5195,3 +5195,74 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
     color: #d6b96f;
     opacity: 1;
 }
+
+.encart-mutation{
+
+    margin:20px 0;
+
+    padding:16px;
+
+    border-radius:12px;
+
+    border:2px solid #7cff7c;
+
+    background:
+    rgba(30,90,30,.35);
+
+    text-align:center;
+
+    animation:
+    apparitionMutation .6s ease;
+
+}
+
+.titre-mutation{
+
+    font-size:1.15rem;
+
+    font-weight:bold;
+
+    color:#9dff9d;
+
+    margin-bottom:8px;
+
+}
+
+.contenu-mutation{
+
+    color:white;
+
+}
+
+.badge-mutation{
+
+    display:inline-block;
+
+    margin-top:8px;
+
+    padding:6px 12px;
+
+    border-radius:999px;
+
+    background:#2f7d32;
+
+    color:white;
+
+    font-size:.9rem;
+
+    font-weight:bold;
+
+}
+
+.details-mutation{
+
+    margin-top:18px;
+
+    padding:12px;
+
+    border-left:4px solid #7cff7c;
+
+    background:
+    rgba(255,255,255,.05);
+
+}

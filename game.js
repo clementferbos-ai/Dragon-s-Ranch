@@ -4617,6 +4617,22 @@ function afficherFicheDetaillee(dragon) {
     // CRÉATION DU CONTENU DE LA FICHE
     // =================================
 
+                let badgeMutation = "";
+
+if (dragon.mutation) {
+
+    badgeMutation = `
+
+    <div class="badge-mutation">
+
+        🧬 Mutation
+
+    </div>
+
+    `;
+
+}
+
     fiche.innerHTML = `
 
         <div class="fiche-detaillee">
@@ -4630,6 +4646,8 @@ function afficherFicheDetaillee(dragon) {
                 <h2>
                     ${dragon.nom}
                 </h2>
+
+                ${badgeMutation}
 
                 <button
                     id="bouton-renommer-dragon"
@@ -4756,6 +4774,26 @@ function afficherFicheDetaillee(dragon) {
                             ${dragon.statistiques.vitesse}
                         </strong>
                     </p>
+
+        ${dragon.mutation ?
+
+`
+
+<div class="details-mutation">
+
+<b>Mutation :</b><br>
+
+${dragon.mutation.texte}
+
+</div>
+
+`
+
+:
+
+""
+
+}
 
                 </div>
 				
@@ -6744,19 +6782,18 @@ const cible =
 
     return {
 
-        type:
-            "amélioration",
+    type: "amélioration",
 
-        statistique:
-            cible.statistique,
+    statistique: cible.statistique,
 
-        ancienGene:
-            ancienneValeur,
+    ancienGene: ancienneValeur,
 
-        nouveauGene:
-            ancienneValeur + 1
+    nouveauGene: ancienneValeur + 1,
 
-    };
+    texte:
+        `${cible.statistique.toUpperCase()} : ${ancienneValeur} → ${ancienneValeur + 1}`
+
+};
 
 }
 
@@ -8010,6 +8047,31 @@ function afficherOeuf(bebe) {
     const zoneOeuf =
         document.getElementById("zone-oeuf");
 
+    let encartMutation = "";
+
+if (bebe.mutation) {
+
+    encartMutation = `
+
+    <div class="encart-mutation">
+
+        <div class="titre-mutation">
+
+            🧬 Mutation génétique
+
+        </div>
+
+        <div class="contenu-mutation">
+
+            ${bebe.mutation.texte}
+
+        </div>
+
+    </div>
+
+    `;
+
+}
 
     zoneOeuf.innerHTML = `
 
@@ -8020,6 +8082,8 @@ function afficherOeuf(bebe) {
             </div>
 
             <h3>Un dragon est né !</h3>
+
+            ${encartMutation}
 
             <p>
                 <strong>Espèce :</strong>
