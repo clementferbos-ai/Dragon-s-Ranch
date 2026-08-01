@@ -4782,6 +4782,10 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
 
 }
 
+.bouton-don {
+    margin-top: 18px;
+}
+
 .bouton-danger {
     margin-top: 18px;
 
@@ -5719,7 +5723,7 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
     border-color: rgba(143, 209, 143, 0.4);
 }
 
-.difficulte-mission.difficulte-moyenne {
+.difficulte-mission.difficulte-intermediaire {
     color: #d1b98f;
     border-color: rgba(209, 185, 143, 0.4);
 }

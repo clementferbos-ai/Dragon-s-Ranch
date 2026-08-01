@@ -44,7 +44,32 @@ let dateDernierRenouvellementMissions = null;
 
 const NOMBRE_MISSIONS_PAR_JOUR = 3;
 
+// Libellés d'affichage des difficultés (les clés internes
+// restent sans accent, sans espace : elles servent aussi
+// de nom de classe CSS).
+
+const libellesDifficulteMissions = {
+    facile: "Facile",
+    intermediaire: "Intermédiaire",
+    difficile: "Difficile"
+};
+
+// Espèces utilisées pour décliner certaines missions une
+// fois par race (avec le bon article pour le libellé).
+
+const especesPourMissions = [
+    { nom: "Vouivre", cle: "vouivre", article: "une" },
+    { nom: "Hydre", cle: "hydre", article: "une" },
+    { nom: "Dragon oriental", cle: "dragon_oriental", article: "un" },
+    { nom: "Dragon européen", cle: "dragon_europeen", article: "un" },
+    { nom: "Wyrm", cle: "wyrm", article: "un" }
+];
+
 const catalogueMissions = {
+
+    // =========================
+    // FACILES
+    // =========================
 
     capturer_dragons: {
         libelle: "Capturer 2 dragons sauvages en expédition",
@@ -60,42 +85,162 @@ const catalogueMissions = {
         objectif: 1
     },
 
+    obtenir_deux_oeufs: {
+        libelle: "Obtenir 2 œufs de dragons (par reproduction)",
+        difficulte: "facile",
+        recompense: 20,
+        objectif: 2
+    },
+
+    capturer_peu_commun: {
+        libelle: "Capturer un dragon de rareté peu commune",
+        difficulte: "facile",
+        recompense: 20,
+        objectif: 1
+    },
+
+    oeuf_peu_commun: {
+        libelle: "Obtenir un œuf de rareté peu commune",
+        difficulte: "facile",
+        recompense: 20,
+        objectif: 1
+    },
+
+    recueillir_don: {
+        libelle: "Recueillir un dragon depuis la bourse aux dons",
+        difficulte: "facile",
+        recompense: 20,
+        objectif: 1
+    },
+
+    // =========================
+    // INTERMÉDIAIRES
+    // =========================
+
     faire_reproduction: {
         libelle: "Réaliser 1 reproduction",
-        difficulte: "moyenne",
+        difficulte: "intermediaire",
         recompense: 50,
         objectif: 1
     },
 
     epuiser_actions: {
         libelle: "Utiliser toutes ses actions du jour (8/8)",
-        difficulte: "moyenne",
+        difficulte: "intermediaire",
         recompense: 50,
         objectif: MAX_ACTIONS_PAR_JOUR
     },
 
     obtenir_ecailles_rares: {
         libelle: "Obtenir un dragon aux écailles Rares ou plus",
-        difficulte: "moyenne",
+        difficulte: "intermediaire",
         recompense: 50,
         objectif: 1
     },
 
     obtenir_dragon_parfait: {
         libelle: "Obtenir un dragon avec un score de perfection ≥ 60%",
-        difficulte: "difficile",
-        recompense: 100,
+        difficulte: "intermediaire",
+        recompense: 50,
         objectif: 1
     },
+
+    dragon_rare_reproduction: {
+        libelle: "Obtenir un dragon de rareté Rare par reproduction",
+        difficulte: "intermediaire",
+        recompense: 50,
+        objectif: 1
+    },
+
+    dragon_rare_capture: {
+        libelle: "Obtenir un dragon de rareté Rare par capture",
+        difficulte: "intermediaire",
+        recompense: 50,
+        objectif: 1
+    },
+
+    potentiel_3s: {
+        libelle: "Obtenir un dragon avec 3 statistiques au potentiel S",
+        difficulte: "intermediaire",
+        recompense: 50,
+        objectif: 1
+    },
+
+    // =========================
+    // DIFFICILES
+    // =========================
 
     debloquer_succes: {
         libelle: "Débloquer un nouveau succès aujourd'hui",
         difficulte: "difficile",
         recompense: 100,
         objectif: 1
+    },
+
+    dragon_exceptionnel_reproduction: {
+        libelle: "Obtenir un dragon de rareté Exceptionnelle par reproduction",
+        difficulte: "difficile",
+        recompense: 100,
+        objectif: 1
+    },
+
+    dragon_exceptionnel_capture: {
+        libelle: "Obtenir un dragon de rareté Exceptionnelle par capture",
+        difficulte: "difficile",
+        recompense: 100,
+        objectif: 1
+    },
+
+    score_brut_100: {
+        libelle: "Obtenir un dragon avec un score de perfection brut > 100 (sur 140)",
+        difficulte: "difficile",
+        recompense: 100,
+        objectif: 1
+    },
+
+    potentiel_5s: {
+        libelle: "Obtenir un dragon avec 5 statistiques au potentiel S",
+        difficulte: "difficile",
+        recompense: 100,
+        objectif: 1
     }
 
 };
+
+// Déclinaison de deux missions de capture par espèce :
+// une "peu commune" (intermédiaire) et une "rare" (difficile).
+
+especesPourMissions.forEach(function (espece) {
+
+    catalogueMissions[`capturer_${espece.cle}_peu_commun`] = {
+
+        libelle:
+            `Attraper ${espece.article} ${espece.nom} `
+            + "de rareté peu commune",
+
+        difficulte: "intermediaire",
+        recompense: 50,
+        objectif: 1,
+        espece: espece.nom,
+        seuilEtoiles: 2
+
+    };
+
+    catalogueMissions[`capturer_${espece.cle}_rare`] = {
+
+        libelle:
+            `Attraper ${espece.article} ${espece.nom} `
+            + "de rareté rare",
+
+        difficulte: "difficile",
+        recompense: 100,
+        objectif: 1,
+        espece: espece.nom,
+        seuilEtoiles: 3
+
+    };
+
+});
 
 const catalogueBoutique = {
 
@@ -4495,24 +4640,77 @@ function verifierRenouvellementActions() {
 
 function tirerMissionsDuJour() {
 
-    const idsDisponibles =
-        Object.keys(catalogueMissions);
+    // Une mission garantie par palier de difficulté, pour
+    // que chaque journée propose toujours un mélange
+    // facile / intermédiaire / difficile plutôt qu'un
+    // tirage entièrement aléatoire pouvant, par malchance,
+    // ne donner que des missions du même palier.
+
+    const paliers =
+        ["facile", "intermediaire", "difficile"];
 
 
     const idsChoisis = [];
+
+
+    paliers.forEach(
+        function (palier) {
+
+            const idsDuPalier =
+                Object.keys(catalogueMissions).filter(
+                    function (id) {
+
+                        return (
+                            catalogueMissions[id].difficulte
+                                === palier
+                        );
+
+                    }
+                );
+
+
+            if (idsDuPalier.length === 0) {
+                return;
+            }
+
+
+            const idTire =
+                choisirAuHasard(
+                    idsDuPalier
+                );
+
+            idsChoisis.push(idTire);
+
+        }
+    );
+
+
+    // S'il reste des emplacements à pourvoir (par exemple
+    // si NOMBRE_MISSIONS_PAR_JOUR dépasse le nombre de
+    // paliers), on complète au hasard parmi les missions
+    // non encore choisies.
+
+    const idsRestants =
+        Object.keys(catalogueMissions).filter(
+            function (id) {
+
+                return !idsChoisis.includes(id);
+
+            }
+        );
 
 
     while (
         idsChoisis.length
             < Math.min(
                 NOMBRE_MISSIONS_PAR_JOUR,
-                idsDisponibles.length
+                idsChoisis.length + idsRestants.length
             )
     ) {
 
         const idTire =
             choisirAuHasard(
-                idsDisponibles
+                idsRestants
             );
 
 
@@ -4611,7 +4809,70 @@ function incrementerProgressionMission(
 
 }
 
-function signalerDragonObtenu(dragon) {
+// Nombre de statistiques dont le meilleur gène atteint
+// le rang génétique S (≥ 19) — le "potentiel" caché du
+// dragon, indépendant du fait qu'il ait été évalué ou non.
+
+function compterPotentielS(dragon) {
+
+    if (!dragon || !dragon.genes) {
+
+        return 0;
+
+    }
+
+
+    const statistiques = [
+        "attaque",
+        "defense",
+        "endurance",
+        "taille",
+        "intelligence",
+        "magie",
+        "vitesse"
+    ];
+
+
+    return statistiques.filter(
+        function (statistique) {
+
+            return (
+                dragon.genes[statistique]
+                && obtenirNoteGenetique(
+                    dragon.genes[statistique]
+                ) === "S"
+            );
+
+        }
+    ).length;
+
+}
+
+// Retrouve la clé de mission associée à une espèce
+// (utilisée pour les missions "Attraper un(e) <espèce>...").
+
+function obtenirCleEspecePourMissions(nomEspece) {
+
+    const trouvee =
+        especesPourMissions.find(
+            function (espece) {
+
+                return espece.nom === nomEspece;
+
+            }
+        );
+
+
+    return trouvee ? trouvee.cle : null;
+
+}
+
+// "origine" vaut "capture" (dragon sauvage gardé) ou
+// "reproduction" (bébé gardé après une éclosion) : ça
+// permet de distinguer les missions qui ne comptent que
+// dans un sens ou dans l'autre.
+
+function signalerDragonObtenu(dragon, origine) {
 
     if (!dragon || !dragon.apparence) {
 
@@ -4619,6 +4880,8 @@ function signalerDragonObtenu(dragon) {
 
     }
 
+
+    // --- Rareté des écailles seules (mission existante) ---
 
     const rarete =
         obtenirRareteEcailles(
@@ -4639,6 +4902,8 @@ function signalerDragonObtenu(dragon) {
     }
 
 
+    // --- Score de perfection (en % et en valeur brute) ---
+
     const perfection =
         parseFloat(
             calculerPourcentagePerfection(
@@ -4652,6 +4917,130 @@ function signalerDragonObtenu(dragon) {
         incrementerProgressionMission(
             "obtenir_dragon_parfait"
         );
+
+    }
+
+
+    const scoreBrut =
+        calculerScorePerfection(dragon);
+
+
+    if (scoreBrut > 100) {
+
+        incrementerProgressionMission(
+            "score_brut_100"
+        );
+
+    }
+
+
+    // --- Potentiel génétique (nombre de statistiques S) ---
+
+    const nombreS =
+        compterPotentielS(dragon);
+
+
+    if (nombreS >= 3) {
+
+        incrementerProgressionMission(
+            "potentiel_3s"
+        );
+
+    }
+
+
+    if (nombreS >= 5) {
+
+        incrementerProgressionMission(
+            "potentiel_5s"
+        );
+
+    }
+
+
+    // --- Rareté globale (étoiles), croisée avec l'origine ---
+
+    const etoiles =
+        dragon.rareteEsthetique
+            ? dragon.rareteEsthetique.etoiles
+            : 0;
+
+
+    if (origine === "capture" && etoiles >= 2) {
+
+        incrementerProgressionMission(
+            "capturer_peu_commun"
+        );
+
+    }
+
+
+    if (origine === "capture" && etoiles >= 3) {
+
+        incrementerProgressionMission(
+            "dragon_rare_capture"
+        );
+
+    }
+
+
+    if (origine === "reproduction" && etoiles >= 3) {
+
+        incrementerProgressionMission(
+            "dragon_rare_reproduction"
+        );
+
+    }
+
+
+    if (origine === "capture" && etoiles >= 5) {
+
+        incrementerProgressionMission(
+            "dragon_exceptionnel_capture"
+        );
+
+    }
+
+
+    if (origine === "reproduction" && etoiles >= 5) {
+
+        incrementerProgressionMission(
+            "dragon_exceptionnel_reproduction"
+        );
+
+    }
+
+
+    // --- Missions déclinées par espèce (capture uniquement) ---
+
+    if (origine === "capture") {
+
+        const cleEspece =
+            obtenirCleEspecePourMissions(
+                dragon.espece
+            );
+
+
+        if (cleEspece) {
+
+            if (etoiles >= 2) {
+
+                incrementerProgressionMission(
+                    `capturer_${cleEspece}_peu_commun`
+                );
+
+            }
+
+
+            if (etoiles >= 3) {
+
+                incrementerProgressionMission(
+                    `capturer_${cleEspece}_rare`
+                );
+
+            }
+
+        }
 
     }
 
@@ -4761,7 +5150,11 @@ function afficherMissions() {
                             <span class="difficulte-mission difficulte-${
                                 definition.difficulte
                             }">
-                                ${definition.difficulte}
+                                ${
+                                    libellesDifficulteMissions[
+                                        definition.difficulte
+                                    ] || definition.difficulte
+                                }
                             </span>
 
                             <span class="recompense-mission">
@@ -5240,7 +5633,7 @@ function garderDragon(index) {
 
     incrementerProgressionMission("capturer_dragons");
 
-    signalerDragonObtenu(dragonChoisi);
+    signalerDragonObtenu(dragonChoisi, "capture");
 
     sauvegarderPartie();
 
@@ -6972,6 +7365,7 @@ ${dragon.mutation.texte}
 
 
             <button
+                class="bouton-don"
                 type="button"
                 onclick="donnerDragon('${dragon.id}')"
             >
@@ -7554,6 +7948,10 @@ async function reclamerDonDragon(idDon) {
 
         collectionDragons.push(
             resultat.dragon
+        );
+
+        incrementerProgressionMission(
+            "recueillir_don"
         );
 
         afficherCollection();
@@ -9079,6 +9477,20 @@ for (
 );
 
     incrementerProgressionMission("faire_reproduction");
+
+    // "Obtenir un œuf" se compte dès l'éclosion, avant
+    // même la décision de le garder ou de le relâcher.
+
+    incrementerProgressionMission("obtenir_deux_oeufs");
+
+    if (
+        bebe.rareteEsthetique
+        && bebe.rareteEsthetique.etoiles >= 2
+    ) {
+
+        incrementerProgressionMission("oeuf_peu_commun");
+
+    }
 
     oeufEnAttente = true;
      mettreAJourBoutonsActions();
@@ -10633,7 +11045,7 @@ function garderBebe() {
 	sauvegarderPartie();
 	verifierSucces();
 
-    signalerDragonObtenu(dragonActuel);
+    signalerDragonObtenu(dragonActuel, "reproduction");
 
     sauvegarderPartie();
 
