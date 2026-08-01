@@ -5196,61 +5196,165 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
     opacity: 1;
 }
 
+/* ==========================================
+   ENCARD MUTATION
+========================================== */
+
 .encart-mutation{
 
-    margin:20px 0;
+    position:relative;
 
-    padding:16px;
+    margin:22px 0;
 
-    border-radius:12px;
+    padding:22px;
 
-    border:2px solid #7cff7c;
+    background:linear-gradient(
+        180deg,
+        rgba(42,30,24,.95),
+        rgba(28,20,16,.95)
+    );
 
-    background:
-    rgba(30,90,30,.35);
+    border:1px solid rgba(196,161,87,.35);
+
+    border-radius:10px;
 
     text-align:center;
 
-    animation:
-    apparitionMutation .6s ease;
+    overflow:hidden;
 
 }
 
-.titre-mutation{
 
-    font-size:1.15rem;
+/* Filet supérieur */
 
-    font-weight:bold;
+.encart-mutation::before{
 
-    color:#9dff9d;
+    content:"";
 
-    margin-bottom:8px;
+    position:absolute;
+
+    top:0;
+
+    left:12%;
+
+    width:76%;
+
+    height:1px;
+
+    background:rgba(196,161,87,.35);
 
 }
 
-.contenu-mutation{
 
-    color:white;
+/* Filet inférieur */
+
+.encart-mutation::after{
+
+    content:"";
+
+    position:absolute;
+
+    bottom:0;
+
+    left:12%;
+
+    width:76%;
+
+    height:1px;
+
+    background:rgba(196,161,87,.35);
 
 }
+
+.encart-mutation .titre-mutation{
+
+    color:#c8a052;
+
+    font-family:"Cinzel",serif;
+
+    font-size:1rem;
+
+    font-weight:700;
+
+    letter-spacing:.15em;
+
+    text-transform:uppercase;
+
+    margin-bottom:14px;
+
+}
+
+.encart-mutation .titre-mutation::before{
+
+    content:"◆ ";
+
+}
+
+.encart-mutation .titre-mutation::after{
+
+    content:" ◆";
+
+}
+
+.encart-mutation .contenu-mutation{
+
+    color:#ece2cf;
+
+    font-size:1.08rem;
+
+    line-height:1.7;
+
+    font-weight:500;
+
+}
+
+/* ==========================================
+   BADGE MUTATION
+========================================== */
 
 .badge-mutation{
 
-    display:inline-block;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
 
-    margin-top:8px;
+    padding:7px 16px;
 
-    padding:6px 12px;
+    border:1px solid rgba(196,161,87,.55);
 
     border-radius:999px;
 
-    background:#2f7d32;
+    background:linear-gradient(
+        180deg,
+        rgba(87,23,23,.95),
+        rgba(55,12,12,.95)
+    );
 
-    color:white;
+    color:#d9c48c;
 
-    font-size:.9rem;
+    font-family:"Cinzel",serif;
 
-    font-weight:bold;
+    font-size:.82rem;
+
+    font-weight:600;
+
+    letter-spacing:.08em;
+
+    text-transform:uppercase;
+
+    box-shadow:
+        inset 0 0 8px rgba(255,255,255,.04),
+        0 0 10px rgba(0,0,0,.25);
+
+}
+
+.badge-mutation::before{
+
+    content:"✦";
+
+    color:#c8a052;
+
+    font-size:.8rem;
 
 }
 
