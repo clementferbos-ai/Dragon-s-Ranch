@@ -5316,46 +5316,39 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
 
     display:inline-flex;
     align-items:center;
-    gap:8px;
+    gap:6px;
 
-    padding:7px 16px;
+    padding:5px 12px;
 
-    border:1px solid rgba(196,161,87,.55);
-
-    border-radius:999px;
+    border:1px solid rgba(194,161,94,.55);
+    border-radius:22px;
 
     background:linear-gradient(
         180deg,
-        rgba(87,23,23,.95),
-        rgba(55,12,12,.95)
+        #6b1f24,
+        #4a1418
     );
 
-    color:#d9c48c;
+    color:#d7c188;
 
     font-family:"Cinzel",serif;
-
-    font-size:.82rem;
-
+    font-size:.72rem;
     font-weight:600;
 
     letter-spacing:.08em;
-
     text-transform:uppercase;
 
     box-shadow:
-        inset 0 0 8px rgba(255,255,255,.04),
-        0 0 10px rgba(0,0,0,.25);
-
+        inset 0 0 6px rgba(255,255,255,.03);
 }
 
 .badge-mutation::before{
 
     content:"✦";
 
-    color:#c8a052;
+    font-size:.65rem;
 
-    font-size:.8rem;
-
+    color:#c4a157;
 }
 
 .details-mutation{
