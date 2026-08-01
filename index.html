@@ -40,6 +40,18 @@
 
 </div>
 
+<div id="compteur-piastres" class="compteur-piastres">
+
+    <span class="titre-piastres">
+        Trésor
+    </span>
+
+    <span id="solde-piastres" class="solde-piastres">
+        0 piastres draconiques
+    </span>
+
+</div>
+
 </header>
 
     <nav class="navigation-jeu">
@@ -77,6 +89,20 @@
 			data-ecran="ecran-succes"
 >
 			Succès
+		</button>
+
+		<button
+			class="bouton-navigation"
+			data-ecran="ecran-missions"
+		>
+			Missions
+		</button>
+
+		<button
+			class="bouton-navigation"
+			data-ecran="ecran-boutique"
+		>
+			Boutique
 		</button>
 
     </nav>
@@ -767,6 +793,80 @@
 	</div>
 	<div id="liste-succes">
 	</div>
+    </div>
+
+</div>
+
+<!-- ============================= -->
+<!-- ÉCRAN 6 : MISSIONS            -->
+<!-- ============================= -->
+
+<div
+    id="ecran-missions"
+    class="ecran-jeu"
+>
+
+    <div class="entete-ecran entete-missions">
+
+        <p class="surtitre-ecran">
+            Contrats du jour
+        </p>
+
+        <h2>
+            Missions
+        </h2>
+
+        <div class="separateur-ecran">
+            <span></span>
+            <i>◆</i>
+            <span></span>
+        </div>
+
+        <p class="description-ecran">
+            Trois missions renouvelées chaque jour.
+            Accomplis-les pour gagner des piastres draconiques.
+        </p>
+
+    </div>
+
+    <div id="liste-missions" class="liste-missions">
+    </div>
+
+</div>
+
+<!-- ============================= -->
+<!-- ÉCRAN 7 : BOUTIQUE            -->
+<!-- ============================= -->
+
+<div
+    id="ecran-boutique"
+    class="ecran-jeu"
+>
+
+    <div class="entete-ecran entete-boutique">
+
+        <p class="surtitre-ecran">
+            Comptoir du généticien
+        </p>
+
+        <h2>
+            Boutique
+        </h2>
+
+        <div class="separateur-ecran">
+            <span></span>
+            <i>◆</i>
+            <span></span>
+        </div>
+
+        <p class="description-ecran">
+            Des objets d'altération génétique à utiliser
+            depuis la fiche détaillée d'un dragon.
+        </p>
+
+    </div>
+
+    <div id="liste-boutique" class="liste-boutique">
     </div>
 
 </div>

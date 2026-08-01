@@ -29,6 +29,132 @@ let idPereSelectionne = "";
 let idMereSelectionne = "";
 let vueParents = "grille";
 
+// =========================================
+// ÉCONOMIE : PIASTRES DRACONIQUES, MISSIONS
+// ET BOUTIQUE
+// =========================================
+
+let piastresDraconiques = 0;
+
+let inventaireObjets = {};
+
+let missionsActuelles = [];
+
+let dateDernierRenouvellementMissions = null;
+
+const NOMBRE_MISSIONS_PAR_JOUR = 3;
+
+const catalogueMissions = {
+
+    capturer_dragons: {
+        libelle: "Capturer 2 dragons sauvages en expédition",
+        difficulte: "facile",
+        recompense: 20,
+        objectif: 2
+    },
+
+    faire_evaluation: {
+        libelle: "Réaliser 1 évaluation de dragon",
+        difficulte: "facile",
+        recompense: 20,
+        objectif: 1
+    },
+
+    faire_reproduction: {
+        libelle: "Réaliser 1 reproduction",
+        difficulte: "moyenne",
+        recompense: 50,
+        objectif: 1
+    },
+
+    epuiser_actions: {
+        libelle: "Utiliser toutes ses actions du jour (8/8)",
+        difficulte: "moyenne",
+        recompense: 50,
+        objectif: MAX_ACTIONS_PAR_JOUR
+    },
+
+    obtenir_ecailles_rares: {
+        libelle: "Obtenir un dragon aux écailles Rares ou plus",
+        difficulte: "moyenne",
+        recompense: 50,
+        objectif: 1
+    },
+
+    obtenir_dragon_parfait: {
+        libelle: "Obtenir un dragon avec un score de perfection ≥ 60%",
+        difficulte: "difficile",
+        recompense: 100,
+        objectif: 1
+    },
+
+    debloquer_succes: {
+        libelle: "Débloquer un nouveau succès aujourd'hui",
+        difficulte: "difficile",
+        recompense: 100,
+        objectif: 1
+    }
+
+};
+
+const catalogueBoutique = {
+
+    serum_plus_un: {
+        nom: "Sérum d'altération +1",
+        description:
+            "Augmente d'un point une statistique au choix d'un dragon (plafonné à 20).",
+        type: "serum",
+        valeur: 1,
+        prix: 1000
+    },
+
+    serum_plus_deux: {
+        nom: "Sérum d'altération +2",
+        description:
+            "Augmente de deux points une statistique au choix d'un dragon (plafonné à 20).",
+        type: "serum",
+        valeur: 2,
+        prix: 2500
+    },
+
+    mutagene_aleatoire_yeux: {
+        nom: "Mutagène oculaire aléatoire",
+        description:
+            "Change au hasard la couleur des yeux d'un dragon (jamais blanc, noir, or, ni de mutation esthétique).",
+        type: "mutagene_aleatoire",
+        cible: "yeux",
+        prix: 500
+    },
+
+    mutagene_aleatoire_ecailles: {
+        nom: "Mutagène tégumentaire aléatoire",
+        description:
+            "Change au hasard la couleur des écailles d'un dragon (jamais blanc, noir, or, ni de mutation esthétique).",
+        type: "mutagene_aleatoire",
+        cible: "ecailles",
+        prix: 800
+    },
+
+    teinture_choisie_yeux: {
+        nom: "Teinture oculaire choisie",
+        description:
+            "Choisissez librement la couleur des yeux d'un dragon, y compris l'or, le blanc et le noir.",
+        type: "teinture_choisie",
+        cible: "yeux",
+        prix: 8000
+    },
+
+    teinture_choisie_ecailles: {
+        nom: "Teinture tégumentaire choisie",
+        description:
+            "Choisissez librement la couleur des écailles d'un dragon, y compris l'or, le blanc et le noir.",
+        type: "teinture_choisie",
+        cible: "ecailles",
+        prix: 10000
+    }
+
+};
+
 function obtenirIdentifiantJoueur() {
 
     let playerId =
@@ -84,9 +210,21 @@ function creerDonneesSauvegarde() {
 
         dateDernierRenouvellement:
             dateDernierRenouvellement,
-		
-		heureDernierRenouvellement: 
-			heureDernierRenouvellement
+
+		heureDernierRenouvellement:
+			heureDernierRenouvellement,
+
+        piastresDraconiques:
+            piastresDraconiques,
+
+        inventaireObjets:
+            inventaireObjets,
+
+        missionsActuelles:
+            missionsActuelles,
+
+        dateDernierRenouvellementMissions:
+            dateDernierRenouvellementMissions
 
     };
 
@@ -1467,6 +1605,8 @@ function debloquerSucces(idSucces) {
         idSucces
     );
 
+    incrementerProgressionMission("debloquer_succes");
+
 
     sauvegarderPartie();
 	afficherResumeSucces();
@@ -2402,14 +2542,36 @@ function appliquerDonneesSauvegarde(
 		!== undefined
 	) {
 		
-		heureDernierRenouvellement = 
+		heureDernierRenouvellement =
 		sauvegarde.heureDernierRenouvellement;
 }
+
+
+    piastresDraconiques =
+        sauvegarde.piastresDraconiques
+        || 0;
+
+
+    inventaireObjets =
+        sauvegarde.inventaireObjets
+        || {};
+
+
+    missionsActuelles =
+        sauvegarde.missionsActuelles
+        || [];
+
+
+    dateDernierRenouvellementMissions =
+        sauvegarde.dateDernierRenouvellementMissions
+        || null;
 
 
     verifierSucces();
 
     verifierRenouvellementActions();
+
+    verifierRenouvellementMissions();
 
     afficherActions();
 
@@ -2418,10 +2580,16 @@ function appliquerDonneesSauvegarde(
     afficherParentsDisponibles();
 
     afficherDragonsEvaluables();
-	
+
 	afficherResumeSucces();
 
 	afficherListeSucces();
+
+    afficherPiastres();
+
+    afficherMissions();
+
+    afficherBoutique();
 
 }
 
@@ -2484,7 +2652,17 @@ localStorage.removeItem(
 
 	dateDernierRenouvellement =
 		obtenirDateLocale(new Date());
-	
+
+	piastresDraconiques = 0;
+
+	inventaireObjets = {};
+
+	missionsActuelles = [];
+
+	dateDernierRenouvellementMissions = null;
+
+	verifierRenouvellementMissions();
+
 	document.getElementById(
     "selection-dragon-evaluation"
 ).value = "";
@@ -2536,9 +2714,15 @@ document.getElementById(
 	afficherResumeSucces();
 
 	afficherListeSucces();
-	
+
+	afficherPiastres();
+
+	afficherMissions();
+
+	afficherBoutique();
+
 	mettreAJourInterfaceSauvegarde();
-	
+
 	sauvegarderPartie();
 
 
@@ -3877,6 +4061,487 @@ function verifierRenouvellementActions() {
     }
 }
 
+// =========================================
+// MISSIONS QUOTIDIENNES
+// =========================================
+
+function tirerMissionsDuJour() {
+
+    const idsDisponibles =
+        Object.keys(catalogueMissions);
+
+
+    const idsChoisis = [];
+
+
+    while (
+        idsChoisis.length
+            < Math.min(
+                NOMBRE_MISSIONS_PAR_JOUR,
+                idsDisponibles.length
+            )
+    ) {
+
+        const idTire =
+            choisirAuHasard(
+                idsDisponibles
+            );
+
+
+        if (!idsChoisis.includes(idTire)) {
+
+            idsChoisis.push(idTire);
+
+        }
+
+    }
+
+
+    return idsChoisis.map(
+        function (id) {
+
+            return {
+
+                id: id,
+
+                progression: 0,
+
+                reclamee: false
+
+            };
+
+        }
+    );
+
+}
+
+function verifierRenouvellementMissions() {
+
+    const dateAujourdhui =
+        obtenirDateLocale(
+            new Date()
+        );
+
+
+    if (
+        dateDernierRenouvellementMissions
+            !== dateAujourdhui
+    ) {
+
+        missionsActuelles =
+            tirerMissionsDuJour();
+
+        dateDernierRenouvellementMissions =
+            dateAujourdhui;
+
+
+        sauvegarderPartie();
+
+        afficherMissions();
+
+    }
+
+}
+
+function incrementerProgressionMission(
+    idType,
+    quantite = 1
+) {
+
+    const mission =
+        missionsActuelles.find(
+            function (m) {
+
+                return (
+                    m.id === idType
+                    && m.reclamee === false
+                );
+
+            }
+        );
+
+
+    if (!mission) {
+
+        return;
+
+    }
+
+
+    const definition =
+        catalogueMissions[idType];
+
+
+    mission.progression =
+        Math.min(
+            definition.objectif,
+            mission.progression + quantite
+        );
+
+
+    afficherMissions();
+
+}
+
+function signalerDragonObtenu(dragon) {
+
+    if (!dragon || !dragon.apparence) {
+
+        return;
+
+    }
+
+
+    const rarete =
+        obtenirRareteEcailles(
+            dragon.espece,
+            dragon.apparence.familleEcailles
+        );
+
+
+    if (
+        rarete.niveau === "rare"
+        || rarete.niveau === "exceptionnel"
+    ) {
+
+        incrementerProgressionMission(
+            "obtenir_ecailles_rares"
+        );
+
+    }
+
+
+    const perfection =
+        parseFloat(
+            calculerPourcentagePerfection(
+                dragon
+            )
+        );
+
+
+    if (perfection >= 60) {
+
+        incrementerProgressionMission(
+            "obtenir_dragon_parfait"
+        );
+
+    }
+
+}
+
+function reclamerMission(idMission) {
+
+    const mission =
+        missionsActuelles.find(
+            function (m) {
+
+                return m.id === idMission;
+
+            }
+        );
+
+
+    if (!mission || mission.reclamee) {
+
+        return;
+
+    }
+
+
+    const definition =
+        catalogueMissions[idMission];
+
+
+    if (mission.progression < definition.objectif) {
+
+        return;
+
+    }
+
+
+    mission.reclamee = true;
+
+    piastresDraconiques +=
+        definition.recompense;
+
+
+    sauvegarderPartie();
+
+    afficherMissions();
+
+    afficherPiastres();
+
+}
+
+function afficherMissions() {
+
+    const conteneur =
+        document.getElementById(
+            "liste-missions"
+        );
+
+
+    if (!conteneur) {
+
+        return;
+
+    }
+
+
+    if (missionsActuelles.length === 0) {
+
+        conteneur.innerHTML = `
+            <p>Aucune mission pour le moment.</p>
+        `;
+
+        return;
+
+    }
+
+
+    conteneur.innerHTML =
+        missionsActuelles.map(
+            function (mission) {
+
+                const definition =
+                    catalogueMissions[mission.id];
+
+
+                if (!definition) {
+
+                    return "";
+
+                }
+
+
+                const complete =
+                    mission.progression
+                        >= definition.objectif;
+
+
+                return `
+                    <div class="carte-mission ${
+                        mission.reclamee
+                            ? "reclamee"
+                            : complete
+                                ? "complete"
+                                : ""
+                    }">
+
+                        <div class="entete-mission">
+
+                            <span class="difficulte-mission difficulte-${
+                                definition.difficulte
+                            }">
+                                ${definition.difficulte}
+                            </span>
+
+                            <span class="recompense-mission">
+                                ${definition.recompense} piastres
+                            </span>
+
+                        </div>
+
+                        <p class="libelle-mission">
+                            ${definition.libelle}
+                        </p>
+
+                        <div class="progression-mission">
+                            <div class="barre-progression-mission">
+                                <div
+                                    class="remplissage-progression-mission"
+                                    style="width: ${
+                                        Math.min(
+                                            100,
+                                            (mission.progression
+                                                / definition.objectif)
+                                                * 100
+                                        )
+                                    }%;"
+                                ></div>
+                            </div>
+
+                            <span class="texte-progression-mission">
+                                ${mission.progression} / ${definition.objectif}
+                            </span>
+                        </div>
+
+                        <button
+                            class="bouton-reclamer-mission"
+                            ${
+                                complete && !mission.reclamee
+                                    ? ""
+                                    : "disabled"
+                            }
+                            onclick="reclamerMission('${mission.id}')"
+                        >
+                            ${
+                                mission.reclamee
+                                    ? "Récompense obtenue"
+                                    : "Réclamer"
+                            }
+                        </button>
+
+                    </div>
+                `;
+
+            }
+        ).join("");
+
+}
+
+function afficherPiastres() {
+
+    const zone =
+        document.getElementById(
+            "solde-piastres"
+        );
+
+
+    if (!zone) {
+
+        return;
+
+    }
+
+
+    zone.textContent =
+        `${piastresDraconiques} piastres draconiques`;
+
+}
+
+// =========================================
+// BOUTIQUE
+// =========================================
+
+function acheterObjet(idObjet) {
+
+    const objet =
+        catalogueBoutique[idObjet];
+
+
+    if (!objet) {
+
+        return;
+
+    }
+
+
+    if (piastresDraconiques < objet.prix) {
+
+        alert(
+            "Tu n'as pas assez de piastres draconiques."
+        );
+
+        return;
+
+    }
+
+
+    piastresDraconiques -= objet.prix;
+
+    inventaireObjets[idObjet] =
+        (inventaireObjets[idObjet] || 0) + 1;
+
+
+    sauvegarderPartie();
+
+    afficherPiastres();
+
+    afficherBoutique();
+
+
+    if (idDragonFicheOuverte !== null) {
+
+        const dragon =
+            collectionDragons.find(
+                function (d) {
+
+                    return d.id === idDragonFicheOuverte;
+
+                }
+            );
+
+
+        if (dragon) {
+
+            afficherFicheDetaillee(dragon);
+
+        }
+
+    }
+
+}
+
+function afficherBoutique() {
+
+    const conteneur =
+        document.getElementById(
+            "liste-boutique"
+        );
+
+
+    if (!conteneur) {
+
+        return;
+
+    }
+
+
+    conteneur.innerHTML =
+        Object.keys(catalogueBoutique).map(
+            function (idObjet) {
+
+                const objet =
+                    catalogueBoutique[idObjet];
+
+
+                const possede =
+                    inventaireObjets[idObjet] || 0;
+
+
+                return `
+                    <div class="carte-objet-boutique">
+
+                        <h3>${objet.nom}</h3>
+
+                        <p class="description-objet">
+                            ${objet.description}
+                        </p>
+
+                        <div class="pied-objet-boutique">
+
+                            <span class="prix-objet">
+                                ${objet.prix} piastres
+                            </span>
+
+                            <span class="possede-objet">
+                                Possédé(s) : ${possede}
+                            </span>
+
+                        </div>
+
+                        <button
+                            class="bouton-acheter-objet"
+                            ${
+                                piastresDraconiques
+                                    < objet.prix
+                                    ? "disabled"
+                                    : ""
+                            }
+                            onclick="acheterObjet('${idObjet}')"
+                        >
+                            Acheter
+                        </button>
+
+                    </div>
+                `;
+
+            }
+        ).join("");
+
+}
+
 function afficherActions() {
 
     const zoneSymboles =
@@ -3976,6 +4641,8 @@ function depenserAction() {
 
 
     actionsRestantes--;
+
+    incrementerProgressionMission("epuiser_actions");
 
 
     afficherActions();
@@ -4137,11 +4804,15 @@ function garderDragon(index) {
 
 
     collectionDragons.push(dragonChoisi);
-	
+
 	statistiquesSucces.dragonsSauvagesCaptures++;
 	sauvegarderPartie();
 
 	verifierSucces();
+
+    incrementerProgressionMission("capturer_dragons");
+
+    signalerDragonObtenu(dragonChoisi);
 
     sauvegarderPartie();
 
@@ -4466,6 +5137,8 @@ function evaluerDragon() {
     );
 
 
+    incrementerProgressionMission("faire_evaluation");
+
     sauvegarderPartie();
 
 
@@ -4504,6 +5177,382 @@ function evaluerDragon() {
 
         </div>
     `;
+
+}
+
+// =========================================
+// UTILISATION DES OBJETS D'ALTÉRATION
+// GÉNÉTIQUE SUR UN DRAGON
+// =========================================
+
+const nomsStatistiquesObjets = {
+
+    attaque: "Attaque",
+    defense: "Défense",
+    endurance: "Endurance",
+    taille: "Taille",
+    intelligence: "Intelligence",
+    magie: "Magie",
+    vitesse: "Vitesse"
+
+};
+
+const nomsCouleursObjets = {
+
+    vert: "Vert",
+    rouge: "Rouge",
+    bleu: "Bleu",
+    brun: "Brun",
+    orange: "Orange",
+    blanc: "Blanc",
+    noir: "Noir",
+    or: "Or"
+
+};
+
+function genererSectionObjetsUtilisables(dragon) {
+
+    const idsPossedes =
+        Object.keys(inventaireObjets).filter(
+            function (id) {
+
+                return (inventaireObjets[id] || 0) > 0;
+
+            }
+        );
+
+
+    if (idsPossedes.length === 0) {
+
+        return `
+            <div class="section-objets-utilisables">
+                <h3>Utiliser un objet</h3>
+                <p class="aucun-objet">
+                    Tu ne possèdes aucun objet d'altération génétique.
+                    Rends-toi à la boutique pour en acheter.
+                </p>
+            </div>
+        `;
+
+    }
+
+
+    const lignes =
+        idsPossedes.map(
+            function (idObjet) {
+
+                const objet =
+                    catalogueBoutique[idObjet];
+
+
+                if (!objet) {
+
+                    return "";
+
+                }
+
+
+                const quantite =
+                    inventaireObjets[idObjet];
+
+                const idSelect =
+                    `select-usage-${idObjet}-${dragon.id}`;
+
+
+                let controle = "";
+
+
+                if (objet.type === "serum") {
+
+                    controle = `
+                        <select id="${idSelect}">
+                            ${
+                                Object.keys(nomsStatistiquesObjets)
+                                    .map(
+                                        stat =>
+                                            `<option value="${stat}">${
+                                                nomsStatistiquesObjets[stat]
+                                            }</option>`
+                                    )
+                                    .join("")
+                            }
+                        </select>
+                    `;
+
+                }
+
+                else if (objet.type === "teinture_choisie") {
+
+                    controle = `
+                        <select id="${idSelect}">
+                            ${
+                                Object.keys(nomsCouleursObjets)
+                                    .map(
+                                        couleur =>
+                                            `<option value="${couleur}">${
+                                                nomsCouleursObjets[couleur]
+                                            }</option>`
+                                    )
+                                    .join("")
+                            }
+                        </select>
+                    `;
+
+                }
+
+
+                const parametreAppel =
+                    controle
+                        ? `document.getElementById('${idSelect}').value`
+                        : "null";
+
+
+                return `
+                    <div class="ligne-objet-utilisable">
+
+                        <span class="nom-objet-inventaire">
+                            ${objet.nom} (x${quantite})
+                        </span>
+
+                        ${controle}
+
+                        <button
+                            type="button"
+                            onclick="utiliserObjet('${idObjet}', '${dragon.id}', ${parametreAppel})"
+                        >
+                            Utiliser
+                        </button>
+
+                    </div>
+                `;
+
+            }
+        ).join("");
+
+
+    return `
+        <div class="section-objets-utilisables">
+            <h3>Utiliser un objet</h3>
+            ${lignes}
+        </div>
+    `;
+
+}
+
+function utiliserObjet(
+    idObjet,
+    idDragon,
+    parametre
+) {
+
+    const objet =
+        catalogueBoutique[idObjet];
+
+
+    if (!objet) {
+
+        return;
+
+    }
+
+
+    if (
+        !inventaireObjets[idObjet]
+        || inventaireObjets[idObjet] <= 0
+    ) {
+
+        alert(
+            "Tu ne possèdes pas cet objet."
+        );
+
+        return;
+
+    }
+
+
+    const dragon =
+        collectionDragons.find(
+            function (d) {
+
+                return d.id === idDragon;
+
+            }
+        );
+
+
+    if (!dragon) {
+
+        return;
+
+    }
+
+
+    if (objet.type === "serum") {
+
+        const statistique = parametre;
+
+
+        if (
+            !dragon.genes
+            || !dragon.genes[statistique]
+        ) {
+
+            return;
+
+        }
+
+
+        dragon.genes[statistique][0] =
+            Math.min(
+                20,
+                dragon.genes[statistique][0]
+                    + objet.valeur * 2
+            );
+
+
+        dragon.statistiques[statistique] =
+            calculerStatistique(
+                dragon.genes[statistique]
+            );
+
+    }
+
+    else if (objet.type === "mutagene_aleatoire") {
+
+        const famillesAutorisees =
+            Object.keys(palettesCouleurs).filter(
+                function (famille) {
+
+                    return ![
+                        "blanc",
+                        "noir",
+                        "or"
+                    ].includes(famille);
+
+                }
+            );
+
+
+        const nouvelleFamille =
+            choisirAuHasard(
+                famillesAutorisees
+            );
+
+        const nouvelleNuance =
+            nombreAleatoire(1, 100);
+
+        const nouvelleCouleur =
+            convertirCouleurEnRgb(
+                nouvelleFamille,
+                nouvelleNuance
+            );
+
+
+        if (objet.cible === "yeux") {
+
+            dragon.apparence.familleYeux =
+                nouvelleFamille;
+
+            dragon.apparence.nuanceYeux =
+                nouvelleNuance;
+
+            dragon.apparence.yeux =
+                nouvelleCouleur;
+
+        }
+
+        else {
+
+            dragon.apparence.familleEcailles =
+                nouvelleFamille;
+
+            dragon.apparence.nuanceEcailles =
+                nouvelleNuance;
+
+            dragon.apparence.ecailles =
+                nouvelleCouleur;
+
+        }
+
+
+        dragon.rareteEsthetique =
+            calculerRareteEsthetique(
+                dragon.espece,
+                dragon.apparence.familleEcailles,
+                dragon.apparence.familleYeux,
+                dragon.apparence.mutationEsthetique
+            );
+
+    }
+
+    else if (objet.type === "teinture_choisie") {
+
+        const familleChoisie = parametre;
+
+
+        if (!palettesCouleurs[familleChoisie]) {
+
+            return;
+
+        }
+
+
+        const nuance =
+            nombreAleatoire(1, 100);
+
+        const couleur =
+            convertirCouleurEnRgb(
+                familleChoisie,
+                nuance
+            );
+
+
+        if (objet.cible === "yeux") {
+
+            dragon.apparence.familleYeux =
+                familleChoisie;
+
+            dragon.apparence.nuanceYeux =
+                nuance;
+
+            dragon.apparence.yeux =
+                couleur;
+
+        }
+
+        else {
+
+            dragon.apparence.familleEcailles =
+                familleChoisie;
+
+            dragon.apparence.nuanceEcailles =
+                nuance;
+
+            dragon.apparence.ecailles =
+                couleur;
+
+        }
+
+
+        dragon.rareteEsthetique =
+            calculerRareteEsthetique(
+                dragon.espece,
+                dragon.apparence.familleEcailles,
+                dragon.apparence.familleYeux,
+                dragon.apparence.mutationEsthetique
+            );
+
+    }
+
+
+    inventaireObjets[idObjet] -= 1;
+
+
+    sauvegarderPartie();
+
+    afficherFicheDetaillee(dragon);
+
+    afficherCollection();
 
 }
 
@@ -5501,7 +6550,9 @@ ${dragon.mutation.texte}
             >
                 Relâcher ce dragon
             </button>
-			
+
+            ${genererSectionObjetsUtilisables(dragon)}
+
         </div>
     `;
 
@@ -6873,6 +7924,8 @@ for (
     mere,
     statistiqueCiblee
 );
+
+    incrementerProgressionMission("faire_reproduction");
 
     oeufEnAttente = true;
      mettreAJourBoutonsActions();
@@ -8427,6 +9480,8 @@ function garderBebe() {
 	sauvegarderPartie();
 	verifierSucces();
 
+    signalerDragonObtenu(dragonActuel);
+
     sauvegarderPartie();
 
     nettoyerGenealogie();
@@ -8673,6 +9728,14 @@ document
     );
 
 mettreAJourInterfaceSauvegarde();
+
+verifierRenouvellementMissions();
+
+afficherPiastres();
+
+afficherMissions();
+
+afficherBoutique();
 
 synchroniserPartieAuDemarrage();
 
