@@ -23,6 +23,19 @@ let oeufEnAttente = false;
 
 let dragonsSauvagesActuels = [];
 
+/* ==========================================================
+   REPRODUCTION V2
+========================================================== */
+
+let pereSelectionne = null;
+let mereSelectionnee = null;
+
+let filtreRecherchePere = "";
+let filtreRechercheMere = "";
+
+let triPere = "evaluation";
+let triMere = "evaluation";
+
 let minuteurSauvegardeDistante = null;
 
 function obtenirIdentifiantJoueur() {
@@ -6315,59 +6328,333 @@ boutonGeneration.addEventListener("click", function () {
 
 });
 
-function afficherParentsDisponibles() {
+function afficherParentsDisponibles(){
 
-    const selectionPere =
-        document.getElementById("selection-pere");
+    const listePeres =
+        document.getElementById("liste-peres");
 
-    const selectionMere =
-        document.getElementById("selection-mere");
+    const listeMeres =
+        document.getElementById("liste-meres");
+
+    listePeres.innerHTML="";
+
+    listeMeres.innerHTML="";
 
 
-    selectionPere.innerHTML = `
-        <option value="">
-            Choisir un mâle
-        </option>
+
+    const peres =
+        obtenirListeFiltree("Mâle");
+
+    const meres =
+    obtenirFemellesCompatibles();
+
+
+
+    trierDragons(
+        peres,
+        triPere
+    );
+
+    trierDragons(
+        meres,
+        triMere
+    );
+
+
+
+    peres.forEach(function(dragon){
+
+        listePeres.appendChild(
+
+            creerCarteDragonReproduction(dragon)
+
+        );
+
+    });
+
+
+
+    meres.forEach(function(dragon){
+
+        listeMeres.appendChild(
+
+            creerCarteDragonReproduction(dragon)
+
+        );
+
+    });
+
+}
+
+function creerCarteDragonReproduction(dragon){
+
+    const carte =
+        document.createElement("div");
+
+    carte.className =
+        "carte-dragon-reproduction";
+
+    carte.innerHTML=`
+
+        <div class="nom">
+
+            ${dragon.nom}
+
+        </div>
+
+        <div class="espece">
+
+            ${dragon.espece}
+
+            ·
+
+            G${dragon.generation}
+
+        </div>
+
+        <div class="resume-stats">
+
+            <span>A ${dragon.statistiques.attaque}</span>
+
+            <span>D ${dragon.statistiques.defense}</span>
+
+            <span>M ${dragon.statistiques.magie}</span>
+
+        </div>
+
+        <div class="badge-evaluation">
+
+            ${dragon.evaluation}
+
+        </div>
+
     `;
 
-    selectionMere.innerHTML = `
-        <option value="">
-            Choisir une femelle
-        </option>
-    `;
+    carte.onclick=function(){
 
-    document.getElementById(
-    "apercu-pere"
-    ).innerHTML = "";
+        selectionnerDragonReproduction(
+            dragon
+        );
 
+    };
 
-    document.getElementById(
-    "apercu-mere"
-    ).innerHTML = "";
+    return carte;
 
-    collectionDragons.forEach(function (dragon) {
+}
 
-        const option = `
-            <option value="${dragon.id}">
-                ${dragon.nom} — ${dragon.espece}
-            </option>
-        `;
+function selectionnerDragonReproduction(dragon){
 
+    if(dragon.sexe==="Mâle"){
 
-        if (dragon.sexe === "Mâle") {
+    pereSelectionne=dragon;
 
-            selectionPere.innerHTML += option;
+    mereSelectionnee=null;
+
+    afficherParentsDisponibles();
+
+    afficherApercuParent(
+
+        dragon.id,
+
+        "apercu-pere"
+
+    );
+
+    document
+    .getElementById("apercu-mere")
+    .innerHTML=
+    "Aucune mère sélectionnée";
+
+}
+
+    else{
+
+    if(
+
+        pereSelectionne
+
+        &&
+
+        dragon.espece!==pereSelectionne.espece
+
+    ){
+
+        return;
+
+    }
+
+    mereSelectionnee=dragon;
+
+    afficherApercuParent(
+
+        dragon.id,
+
+        "apercu-mere"
+
+    );
+
+}
+
+    mettreAJourSelectionCartes();
+
+}
+
+function mettreAJourSelectionCartes(){
+
+    document
+    .querySelectorAll(
+        ".carte-dragon-reproduction"
+    )
+    .forEach(function(carte){
+
+        carte.classList.remove(
+            "selectionnee"
+        );
+
+        const dragon =
+            collectionDragons.find(
+
+                d=>d.id===carte.dataset.id
+
+            );
+
+        if(
+            pereSelectionne
+            &&
+            dragon.id===pereSelectionne.id
+        ){
+
+            carte.classList.add(
+                "selectionnee"
+            );
 
         }
 
+        if(
+            mereSelectionnee
+            &&
+            dragon.id===mereSelectionnee.id
+        ){
 
-        if (dragon.sexe === "Femelle") {
-
-            selectionMere.innerHTML += option;
+            carte.classList.add(
+                "selectionnee"
+            );
 
         }
 
     });
+
+}
+
+function obtenirListeFiltree(sexe){
+
+    const recherche =
+        sexe==="Mâle"
+        ? filtreRecherchePere
+        : filtreRechercheMere;
+
+    return collectionDragons.filter(function(dragon){
+
+        if(dragon.sexe!==sexe){
+
+            return false;
+
+        }
+
+        if(
+            recherche!==""
+            &&
+            !dragon.nom
+            .toLowerCase()
+            .includes(recherche)
+        ){
+
+            return false;
+
+        }
+
+        return true;
+
+    });
+
+}
+
+function obtenirFemellesCompatibles(){
+
+    if(pereSelectionne===null){
+
+        return collectionDragons.filter(
+
+            dragon=>dragon.sexe==="Femelle"
+
+        );
+
+    }
+
+    return collectionDragons.filter(
+
+        dragon=>
+
+            dragon.sexe==="Femelle"
+
+            &&
+
+            dragon.espece===pereSelectionne.espece
+
+    );
+
+}
+
+function trierDragons(liste, critere){
+
+    liste.sort(function(a,b){
+
+        switch(critere){
+
+            case "nom":
+
+                return a.nom.localeCompare(b.nom);
+
+            case "attaque":
+
+                return b.genes.attaque-a.genes.attaque;
+
+            case "defense":
+
+                return b.genes.defense-a.genes.defense;
+
+            case "endurance":
+
+                return b.genes.endurance-a.genes.endurance;
+
+            case "taille":
+
+                return b.genes.taille-a.genes.taille;
+
+            case "intelligence":
+
+                return b.genes.intelligence-a.genes.intelligence;
+
+            case "magie":
+
+                return b.genes.magie-a.genes.magie;
+
+            case "vitesse":
+
+                return b.genes.vitesse-a.genes.vitesse;
+
+            default:
+
+                return (
+                    (b.evaluation||0)
+                    -
+                    (a.evaluation||0)
+                );
+
+        }
+
+    });
+
 }
 
 function afficherApercuParent(
@@ -6510,33 +6797,20 @@ bouton.onclick =
 }
 
 document
-    .getElementById("selection-pere")
-    .addEventListener(
-        "change",
-        function () {
-
-            afficherApercuParent(
-                this.value,
-                "apercu-pere"
-            );
-
-        }
-    );
-
+.getElementById("tri-pere")
+.addEventListener(...)
 
 document
-    .getElementById("selection-mere")
-    .addEventListener(
-        "change",
-        function () {
+.getElementById("tri-mere")
+.addEventListener(...)
 
-            afficherApercuParent(
-                this.value,
-                "apercu-mere"
-            );
+document
+.getElementById("recherche-pere")
+.addEventListener(...)
 
-        }
-    );
+document
+.getElementById("recherche-mere")
+.addEventListener(...)
 
 function reproduireDragons() {
 
@@ -6549,28 +6823,23 @@ function reproduireDragons() {
         return;
     }
 
-    const idPere =
-        document.getElementById("selection-pere").value;
+    if (
+    pereSelectionne === null
+    ||
+    mereSelectionnee === null
+){
 
-    const idMere =
-        document.getElementById("selection-mere").value;
-
-
-    if (idPere === "" || idMere === "") {
-
-        alert("Tu dois choisir un père et une mère.");
-
-        return;
-    }
-
-
-    const pere = collectionDragons.find(
-        dragon => dragon.id === idPere
+    alert(
+        "Tu dois choisir un père et une mère."
     );
 
-    const mere = collectionDragons.find(
-        dragon => dragon.id === idMere
-    );
+    return;
+
+}
+
+const pere = pereSelectionne;
+
+const mere = mereSelectionnee;
 
 
     if (pere.espece !== mere.espece) {
@@ -8199,7 +8468,6 @@ function garderBebe() {
     oeufEnAttente = false;
 
     mettreAJourBoutonsActions();
-
 
     afficherCollection();
 
