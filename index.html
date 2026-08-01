@@ -411,111 +411,20 @@
 
         <h3>Père</h3>
 
-        <div id="zone-reproduction">
+        <select id="selection-pere">
 
-    <!-- ========================= -->
-    <!-- PÈRE                      -->
-    <!-- ========================= -->
+            <option value="">
+                Choisir un mâle
+            </option>
 
-    <div class="selection-parent">
-
-        <h3>🐉 Père</h3>
-
-        <input
-            type="text"
-            id="recherche-pere"
-            class="champ-recherche-dragon"
-            placeholder="Rechercher..."
-        >
-
-        <select
-            id="tri-pere"
-            class="select-tri-dragon"
-        >
-            <option value="evaluation">Évaluation</option>
-            <option value="nom">Nom</option>
-            <option value="attaque">Attaque</option>
-            <option value="defense">Défense</option>
-            <option value="endurance">Endurance</option>
-            <option value="magie">Magie</option>
-            <option value="vitesse">Vitesse</option>
-            <option value="taille">Taille</option>
         </select>
 
         <div
-            id="liste-peres"
-            class="liste-dragons"
-        >
-
-        </div>
+            id="apercu-pere"
+            class="apercu-parent"
+        ></div>
 
     </div>
-
-
-
-    <!-- ========================= -->
-    <!-- MÈRE                      -->
-    <!-- ========================= -->
-
-    <div class="selection-parent">
-
-        <h3>🐲 Mère</h3>
-
-        <input
-            type="text"
-            id="recherche-mere"
-            class="champ-recherche-dragon"
-            placeholder="Rechercher..."
-        >
-
-        <select
-            id="tri-mere"
-            class="select-tri-dragon"
-        >
-            <option value="evaluation">Évaluation</option>
-            <option value="nom">Nom</option>
-            <option value="attaque">Attaque</option>
-            <option value="defense">Défense</option>
-            <option value="endurance">Endurance</option>
-            <option value="magie">Magie</option>
-            <option value="vitesse">Vitesse</option>
-            <option value="taille">Taille</option>
-        </select>
-
-        <div
-            id="liste-meres"
-            class="liste-dragons"
-        >
-
-        </div>
-
-    </div>
-
-</div>
-
-
-
-<div id="resume-reproduction">
-
-    <div
-        id="apercu-pere"
-        class="apercu-parent"
-    >
-
-        Aucun père sélectionné
-
-    </div>
-
-    <div
-        id="apercu-mere"
-        class="apercu-parent"
-    >
-
-        Aucune mère sélectionnée
-
-    </div>
-
-</div>
 
 
     <div class="selection-parent">
