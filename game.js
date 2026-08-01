@@ -4470,6 +4470,10 @@ const genes = {
 
         generation: 0,
 
+        notes: "",
+
+        favori: false,
+
         parents: {
             pere: null,
             mere: null
@@ -6377,6 +6381,72 @@ function utiliserObjet(
 
 }
 
+function echapperHtml(texte) {
+
+    const zoneTemporaire =
+        document.createElement("div");
+
+    zoneTemporaire.textContent =
+        texte == null
+            ? ""
+            : String(texte);
+
+    return zoneTemporaire.innerHTML;
+
+}
+
+function basculerFavori(idDragon) {
+
+    const dragon =
+        collectionDragons.find(
+            function (d) {
+                return d.id === idDragon;
+            }
+        );
+
+    if (!dragon) {
+        return;
+    }
+
+
+    dragon.favori = !dragon.favori;
+
+    sauvegarderPartie();
+
+    afficherCollection();
+
+
+    if (idDragonFicheOuverte === idDragon) {
+
+        afficherFicheDetaillee(dragon);
+
+    }
+
+}
+
+function modifierNoteDragon(idDragon, valeur) {
+
+    const dragon =
+        collectionDragons.find(
+            function (d) {
+                return d.id === idDragon;
+            }
+        );
+
+    if (!dragon) {
+        return;
+    }
+
+
+    dragon.notes =
+        valeur.slice(0, 500);
+
+    sauvegarderPartie();
+
+    afficherCollection();
+
+}
+
 function afficherFicheDetaillee(dragon) {
 
     const fiche =
@@ -6532,7 +6602,22 @@ if (dragon.mutation) {
                     ✎
                 </button>
 
-                </div>  
+                <button
+                    id="bouton-favori-dragon"
+                    class="bouton-favori-dragon ${
+                        dragon.favori ? "actif" : ""
+                    }"
+                    type="button"
+                    title="${
+                        dragon.favori
+                            ? "Retirer des favoris"
+                            : "Ajouter aux favoris"
+                    }"
+                >
+                    ${dragon.favori ? "★" : "☆"}
+                </button>
+
+                </div>
 
                     <p>
                         ${dragon.espece}
@@ -7351,7 +7436,23 @@ ${dragon.mutation.texte}
                     </p>
 
                 </div>
-				
+
+
+                <div class="bloc-fiche bloc-note-dragon">
+
+                    <h3>
+                        Note personnelle
+                    </h3>
+
+                    <textarea
+                        id="zone-note-dragon"
+                        class="zone-note-dragon"
+                        placeholder="Écris ici une réflexion sur ce dragon..."
+                        maxlength="500"
+                    >${echapperHtml(dragon.notes || "")}</textarea>
+
+                </div>
+
 
                         </div>
 
@@ -7575,8 +7676,49 @@ champNouveauNom.addEventListener(
     }
 );
     }
-    
+
 );
+
+    // =================================
+    // BOUTON FAVORI
+    // =================================
+
+    const boutonFavori =
+        document.getElementById(
+            "bouton-favori-dragon"
+        );
+
+    boutonFavori.addEventListener(
+        "click",
+        function () {
+
+            basculerFavori(
+                dragon.id
+            );
+
+        }
+    );
+
+    // =================================
+    // NOTE PERSONNELLE
+    // =================================
+
+    const zoneNote =
+        document.getElementById(
+            "zone-note-dragon"
+        );
+
+    zoneNote.addEventListener(
+        "change",
+        function () {
+
+            modifierNoteDragon(
+                dragon.id,
+                zoneNote.value
+            );
+
+        }
+    );
 
     // =================================
     // BOUTON FERMER
@@ -7831,7 +7973,18 @@ async function donnerDragon(idDragon) {
                         JSON.stringify({
                             donneurId:
                                 obtenirIdentifiantJoueur(),
-                            dragon: dragon,
+
+                            // Le statut "favori" est une
+                            // préférence perso du donneur,
+                            // elle n'a pas de sens pour le
+                            // receveur : on la réinitialise.
+                            // La note, elle, part avec le
+                            // dragon (voulu).
+                            dragon: {
+                                ...dragon,
+                                favori: false
+                            },
+
                             destinataireId:
                                 destinataireId
                         })
@@ -8564,6 +8717,23 @@ if (filtreRarete !== "toutes") {
 
 }
 	
+	    if (tri === "favoris") {
+
+        dragonsAffiches.sort(
+            function (a, b) {
+
+                return (
+                    (b.favori ? 1 : 0)
+                    -
+                    (a.favori ? 1 : 0)
+                );
+
+            }
+        );
+
+    }
+
+
 	    if (tri === "nom-az") {
 
         dragonsAffiches.sort(
@@ -8711,7 +8881,7 @@ if (filtreRarete !== "toutes") {
     dragonsAffiches.forEach(function (dragon) {
 
         zoneCollection.innerHTML += `
-            <div class="carte-dragon">
+            <div class="carte-dragon ${dragon.favori ? "favori" : ""}">
 
                 <div class="entete-carte-dragon">
 
@@ -8719,10 +8889,27 @@ if (filtreRarete !== "toutes") {
         ${dragon.nom}
     </h3>
 
-    <span class="identite-carte-dragon">
-        ${dragon.sexe === "Mâle" ? "♂" : "♀"}
-        ${dragon.generation}
-    </span>
+    <div class="actions-carte-dragon">
+
+        <button
+            class="bouton-favori-carte ${dragon.favori ? "actif" : ""}"
+            data-id="${dragon.id}"
+            type="button"
+            title="${
+                dragon.favori
+                    ? "Retirer des favoris"
+                    : "Ajouter aux favoris"
+            }"
+        >
+            ${dragon.favori ? "★" : "☆"}
+        </button>
+
+        <span class="identite-carte-dragon">
+            ${dragon.sexe === "Mâle" ? "♂" : "♀"}
+            ${dragon.generation}
+        </span>
+
+    </div>
 
 </div>
 
@@ -8845,7 +9032,31 @@ if (filtreRarete !== "toutes") {
         );
 
     });
-	
+
+
+    const boutonsFavoriCarte =
+        document.querySelectorAll(
+            ".bouton-favori-carte"
+        );
+
+
+    boutonsFavoriCarte.forEach(function (bouton) {
+
+        bouton.addEventListener(
+            "click",
+            function (evenement) {
+
+                evenement.stopPropagation();
+
+                basculerFavori(
+                    bouton.dataset.id
+                );
+
+            }
+        );
+
+    });
+
 }
 
 // =================================
@@ -10775,6 +10986,10 @@ const mutation =
         ]),
 
         origine: "Élevage",
+
+        notes: "",
+
+        favori: false,
 
         generation:
             Math.max(
