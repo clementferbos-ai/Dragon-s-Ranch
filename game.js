@@ -3930,8 +3930,8 @@ const palettesCouleurs = {
     },
 
     rouge: {
-        debut: [240, 90, 110],
-        fin: [90, 35, 120]
+        debut: [225, 45, 40],
+        fin: [80, 12, 18]
     },
 
     bleu: {
