@@ -25,6 +25,10 @@ let dragonsSauvagesActuels = [];
 
 let minuteurSauvegardeDistante = null;
 
+let idPereSelectionne = "";
+let idMereSelectionne = "";
+let vueParents = "grille";
+
 function obtenirIdentifiantJoueur() {
 
     let playerId =
@@ -6315,59 +6319,182 @@ boutonGeneration.addEventListener("click", function () {
 
 });
 
-function afficherParentsDisponibles() {
+function obtenirParentsFiltres(sexe) {
 
-    const selectionPere =
-        document.getElementById("selection-pere");
+    const recherche =
+        document.getElementById("recherche-parent")
+            .value.trim().toLowerCase();
 
-    const selectionMere =
-        document.getElementById("selection-mere");
+    const filtreEspece =
+        document.getElementById("filtre-espece-parent").value;
 
+    const tri =
+        document.getElementById("tri-parents").value;
 
-    selectionPere.innerHTML = `
-        <option value="">
-            Choisir un mâle
-        </option>
+    let dragons =
+        collectionDragons.filter(
+            dragon => dragon.sexe === sexe
+        );
+
+    if (recherche !== "") {
+
+        dragons = dragons.filter(
+            dragon => dragon.nom.toLowerCase().includes(recherche)
+        );
+
+    }
+
+    if (filtreEspece !== "toutes") {
+
+        dragons = dragons.filter(
+            dragon => dragon.espece === filtreEspece
+        );
+
+    }
+
+    if (tri === "score-desc") {
+
+        dragons.sort(
+            (a, b) =>
+                calculerScorePerfection(b)
+                - calculerScorePerfection(a)
+        );
+
+    } else if (tri === "score-asc") {
+
+        dragons.sort(
+            (a, b) =>
+                calculerScorePerfection(a)
+                - calculerScorePerfection(b)
+        );
+
+    } else if (tri === "generation-desc") {
+
+        dragons.sort((a, b) => b.generation - a.generation);
+
+    } else if (tri === "generation-asc") {
+
+        dragons.sort((a, b) => a.generation - b.generation);
+
+    } else if (tri === "nom-az") {
+
+        dragons.sort((a, b) => a.nom.localeCompare(b.nom, "fr"));
+
+    } else if (tri === "nom-za") {
+
+        dragons.sort((a, b) => b.nom.localeCompare(a.nom, "fr"));
+
+    }
+
+    return dragons;
+}
+
+function rendreCarteParent(dragon, idSelectionne) {
+
+    const selectionnee =
+        dragon.id === idSelectionne;
+
+    return `
+        <button
+            type="button"
+            class="carte-parent ${selectionnee ? "selectionnee" : ""}"
+            data-id="${dragon.id}"
+        >
+            <span class="carte-parent-nom">
+                ${dragon.nom}
+            </span>
+
+            <span class="carte-parent-info">
+                ${dragon.espece} · G${dragon.generation}
+            </span>
+
+            <span class="carte-parent-score">
+                ★ ${calculerScorePerfection(dragon)}
+            </span>
+        </button>
     `;
+}
 
-    selectionMere.innerHTML = `
-        <option value="">
-            Choisir une femelle
-        </option>
-    `;
+function afficherListeParents(sexe, idListe, idSelectionne) {
 
-    document.getElementById(
-    "apercu-pere"
-    ).innerHTML = "";
+    const zone =
+        document.getElementById(idListe);
 
+    const dragons =
+        obtenirParentsFiltres(sexe);
 
-    document.getElementById(
-    "apercu-mere"
-    ).innerHTML = "";
+    zone.classList.remove("vue-grille", "vue-liste");
+    zone.classList.add(
+        vueParents === "liste" ? "vue-liste" : "vue-grille"
+    );
 
-    collectionDragons.forEach(function (dragon) {
+    if (dragons.length === 0) {
 
-        const option = `
-            <option value="${dragon.id}">
-                ${dragon.nom} — ${dragon.espece}
-            </option>
+        zone.innerHTML = `
+            <p class="liste-parents-vide">
+                Aucun dragon ne correspond aux critères.
+            </p>
         `;
 
+        return;
 
-        if (dragon.sexe === "Mâle") {
+    }
 
-            selectionPere.innerHTML += option;
+    zone.innerHTML =
+        dragons
+            .map(dragon => rendreCarteParent(dragon, idSelectionne))
+            .join("");
 
-        }
+    zone.querySelectorAll(".carte-parent").forEach(function (carte) {
 
+        carte.addEventListener("click", function () {
 
-        if (dragon.sexe === "Femelle") {
+            if (sexe === "Mâle") {
 
-            selectionMere.innerHTML += option;
+                idPereSelectionne = carte.dataset.id;
 
-        }
+            } else {
+
+                idMereSelectionne = carte.dataset.id;
+
+            }
+
+            afficherParentsDisponibles();
+
+        });
 
     });
+
+}
+
+function afficherParentsDisponibles() {
+
+    document.getElementById("compteur-peres").textContent =
+        "(" + obtenirParentsFiltres("Mâle").length + ")";
+
+    document.getElementById("compteur-meres").textContent =
+        "(" + obtenirParentsFiltres("Femelle").length + ")";
+
+    afficherListeParents("Mâle", "liste-peres", idPereSelectionne);
+    afficherListeParents("Femelle", "liste-meres", idMereSelectionne);
+
+    afficherApercuParent(idPereSelectionne, "apercu-pere");
+    afficherApercuParent(idMereSelectionne, "apercu-mere");
+
+    const boutonComparer =
+        document.getElementById("bouton-comparer-parents");
+
+    boutonComparer.disabled =
+        idPereSelectionne === "" || idMereSelectionne === "";
+
+    if (idPereSelectionne === "" || idMereSelectionne === "") {
+
+        document.getElementById(
+            "panneau-comparaison-parents"
+        ).innerHTML = "";
+
+    }
+
 }
 
 function afficherApercuParent(
@@ -6510,33 +6637,137 @@ bouton.onclick =
 }
 
 document
-    .getElementById("selection-pere")
-    .addEventListener(
-        "change",
-        function () {
-
-            afficherApercuParent(
-                this.value,
-                "apercu-pere"
-            );
-
-        }
-    );
-
+    .getElementById("recherche-parent")
+    .addEventListener("input", afficherParentsDisponibles);
 
 document
-    .getElementById("selection-mere")
-    .addEventListener(
-        "change",
-        function () {
+    .getElementById("filtre-espece-parent")
+    .addEventListener("change", afficherParentsDisponibles);
 
-            afficherApercuParent(
-                this.value,
-                "apercu-mere"
-            );
+document
+    .getElementById("tri-parents")
+    .addEventListener("change", afficherParentsDisponibles);
 
-        }
+document
+    .getElementById("bouton-vue-grille")
+    .addEventListener("click", function () {
+
+        vueParents = "grille";
+
+        this.classList.add("actif");
+        this.setAttribute("aria-pressed", "true");
+
+        document.getElementById("bouton-vue-liste")
+            .classList.remove("actif");
+        document.getElementById("bouton-vue-liste")
+            .setAttribute("aria-pressed", "false");
+
+        afficherParentsDisponibles();
+
+    });
+
+document
+    .getElementById("bouton-vue-liste")
+    .addEventListener("click", function () {
+
+        vueParents = "liste";
+
+        this.classList.add("actif");
+        this.setAttribute("aria-pressed", "true");
+
+        document.getElementById("bouton-vue-grille")
+            .classList.remove("actif");
+        document.getElementById("bouton-vue-grille")
+            .setAttribute("aria-pressed", "false");
+
+        afficherParentsDisponibles();
+
+    });
+
+document
+    .getElementById("bouton-comparer-parents")
+    .addEventListener("click", afficherComparaisonParents);
+
+function afficherComparaisonParents() {
+
+    const panneau =
+        document.getElementById("panneau-comparaison-parents");
+
+    if (idPereSelectionne === "" || idMereSelectionne === "") {
+
+        panneau.innerHTML = "";
+        return;
+
+    }
+
+    const pere = collectionDragons.find(
+        dragon => dragon.id === idPereSelectionne
     );
+
+    const mere = collectionDragons.find(
+        dragon => dragon.id === idMereSelectionne
+    );
+
+    if (!pere || !mere) {
+
+        panneau.innerHTML = "";
+        return;
+
+    }
+
+    const statsAComparer = [
+        { cle: "attaque", label: "Attaque" },
+        { cle: "defense", label: "Défense" },
+        { cle: "endurance", label: "Endurance" },
+        { cle: "taille", label: "Taille" },
+        { cle: "intelligence", label: "Intelligence" },
+        { cle: "magie", label: "Magie" },
+        { cle: "vitesse", label: "Vitesse" }
+    ];
+
+    const lignes =
+        statsAComparer.map(function (stat) {
+
+            const valeurPere = pere.statistiques[stat.cle];
+            const valeurMere = mere.statistiques[stat.cle];
+
+            const classePere =
+                valeurPere > valeurMere ? "meilleure-valeur" : "";
+
+            const classeMere =
+                valeurMere > valeurPere ? "meilleure-valeur" : "";
+
+            return `
+                <div class="ligne-comparaison">
+                    <span class="comparaison-label">${stat.label}</span>
+                    <strong class="${classePere}">${valeurPere}</strong>
+                    <strong class="${classeMere}">${valeurMere}</strong>
+                </div>
+            `;
+
+        }).join("");
+
+    panneau.innerHTML = `
+        <div class="carte-comparaison">
+
+            <div class="entete-comparaison">
+                <span></span>
+                <span>${pere.nom} ♂</span>
+                <span>${mere.nom} ♀</span>
+            </div>
+
+            ${lignes}
+
+            <div class="ligne-comparaison ligne-comparaison-score">
+                <span class="comparaison-label">Score total</span>
+                <strong>${calculerScorePerfection(pere)}</strong>
+                <strong>${calculerScorePerfection(mere)}</strong>
+            </div>
+
+        </div>
+    `;
+
+}
 
 function reproduireDragons() {
 
@@ -6550,10 +6781,10 @@ function reproduireDragons() {
     }
 
     const idPere =
-        document.getElementById("selection-pere").value;
+        idPereSelectionne;
 
     const idMere =
-        document.getElementById("selection-mere").value;
+        idMereSelectionne;
 
 
     if (idPere === "" || idMere === "") {
@@ -6647,6 +6878,12 @@ for (
      mettreAJourBoutonsActions();
 
     afficherOeuf(bebe);
+
+    idPereSelectionne = "";
+    idMereSelectionne = "";
+    document.getElementById("panneau-comparaison-parents").innerHTML = "";
+
+    afficherParentsDisponibles();
 }
 
 function transmettreGene(genesParent) {

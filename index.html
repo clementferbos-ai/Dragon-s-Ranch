@@ -407,44 +407,147 @@
 
         <div id="zone-reproduction">
 
-    <div class="selection-parent">
+    <div class="outils-elevage outils-reproduction">
 
-        <h3>Père</h3>
+        <div class="outil-elevage outil-recherche">
 
-        <select id="selection-pere">
+            <label for="recherche-parent">
+                Rechercher
+            </label>
 
-            <option value="">
-                Choisir un mâle
-            </option>
+            <input
+                type="search"
+                id="recherche-parent"
+                placeholder="Nom du dragon..."
+                autocomplete="off"
+            >
 
-        </select>
+        </div>
+
+        <div class="outil-elevage">
+
+            <label for="filtre-espece-parent">
+                Espèce
+            </label>
+
+            <select id="filtre-espece-parent">
+
+                <option value="toutes">Toutes</option>
+                <option value="Vouivre">Vouivre</option>
+                <option value="Wyrm">Wyrm</option>
+                <option value="Hydre">Hydre</option>
+                <option value="Dragon européen">Dragon européen</option>
+                <option value="Dragon oriental">Dragon oriental</option>
+
+            </select>
+
+        </div>
+
+        <div class="outil-elevage">
+
+            <label for="tri-parents">
+                Trier par
+            </label>
+
+            <select id="tri-parents">
+
+                <option value="score-desc">Score : meilleur d'abord</option>
+                <option value="score-asc">Score : plus faible d'abord</option>
+                <option value="generation-desc">Génération : + récente</option>
+                <option value="generation-asc">Génération : + ancienne</option>
+                <option value="nom-az">Nom : A → Z</option>
+                <option value="nom-za">Nom : Z → A</option>
+
+            </select>
+
+        </div>
 
         <div
-            id="apercu-pere"
-            class="apercu-parent"
-        ></div>
+            class="bascule-affichage"
+            role="group"
+            aria-label="Mode d'affichage"
+        >
+
+            <button
+                type="button"
+                id="bouton-vue-grille"
+                class="bouton-vue actif"
+                aria-pressed="true"
+            >
+                Grille
+            </button>
+
+            <button
+                type="button"
+                id="bouton-vue-liste"
+                class="bouton-vue"
+                aria-pressed="false"
+            >
+                Liste
+            </button>
+
+        </div>
 
     </div>
 
+    <div class="colonnes-parents">
 
-    <div class="selection-parent">
+        <div class="selection-parent">
 
-        <h3>Mère</h3>
+            <h3>
+                Père
+                <span
+                    id="compteur-peres"
+                    class="compteur-parents"
+                ></span>
+            </h3>
 
-        <select id="selection-mere">
+            <div
+                id="apercu-pere"
+                class="apercu-parent"
+            ></div>
 
-            <option value="">
-                Choisir une femelle
-            </option>
+            <div
+                id="liste-peres"
+                class="liste-parents vue-grille"
+            ></div>
 
-        </select>
+        </div>
 
-        <div
-            id="apercu-mere"
-            class="apercu-parent"
-        ></div>
+
+        <div class="selection-parent">
+
+            <h3>
+                Mère
+                <span
+                    id="compteur-meres"
+                    class="compteur-parents"
+                ></span>
+            </h3>
+
+            <div
+                id="apercu-mere"
+                class="apercu-parent"
+            ></div>
+
+            <div
+                id="liste-meres"
+                class="liste-parents vue-grille"
+            ></div>
+
+        </div>
 
     </div>
+
+    <button
+        id="bouton-comparer-parents"
+        type="button"
+        disabled
+    >
+        Comparer les lignées
+    </button>
+
+    <div id="panneau-comparaison-parents"></div>
 
 </div>
 
