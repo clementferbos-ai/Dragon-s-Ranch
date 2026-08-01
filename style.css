@@ -1969,7 +1969,8 @@ body {
 /* ================================= */
 
 select,
-input[type="text"] {
+input[type="text"],
+textarea {
     box-sizing: border-box;
 
     min-height: 42px;
@@ -1999,9 +2000,21 @@ input[type="text"] {
 }
 
 select:hover,
-input[type="text"]:hover {
+input[type="text"]:hover,
+textarea:hover {
     border-color:
         var(--bordure-moyenne);
+}
+
+.champ-import-sauvegarde {
+    width: 100%;
+    resize: vertical;
+    font-size: 0.8rem;
+    margin-bottom: 12px;
+}
+
+.ligne-export-sauvegarde {
+    margin-bottom: 18px;
 }
 
 select:focus,

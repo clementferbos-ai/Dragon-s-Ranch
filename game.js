@@ -187,51 +187,205 @@ function obtenirIdentifiantJoueur() {
 
 }
 
+// =========================================
+// SCHÉMA CENTRALISÉ DE LA SAUVEGARDE
+// =========================================
+//
+// Chaque champ persistant du jeu n'est déclaré
+// qu'ICI, une seule fois : comment le lire
+// (obtenir), comment le restaurer (definir) et
+// quelle est sa valeur par défaut si absent
+// d'une sauvegarde plus ancienne (defaut).
+//
+// creerDonneesSauvegarde(), appliquerChampsSauvegarde()
+// et reinitialiserChampsSauvegarde() se contentent de
+// parcourir cette liste : plus besoin de dupliquer les
+// noms de champs à trois endroits différents (c'est ce
+// qui rendait ce système fragile).
+//
+// Pour ajouter un nouveau champ sauvegardé plus tard :
+// une seule entrée à ajouter ici, rien d'autre.
+
+const VERSION_SAUVEGARDE_ACTUELLE = 2;
+
+const schemaSauvegarde = [
+
+    {
+        cle: "collectionDragons",
+        obtenir: () => collectionDragons,
+        definir: v => { collectionDragons = v; },
+        defaut: () => []
+    },
+
+    {
+        cle: "succesDebloques",
+        obtenir: () => succesDebloques,
+        definir: v => { succesDebloques = v; },
+        defaut: () => []
+    },
+
+    {
+        cle: "statistiquesSucces",
+        obtenir: () => statistiquesSucces,
+        definir: v => { statistiquesSucces = v; },
+        defaut: () => ({
+            dragonsSauvagesCaptures: 0,
+            dragonsEleves: 0
+        })
+    },
+
+    {
+        cle: "actionsRestantes",
+        obtenir: () => actionsRestantes,
+        definir: v => { actionsRestantes = v; },
+        defaut: () => MAX_ACTIONS_PAR_JOUR
+    },
+
+    {
+        cle: "dateDernierRenouvellement",
+        obtenir: () => dateDernierRenouvellement,
+        definir: v => { dateDernierRenouvellement = v; },
+        defaut: () => null
+    },
+
+    {
+        cle: "heureDernierRenouvellement",
+        obtenir: () => heureDernierRenouvellement,
+        definir: v => { heureDernierRenouvellement = v; },
+        defaut: () => null
+    },
+
+    {
+        cle: "piastresDraconiques",
+        obtenir: () => piastresDraconiques,
+        definir: v => { piastresDraconiques = v; },
+        defaut: () => 0
+    },
+
+    {
+        cle: "inventaireObjets",
+        obtenir: () => inventaireObjets,
+        definir: v => { inventaireObjets = v; },
+        defaut: () => ({})
+    },
+
+    {
+        cle: "missionsActuelles",
+        obtenir: () => missionsActuelles,
+        definir: v => { missionsActuelles = v; },
+        defaut: () => []
+    },
+
+    {
+        cle: "dateDernierRenouvellementMissions",
+        obtenir: () => dateDernierRenouvellementMissions,
+        definir: v => { dateDernierRenouvellementMissions = v; },
+        defaut: () => null
+    }
+
+];
+
 function creerDonneesSauvegarde() {
 
-    return {
+    const donnees = {
 
-        versionSauvegarde: 1,
+        versionSauvegarde:
+            VERSION_SAUVEGARDE_ACTUELLE,
 
         dateSauvegarde:
-            new Date().toISOString(),
-
-        collectionDragons:
-            collectionDragons,
-
-        succesDebloques:
-            succesDebloques,
-
-        statistiquesSucces:
-            statistiquesSucces,
-
-        actionsRestantes:
-            actionsRestantes,
-
-        dateDernierRenouvellement:
-            dateDernierRenouvellement,
-
-		heureDernierRenouvellement:
-			heureDernierRenouvellement,
-
-        piastresDraconiques:
-            piastresDraconiques,
-
-        inventaireObjets:
-            inventaireObjets,
-
-        missionsActuelles:
-            missionsActuelles,
-
-        dateDernierRenouvellementMissions:
-            dateDernierRenouvellementMissions
+            new Date().toISOString()
 
     };
 
+
+    schemaSauvegarde.forEach(
+        function (champ) {
+
+            donnees[champ.cle] =
+                champ.obtenir();
+
+        }
+    );
+
+
+    return donnees;
+
 }
 
+// Restaure chaque champ du schéma à partir d'une
+// sauvegarde donnée (ou de sa valeur par défaut si
+// le champ est absent — ex : une sauvegarde créée
+// avant l'existence des missions).
+
+function appliquerChampsSauvegarde(sauvegarde) {
+
+    schemaSauvegarde.forEach(
+        function (champ) {
+
+            const valeur =
+                sauvegarde
+                    ? sauvegarde[champ.cle]
+                    : undefined;
+
+
+            champ.definir(
+                valeur !== undefined
+                    ? valeur
+                    : champ.defaut()
+            );
+
+        }
+    );
+
+}
+
+// Remet chaque champ du schéma à sa valeur par
+// défaut (nouvelle partie).
+
+function reinitialiserChampsSauvegarde() {
+
+    schemaSauvegarde.forEach(
+        function (champ) {
+
+            champ.definir(
+                champ.defaut()
+            );
+
+        }
+    );
+
+}
+
+// =========================================
+// VERROU ANTI-ÉCRASEMENT AU DÉMARRAGE
+// =========================================
+//
+// Tant que la vraie sauvegarde (locale ou distante,
+// ou l'état neutre d'une toute nouvelle partie) n'a
+// pas fini d'être déterminée, sauvegarderPartie() ne
+// doit RIEN persister : sinon on risque d'écraser la
+// partie du joueur avec l'état par défaut du script
+// (collection vide) — c'est exactement ce qui a causé
+// la perte de données du système de missions.
+//
+// Ce flag passe à true dans appliquerDonneesSauvegarde()
+// et dans les branches "nouvelle partie" / recommencerPartie().
+
+let chargementInitialTermine = false;
 
 function sauvegarderPartie() {
+
+    if (!chargementInitialTermine) {
+
+        console.warn(
+            "Sauvegarde ignorée : le chargement initial "
+            + "n'est pas encore terminé."
+        );
+
+        return;
+
+    }
+
 
     const donneesSauvegarde =
         creerDonneesSauvegarde();
@@ -247,7 +401,7 @@ function sauvegarderPartie() {
         "elevageDragons",
         sauvegarde
     );
-	
+
 	afficherEtatSynchronisation(
     "Sauvegarde en cours…",
     "en-cours"
@@ -285,6 +439,24 @@ function programmerSauvegardeDistante() {
 }
 
 async function sauvegarderPartieDistante() {
+
+    // Même verrou que sauvegarderPartie() : c'est cette
+    // fonction qui écrit réellement sur le serveur, donc
+    // c'est elle qui doit refuser d'agir tant que le
+    // chargement initial n'est pas terminé — même si un
+    // futur appel venait à la contourner directement.
+
+    if (!chargementInitialTermine) {
+
+        console.warn(
+            "Sauvegarde distante ignorée : le chargement "
+            + "initial n'est pas encore terminé."
+        );
+
+        return;
+
+    }
+
 
     try {
 
@@ -707,6 +879,195 @@ async function gererRecuperationPartie() {
 
 }
 
+
+// =========================================
+// SAUVEGARDE MANUELLE (EXPORT / IMPORT)
+// =========================================
+//
+// Contrairement au "code de récupération" (qui n'est
+// que l'identifiant du joueur, utile pour retrouver sa
+// partie sur le serveur), ceci exporte les VRAIES
+// données de jeu, en texte, indépendamment du serveur.
+// Un joueur qui garde ce texte quelque part peut se
+// remettre d'un incident serveur sans dépendre de rien.
+
+async function exporterSauvegarde() {
+
+    const texte =
+        JSON.stringify(
+            creerDonneesSauvegarde(),
+            null,
+            2
+        );
+
+
+    const champImport =
+        document.getElementById(
+            "champ-import-sauvegarde"
+        );
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            texte
+        );
+
+
+        afficherEtatSynchronisation(
+            "Sauvegarde copiée dans le presse-papier.",
+            "succes"
+        );
+
+    }
+
+    catch (erreur) {
+
+        // Le presse-papier n'est pas disponible :
+        // on affiche le texte dans le champ d'import
+        // pour que le joueur puisse le sélectionner
+        // et le copier lui-même.
+
+        if (champImport) {
+
+            champImport.value = texte;
+
+            champImport.focus();
+
+            champImport.select();
+
+        }
+
+
+        afficherEtatSynchronisation(
+            "Le texte a été placé ci-dessous : copie-le manuellement.",
+            "erreur"
+        );
+
+    }
+
+}
+
+async function importerSauvegarde() {
+
+    const champ =
+        document.getElementById(
+            "champ-import-sauvegarde"
+        );
+
+
+    const texte =
+        champ.value.trim();
+
+
+    if (texte === "") {
+
+        afficherEtatSynchronisation(
+            "Colle d'abord un texte de sauvegarde.",
+            "erreur"
+        );
+
+        return;
+
+    }
+
+
+    let donneesImportees;
+
+
+    try {
+
+        donneesImportees =
+            JSON.parse(texte);
+
+    }
+
+    catch (erreur) {
+
+        afficherEtatSynchronisation(
+            "Ce texte n'est pas une sauvegarde valide (JSON illisible).",
+            "erreur"
+        );
+
+        return;
+
+    }
+
+
+    // Validation minimale : ça doit ressembler à une
+    // sauvegarde de ce jeu, pas à n'importe quel JSON.
+
+    if (
+        typeof donneesImportees !== "object"
+        || donneesImportees === null
+        || Array.isArray(donneesImportees)
+        || !Array.isArray(donneesImportees.collectionDragons)
+    ) {
+
+        afficherEtatSynchronisation(
+            "Ce texte ne ressemble pas à une sauvegarde de Dragon's Ranch.",
+            "erreur"
+        );
+
+        return;
+
+    }
+
+
+    const collectionActuelle =
+        creerDonneesSauvegarde();
+
+
+    let messageConfirmation =
+        "Importer cette sauvegarde remplacera la partie "
+        + "présente sur cet appareil (et sur le serveur).\n\n"
+        + "Continuer ?";
+
+
+    if (
+        estSauvegardeSuspecte(
+            donneesImportees,
+            collectionActuelle
+        )
+    ) {
+
+        messageConfirmation =
+            "Attention : la sauvegarde que tu importes a une "
+            + "collection VIDE, alors que ta partie actuelle a "
+            + "des dragons. Si ce n'est pas volontaire, annule.\n\n"
+            + "Importer quand même ?";
+
+    }
+
+
+    const confirmation =
+        confirm(
+            messageConfirmation
+        );
+
+
+    if (!confirmation) {
+        return;
+    }
+
+
+    appliquerDonneesSauvegarde(
+        donneesImportees
+    );
+
+
+    sauvegarderPartie();
+
+
+    champ.value = "";
+
+
+    afficherEtatSynchronisation(
+        "Sauvegarde importée et appliquée.",
+        "succes"
+    );
+
+}
 
 function afficherEtatSynchronisation(
     message,
@@ -2333,6 +2694,57 @@ function obtenirDateSauvegarde(
 // SYNCHRONISATION AU DÉMARRAGE
 // =================================
 
+// =========================================
+// GARDE-FOU ANTI-ÉCRASEMENT
+// =========================================
+//
+// Compare une sauvegarde "candidate" (celle qu'on
+// s'apprête à appliquer) à une sauvegarde "référence"
+// (celle qui est déjà affichée/connue). Si la référence
+// a des dragons et que la candidate n'en a aucun, on
+// considère la candidate suspecte : ça sent l'état par
+// défaut d'un script qui n'a pas fini de charger, ou une
+// sauvegarde corrompue — jamais une vraie intention du
+// joueur de vider sa propre collection (ça, ça passe par
+// "Recommencer", qui lève le verrou explicitement).
+//
+// C'est un filet de sécurité de dernier recours : même
+// si un futur bug fait à nouveau gagner la mauvaise
+// sauvegarde à la comparaison de dates, celle-ci ne
+// pourra plus jamais écraser silencieusement une
+// collection existante par du vide.
+
+function estSauvegardeSuspecte(
+    sauvegardeCandidate,
+    sauvegardeReference
+) {
+
+    if (
+        !sauvegardeReference
+        || !sauvegardeCandidate
+    ) {
+
+        return false;
+
+    }
+
+
+    const nbReference =
+        (sauvegardeReference.collectionDragons || [])
+            .length;
+
+    const nbCandidate =
+        (sauvegardeCandidate.collectionDragons || [])
+            .length;
+
+
+    return (
+        nbReference > 0
+        && nbCandidate === 0
+    );
+
+}
+
 async function synchroniserPartieAuDemarrage() {
 
     afficherEtatSynchronisation(
@@ -2416,17 +2828,55 @@ async function synchroniserPartieAuDemarrage() {
             && dateLocale > dateDistante
         ) {
 
-            console.log(
-                "Sauvegarde locale plus récente."
-            );
+            if (
+                estSauvegardeSuspecte(
+                    sauvegardeLocale,
+                    sauvegardeDistante
+                )
+            ) {
+
+                // La locale est "plus récente" mais vide,
+                // alors que la distante a des dragons :
+                // on refuse de faire confiance à la date
+                // et on garde la distante à la place.
+
+                console.warn(
+                    "Sauvegarde locale suspecte (collection "
+                    + "vide alors que la distante en a) : "
+                    + "on garde la sauvegarde distante par "
+                    + "sécurité."
+                );
 
 
-            appliquerDonneesSauvegarde(
-                sauvegardeLocale
-            );
+                appliquerDonneesSauvegarde(
+                    sauvegardeDistante
+                );
 
 
-            await sauvegarderPartieDistante();
+                localStorage.setItem(
+                    "elevageDragons",
+                    JSON.stringify(
+                        sauvegardeDistante
+                    )
+                );
+
+            }
+
+            else {
+
+                console.log(
+                    "Sauvegarde locale plus récente."
+                );
+
+
+                appliquerDonneesSauvegarde(
+                    sauvegardeLocale
+                );
+
+
+                await sauvegarderPartieDistante();
+
+            }
 
         }
 
@@ -2435,22 +2885,55 @@ async function synchroniserPartieAuDemarrage() {
 
         else {
 
-            console.log(
-                "Sauvegarde distante utilisée."
-            );
-
-
-            appliquerDonneesSauvegarde(
-                sauvegardeDistante
-            );
-
-
-            localStorage.setItem(
-                "elevageDragons",
-                JSON.stringify(
-                    sauvegardeDistante
+            if (
+                estSauvegardeSuspecte(
+                    sauvegardeDistante,
+                    sauvegardeLocale
                 )
-            );
+            ) {
+
+                // La distante est "plus récente" mais vide,
+                // alors que la locale a des dragons : on
+                // refuse l'écrasement et on repousse la
+                // locale pour corriger le serveur.
+
+                console.warn(
+                    "Sauvegarde distante suspecte (collection "
+                    + "vide alors que la locale en a) : on "
+                    + "garde la sauvegarde locale par "
+                    + "sécurité et on la repousse en ligne."
+                );
+
+
+                appliquerDonneesSauvegarde(
+                    sauvegardeLocale
+                );
+
+
+                await sauvegarderPartieDistante();
+
+            }
+
+            else {
+
+                console.log(
+                    "Sauvegarde distante utilisée."
+                );
+
+
+                appliquerDonneesSauvegarde(
+                    sauvegardeDistante
+                );
+
+
+                localStorage.setItem(
+                    "elevageDragons",
+                    JSON.stringify(
+                        sauvegardeDistante
+                    )
+                );
+
+            }
 
         }
 
@@ -2486,8 +2969,10 @@ async function synchroniserPartieAuDemarrage() {
             );
 
             // Nouveau joueur : aucune donnée existante
-            // à écraser, on peut initialiser les missions
-            // et sauvegarder en toute sécurité.
+            // à écraser, on peut lever le verrou et
+            // initialiser les missions en toute sécurité.
+
+            chargementInitialTermine = true;
 
             verifierRenouvellementMissions();
 
@@ -2509,73 +2994,17 @@ function appliquerDonneesSauvegarde(
     sauvegarde
 ) {
 
-    collectionDragons =
-        sauvegarde.collectionDragons
-        || [];
+    appliquerChampsSauvegarde(
+        sauvegarde
+    );
 
 
-    succesDebloques =
-        sauvegarde.succesDebloques
-        || [];
+    // À partir d'ici, l'état en mémoire reflète une
+    // vraie sauvegarde (ou l'état neutre d'une partie
+    // qui n'existe pas encore) : sauvegarderPartie()
+    // peut désormais persister sans risque.
 
-
-    statistiquesSucces =
-        sauvegarde.statistiquesSucces
-        || {
-            dragonsSauvagesCaptures: 0,
-            dragonsEleves: 0
-        };
-
-
-    if (
-        sauvegarde.actionsRestantes
-        !== undefined
-    ) {
-
-        actionsRestantes =
-            sauvegarde.actionsRestantes;
-
-    }
-
-
-    if (
-        sauvegarde.dateDernierRenouvellement
-        !== undefined
-    ) {
-
-        dateDernierRenouvellement =
-            sauvegarde.dateDernierRenouvellement;
-
-    }
-	
-	if (
-		sauvegarde.heureDernierRenouvellement
-		!== undefined
-	) {
-		
-		heureDernierRenouvellement =
-		sauvegarde.heureDernierRenouvellement;
-}
-
-
-    piastresDraconiques =
-        sauvegarde.piastresDraconiques
-        || 0;
-
-
-    inventaireObjets =
-        sauvegarde.inventaireObjets
-        || {};
-
-
-    missionsActuelles =
-        sauvegarde.missionsActuelles
-        || [];
-
-
-    dateDernierRenouvellementMissions =
-        sauvegarde.dateDernierRenouvellementMissions
-        || null;
+    chargementInitialTermine = true;
 
 
     verifierSucces();
@@ -2646,31 +3075,19 @@ localStorage.removeItem(
 
     localStorage.removeItem("elevageDragons");
 
-    collectionDragons = [];
-	
-	succesDebloques = [];
-	
-	statistiquesSucces = {
+    // Repart d'un état neutre pour tous les champs
+    // du schéma de sauvegarde, en une seule ligne
+    // au lieu d'une réaffectation manuelle par champ.
 
-    dragonsSauvagesCaptures: 0,
-
-    dragonsEleves: 0
-
-};
-	
-	actionsRestantes =
-    MAX_ACTIONS_PAR_JOUR;
+    reinitialiserChampsSauvegarde();
 
 	dateDernierRenouvellement =
 		obtenirDateLocale(new Date());
 
-	piastresDraconiques = 0;
+	// Reset volontaire : il n'y a plus rien à perdre,
+	// on peut lever le verrou et sauvegarder à nouveau.
 
-	inventaireObjets = {};
-
-	missionsActuelles = [];
-
-	dateDernierRenouvellementMissions = null;
+	chargementInitialTermine = true;
 
 	verifierRenouvellementMissions();
 
@@ -9599,6 +10016,30 @@ const boutonRecupererPartie =
 boutonRecupererPartie.addEventListener(
     "click",
     gererRecuperationPartie
+);
+
+
+const boutonExporterSauvegarde =
+    document.getElementById(
+        "bouton-exporter-sauvegarde"
+    );
+
+
+boutonExporterSauvegarde.addEventListener(
+    "click",
+    exporterSauvegarde
+);
+
+
+const boutonImporterSauvegarde =
+    document.getElementById(
+        "bouton-importer-sauvegarde"
+    );
+
+
+boutonImporterSauvegarde.addEventListener(
+    "click",
+    importerSauvegarde
 );
 
 
