@@ -5888,3 +5888,79 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
 .ligne-objet-utilisable button {
     width: auto;
 }
+
+/* ================================= */
+/* ÉCRAN DONS                        */
+/* ================================= */
+
+.titre-section-dons {
+    width: min(1100px, 100%);
+    margin: 32px auto 14px;
+
+    color: var(--texte-principal);
+    font-size: 1rem;
+    font-weight: normal;
+
+    text-align: center;
+}
+
+.liste-dons {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.liste-dons p {
+    grid-column: 1 / -1;
+
+    text-align: center;
+    color: var(--texte-discret);
+}
+
+.carte-don {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    padding: 20px 22px;
+
+    border: 1px solid var(--bordure-fine);
+    border-left: 3px solid var(--or-sombre);
+
+    background: var(--fond-carte);
+
+    box-shadow: var(--ombre-carte);
+}
+
+.carte-don h4 {
+    margin: 0;
+    color: var(--texte-principal);
+    font-size: 1rem;
+    font-weight: normal;
+}
+
+.espece-carte-don {
+    color: var(--texte-discret);
+    font-size: 0.82rem;
+    font-weight: normal;
+}
+
+.perfection-carte-don {
+    margin: 0;
+    color: var(--texte-secondaire);
+    font-size: 0.85rem;
+}
+
+.origine-don {
+    margin: 0;
+    color: var(--texte-discret);
+    font-size: 0.78rem;
+}
+
+.carte-don button {
+    width: 100%;
+}

@@ -6972,6 +6972,14 @@ ${dragon.mutation.texte}
 
 
             <button
+                type="button"
+                onclick="donnerDragon('${dragon.id}')"
+            >
+                Faire don de ce dragon
+            </button>
+
+
+            <button
                 class="bouton-danger"
                 type="button"
                 onclick="relacherDragon('${dragon.id}')"
@@ -7301,7 +7309,615 @@ function relacherDragon(idDragon) {
     afficherDragonsEvaluables();
     verifierSucces();
     sauvegarderPartie();
-	
+
+}
+
+// =========================================
+// BOURSE DE DONS ENTRE JOUEURS
+// =========================================
+//
+// Principe important : le serveur ne modifie JAMAIS
+// directement la sauvegarde d'un joueur pour déposer ou
+// livrer un dragon. Les dons vivent dans leur propre
+// table (dons_dragons), complètement séparée de la table
+// "sauvegardes". C'est toujours le client (donneur ou
+// receveur) qui ajoute/retire le dragon de SA PROPRE
+// collection en mémoire, puis appelle sauvegarderPartie()
+// normalement — exactement le même chemin que n'importe
+// quelle autre action du joueur. Ça évite qu'un dépôt ou
+// une réclamation ne se fasse écraser par la prochaine
+// sauvegarde automatique du client concerné, le genre de
+// course qu'on a identifié en travaillant sur les missions.
+
+async function donnerDragon(idDragon) {
+
+    const dragon =
+        collectionDragons.find(
+            function (d) {
+                return d.id === idDragon;
+            }
+        );
+
+    if (!dragon) {
+        return;
+    }
+
+
+    const nomDragon =
+        dragon.nom && dragon.nom.trim() !== ""
+            ? dragon.nom
+            : "ce dragon";
+
+    const aDesDescendants =
+        dragonADesDescendants(idDragon);
+
+    let message =
+        "Faire don de "
+        + nomDragon
+        + " ?\n\nIl quittera immédiatement ton élevage "
+        + "et rejoindra la bourse des dons.";
+
+    if (aDesDescendants) {
+
+        message +=
+            "\n\nCe dragon apparaît dans la lignée "
+            + "d'autres dragons. Ses descendants "
+            + "resteront dans ton élevage, mais sa "
+            + "fiche ne sera plus disponible.";
+
+    }
+
+    message +=
+        "\n\nTu pourras annuler le don tant que "
+        + "personne ne l'a réclamé, depuis l'écran "
+        + "\"Dons\".";
+
+
+    if (!confirm(message)) {
+        return;
+    }
+
+
+    const destinataireSaisi =
+        prompt(
+            "Code du destinataire (optionnel) : "
+            + "laisse vide pour la bourse publique, "
+            + "que n'importe quel joueur peut "
+            + "consulter et réclamer."
+        );
+
+    // prompt() renvoie null si le joueur annule la
+    // boîte de dialogue : dans ce cas, on annule tout
+    // le don, rien n'a encore bougé.
+
+    if (destinataireSaisi === null) {
+        return;
+    }
+
+    const destinataireId =
+        destinataireSaisi.trim() !== ""
+            ? destinataireSaisi.trim()
+            : null;
+
+
+    // On retire tout de suite le dragon de la
+    // collection locale : du point de vue du joueur,
+    // le don est déjà parti.
+
+    collectionDragons =
+        collectionDragons.filter(
+            function (d) {
+                return d.id !== idDragon;
+            }
+        );
+
+    idDragonFicheOuverte = null;
+
+    afficherFicheDetaillee(null);
+    afficherCollection();
+    afficherParentsDisponibles();
+    afficherDragonsEvaluables();
+    verifierSucces();
+
+
+    try {
+
+        const reponse =
+            await fetch(
+                "/api/deposer-don",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            donneurId:
+                                obtenirIdentifiantJoueur(),
+                            dragon: dragon,
+                            destinataireId:
+                                destinataireId
+                        })
+                }
+            );
+
+        const resultat =
+            await reponse.json();
+
+        if (
+            !reponse.ok
+            || !resultat.succes
+        ) {
+
+            throw new Error(
+                resultat.erreur
+                || "Erreur inconnue."
+            );
+
+        }
+
+
+        afficherEtatSynchronisation(
+            "Don déposé avec succès.",
+            "succes"
+        );
+
+
+        chargerEtAfficherDons();
+
+    }
+
+    catch (erreur) {
+
+        console.error(
+            "Erreur dépôt du don :",
+            erreur
+        );
+
+
+        // Le dépôt a échoué côté serveur : on rend le
+        // dragon au joueur immédiatement pour ne rien
+        // perdre.
+
+        collectionDragons.push(dragon);
+
+        afficherCollection();
+        afficherParentsDisponibles();
+        afficherDragonsEvaluables();
+
+
+        afficherEtatSynchronisation(
+            "Le don n'a pas pu être déposé : "
+            + "le dragon t'a été rendu.",
+            "erreur"
+        );
+
+    }
+
+
+    sauvegarderPartie();
+
+}
+
+async function reclamerDonDragon(idDon) {
+
+    if (
+        !confirm(
+            "Réclamer ce dragon ? Il rejoindra "
+            + "ton élevage."
+        )
+    ) {
+        return;
+    }
+
+
+    try {
+
+        const reponse =
+            await fetch(
+                "/api/reclamer-don",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            idDon: idDon,
+                            joueurId:
+                                obtenirIdentifiantJoueur()
+                        })
+                }
+            );
+
+        const resultat =
+            await reponse.json();
+
+        if (
+            !reponse.ok
+            || !resultat.succes
+        ) {
+
+            throw new Error(
+                resultat.erreur
+                || "Erreur inconnue."
+            );
+
+        }
+
+
+        collectionDragons.push(
+            resultat.dragon
+        );
+
+        afficherCollection();
+        afficherParentsDisponibles();
+        afficherDragonsEvaluables();
+        verifierSucces();
+        sauvegarderPartie();
+
+
+        afficherEtatSynchronisation(
+            (
+                resultat.dragon.nom
+                || "Un dragon"
+            )
+            + " a rejoint ton élevage !",
+            "succes"
+        );
+
+
+        chargerEtAfficherDons();
+
+    }
+
+    catch (erreur) {
+
+        console.error(
+            "Erreur réclamation du don :",
+            erreur
+        );
+
+
+        afficherEtatSynchronisation(
+            erreur.message
+            || "Impossible de réclamer ce don.",
+            "erreur"
+        );
+
+
+        // La liste a peut-être changé entre-temps
+        // (don déjà pris par quelqu'un d'autre) :
+        // on la rafraîchit.
+
+        chargerEtAfficherDons();
+
+    }
+
+}
+
+async function annulerDonDragon(idDon) {
+
+    if (
+        !confirm(
+            "Annuler ce don et récupérer le dragon "
+            + "dans ton élevage ?"
+        )
+    ) {
+        return;
+    }
+
+
+    try {
+
+        const reponse =
+            await fetch(
+                "/api/annuler-don",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            idDon: idDon,
+                            donneurId:
+                                obtenirIdentifiantJoueur()
+                        })
+                }
+            );
+
+        const resultat =
+            await reponse.json();
+
+        if (
+            !reponse.ok
+            || !resultat.succes
+        ) {
+
+            throw new Error(
+                resultat.erreur
+                || "Erreur inconnue."
+            );
+
+        }
+
+
+        collectionDragons.push(
+            resultat.dragon
+        );
+
+        afficherCollection();
+        afficherParentsDisponibles();
+        afficherDragonsEvaluables();
+        verifierSucces();
+        sauvegarderPartie();
+
+
+        afficherEtatSynchronisation(
+            "Don annulé : le dragon est de "
+            + "retour dans ton élevage.",
+            "succes"
+        );
+
+
+        chargerEtAfficherDons();
+
+    }
+
+    catch (erreur) {
+
+        console.error(
+            "Erreur annulation du don :",
+            erreur
+        );
+
+
+        afficherEtatSynchronisation(
+            erreur.message
+            || "Impossible d'annuler ce don.",
+            "erreur"
+        );
+
+
+        chargerEtAfficherDons();
+
+    }
+
+}
+
+function resumerCarteDon(dragon) {
+
+    const pourcentage =
+        dragon.statistiques
+            ? calculerPourcentagePerfection(dragon)
+            : "?";
+
+    return `
+        <h4>
+            ${dragon.nom || "Dragon sans nom"}
+            <span class="espece-carte-don">
+                (${dragon.espece || "Espèce inconnue"})
+            </span>
+        </h4>
+
+        <p class="perfection-carte-don">
+            Perfection : ${pourcentage}%
+        </p>
+    `;
+
+}
+
+function afficherListeDonsDisponibles(dons) {
+
+    const conteneur =
+        document.getElementById(
+            "liste-dons-disponibles"
+        );
+
+    if (!conteneur) {
+        return;
+    }
+
+
+    if (dons.length === 0) {
+
+        conteneur.innerHTML = `
+            <p>Aucun don disponible pour le moment.</p>
+        `;
+
+        return;
+
+    }
+
+
+    conteneur.innerHTML =
+        dons.map(
+            function (don) {
+
+                return `
+                    <div class="carte-don">
+
+                        ${resumerCarteDon(don.dragon)}
+
+                        <p class="origine-don">
+                            Donné par
+                            ${don.donneurId.slice(0, 8)}…
+                        </p>
+
+                        <button
+                            type="button"
+                            onclick="reclamerDonDragon('${don.id}')"
+                        >
+                            Réclamer
+                        </button>
+
+                    </div>
+                `;
+
+            }
+        ).join("");
+
+}
+
+function afficherListeMesDons(dons) {
+
+    const conteneur =
+        document.getElementById(
+            "liste-mes-dons"
+        );
+
+    if (!conteneur) {
+        return;
+    }
+
+
+    if (dons.length === 0) {
+
+        conteneur.innerHTML = `
+            <p>Tu n'as aucun don en attente.</p>
+        `;
+
+        return;
+
+    }
+
+
+    conteneur.innerHTML =
+        dons.map(
+            function (don) {
+
+                return `
+                    <div class="carte-don">
+
+                        ${resumerCarteDon(don.dragon)}
+
+                        <p class="origine-don">
+                            ${
+                                don.destinataireId
+                                    ? "Réservé à "
+                                        + don.destinataireId.slice(0, 8)
+                                        + "…"
+                                    : "Bourse publique"
+                            }
+                        </p>
+
+                        <button
+                            type="button"
+                            onclick="annulerDonDragon('${don.id}')"
+                        >
+                            Annuler
+                        </button>
+
+                    </div>
+                `;
+
+            }
+        ).join("");
+
+}
+
+async function chargerEtAfficherDons() {
+
+    const conteneurDisponibles =
+        document.getElementById(
+            "liste-dons-disponibles"
+        );
+
+    const conteneurMesDons =
+        document.getElementById(
+            "liste-mes-dons"
+        );
+
+    if (!conteneurDisponibles && !conteneurMesDons) {
+        return;
+    }
+
+
+    try {
+
+        const reponse =
+            await fetch(
+                "/api/lister-dons",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            joueurId:
+                                obtenirIdentifiantJoueur()
+                        })
+                }
+            );
+
+        const resultat =
+            await reponse.json();
+
+        if (
+            !reponse.ok
+            || !resultat.succes
+        ) {
+
+            throw new Error(
+                resultat.erreur
+                || "Erreur inconnue."
+            );
+
+        }
+
+
+        afficherListeDonsDisponibles(
+            resultat.donsDisponibles
+        );
+
+        afficherListeMesDons(
+            resultat.mesDons
+        );
+
+    }
+
+    catch (erreur) {
+
+        console.error(
+            "Erreur chargement des dons :",
+            erreur
+        );
+
+
+        if (conteneurDisponibles) {
+
+            conteneurDisponibles.innerHTML = `
+                <p>
+                    Impossible de charger la bourse
+                    pour le moment.
+                </p>
+            `;
+
+        }
+
+
+        if (conteneurMesDons) {
+
+            conteneurMesDons.innerHTML = "";
+
+        }
+
+    }
+
 }
 
 function afficherCollection() {
@@ -10149,6 +10765,19 @@ boutonsNavigation.forEach(
                 bouton.classList.add(
                     "actif"
                 );
+
+
+                // La bourse de dons vit côté serveur,
+                // partagée entre joueurs : on la
+                // rafraîchit à chaque fois qu'on ouvre
+                // cet écran plutôt que de compter sur un
+                // état mis en cache.
+
+                if (idEcran === "ecran-dons") {
+
+                    chargerEtAfficherDons();
+
+                }
 
             }
         );
