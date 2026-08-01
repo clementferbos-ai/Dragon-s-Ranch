@@ -2485,6 +2485,17 @@ async function synchroniserPartieAuDemarrage() {
                 "Nouvelle partie."
             );
 
+            // Nouveau joueur : aucune donnée existante
+            // à écraser, on peut initialiser les missions
+            // et sauvegarder en toute sécurité.
+
+            verifierRenouvellementMissions();
+
+            afficherPiastres();
+
+            afficherMissions();
+
+            afficherBoutique();
 
             sauvegarderPartie();
 
@@ -9729,13 +9740,14 @@ document
 
 mettreAJourInterfaceSauvegarde();
 
-verifierRenouvellementMissions();
-
-afficherPiastres();
-
-afficherMissions();
-
-afficherBoutique();
+// Important : on ne touche pas aux missions/à l'argent ici.
+// Tant que synchroniserPartieAuDemarrage() n'a pas chargé la
+// vraie sauvegarde (locale ou distante), appeler quoi que ce
+// soit qui déclenche sauvegarderPartie() écraserait la partie
+// du joueur avec l'état par défaut (collection vide). Les
+// missions/la boutique sont initialisées à l'intérieur
+// d'appliquerDonneesSauvegarde(), une fois les vraies données
+// en mémoire.
 
 synchroniserPartieAuDemarrage();
 
