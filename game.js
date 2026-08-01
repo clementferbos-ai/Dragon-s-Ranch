@@ -7695,24 +7695,135 @@ async function annulerDonDragon(idDon) {
 
 }
 
-function resumerCarteDon(dragon) {
+// Reprend exactement le gabarit visuel de .carte-dragon
+// (l'écran Élevage) pour que les dragons de la bourse
+// aient la même richesse d'affichage — stats, couleurs
+// d'écailles/yeux, etc. — plutôt qu'un simple résumé
+// textuel. "piedDeCarte" est le seul bloc qui change
+// entre "Dragons disponibles" et "Mes dons en cours".
 
-    const pourcentage =
+function genererCarteDragonDon(dragon, piedDeCarte) {
+
+    const statistiques =
         dragon.statistiques
-            ? calculerPourcentagePerfection(dragon)
-            : "?";
+            || {
+                attaque: "?",
+                defense: "?",
+                endurance: "?",
+                taille: "?",
+                intelligence: "?",
+                magie: "?",
+                vitesse: "?"
+            };
 
     return `
-        <h4>
-            ${dragon.nom || "Dragon sans nom"}
-            <span class="espece-carte-don">
-                (${dragon.espece || "Espèce inconnue"})
-            </span>
-        </h4>
+        <div class="carte-dragon carte-don">
 
-        <p class="perfection-carte-don">
-            Perfection : ${pourcentage}%
-        </p>
+            <div class="entete-carte-dragon">
+
+                <h3>
+                    ${dragon.nom || "Dragon sans nom"}
+                </h3>
+
+                <span class="identite-carte-dragon">
+                    ${dragon.sexe === "Mâle" ? "♂" : "♀"}
+                    ${
+                        dragon.generation !== undefined
+                            ? dragon.generation
+                            : ""
+                    }
+                </span>
+
+            </div>
+
+            <p class="espece-carte-dragon">
+                ${dragon.espece || "Espèce inconnue"}
+            </p>
+
+            <p class="origine-carte-dragon">
+                Perfection :
+                ${
+                    dragon.statistiques
+                        ? calculerPourcentagePerfection(dragon)
+                        : "?"
+                }%
+            </p>
+
+            <div class="mini-grille-stats">
+
+                <div class="mini-stat">
+                    <span class="mini-stat-nom">ATQ</span>
+                    <strong>${statistiques.attaque}</strong>
+                </div>
+
+                <div class="mini-stat">
+                    <span class="mini-stat-nom">DEF</span>
+                    <strong>${statistiques.defense}</strong>
+                </div>
+
+                <div class="mini-stat">
+                    <span class="mini-stat-nom">END</span>
+                    <strong>${statistiques.endurance}</strong>
+                </div>
+
+                <div class="mini-stat">
+                    <span class="mini-stat-nom">TAI</span>
+                    <strong>${statistiques.taille}</strong>
+                </div>
+
+                <div class="mini-stat">
+                    <span class="mini-stat-nom">INT</span>
+                    <strong>${statistiques.intelligence}</strong>
+                </div>
+
+                <div class="mini-stat">
+                    <span class="mini-stat-nom">MAG</span>
+                    <strong>${statistiques.magie}</strong>
+                </div>
+
+                <div class="mini-stat">
+                    <span class="mini-stat-nom">VIT</span>
+                    <strong>${statistiques.vitesse}</strong>
+                </div>
+
+            </div>
+
+            ${
+                dragon.apparence
+                    ? `
+                        <div class="apparence-carte">
+
+                            <div class="ligne-apparence">
+
+                                <span>
+                                    Écailles :
+                                </span>
+
+                                <span
+                                    class="pastille-couleur ${obtenirClassePastilleEcailles(dragon)}"
+                                    style="background-color: ${dragon.apparence.ecailles};"
+                                ></span>
+
+                            </div>
+
+                            <div class="ligne-apparence">
+
+                                <span>
+                                    Yeux :
+                                </span>
+
+                                ${genererAffichageYeux(dragon)}
+
+                            </div>
+
+                        </div>
+                    `
+                    : ""
+            }
+
+            ${piedDeCarte}
+
+        </div>
     `;
 
 }
@@ -7744,25 +7855,24 @@ function afficherListeDonsDisponibles(dons) {
         dons.map(
             function (don) {
 
-                return `
-                    <div class="carte-don">
+                const piedDeCarte = `
+                    <p class="origine-don">
+                        Donné par
+                        ${don.donneurId.slice(0, 8)}…
+                    </p>
 
-                        ${resumerCarteDon(don.dragon)}
-
-                        <p class="origine-don">
-                            Donné par
-                            ${don.donneurId.slice(0, 8)}…
-                        </p>
-
-                        <button
-                            type="button"
-                            onclick="reclamerDonDragon('${don.id}')"
-                        >
-                            Réclamer
-                        </button>
-
-                    </div>
+                    <button
+                        type="button"
+                        onclick="reclamerDonDragon('${don.id}')"
+                    >
+                        Réclamer
+                    </button>
                 `;
+
+                return genererCarteDragonDon(
+                    don.dragon,
+                    piedDeCarte
+                );
 
             }
         ).join("");
@@ -7796,30 +7906,29 @@ function afficherListeMesDons(dons) {
         dons.map(
             function (don) {
 
-                return `
-                    <div class="carte-don">
+                const piedDeCarte = `
+                    <p class="origine-don">
+                        ${
+                            don.destinataireId
+                                ? "Réservé à "
+                                    + don.destinataireId.slice(0, 8)
+                                    + "…"
+                                : "Bourse publique"
+                        }
+                    </p>
 
-                        ${resumerCarteDon(don.dragon)}
-
-                        <p class="origine-don">
-                            ${
-                                don.destinataireId
-                                    ? "Réservé à "
-                                        + don.destinataireId.slice(0, 8)
-                                        + "…"
-                                    : "Bourse publique"
-                            }
-                        </p>
-
-                        <button
-                            type="button"
-                            onclick="annulerDonDragon('${don.id}')"
-                        >
-                            Annuler
-                        </button>
-
-                    </div>
+                    <button
+                        type="button"
+                        onclick="annulerDonDragon('${don.id}')"
+                    >
+                        Annuler
+                    </button>
                 `;
+
+                return genererCarteDragonDon(
+                    don.dragon,
+                    piedDeCarte
+                );
 
             }
         ).join("");

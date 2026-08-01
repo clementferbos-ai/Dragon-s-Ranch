@@ -5910,8 +5910,10 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
 
     display: grid;
     grid-template-columns:
-        repeat(auto-fit, minmax(240px, 1fr));
+        repeat(auto-fit, minmax(260px, 1fr));
     gap: 20px;
+
+    align-items: start;
 }
 
 .liste-dons p {
@@ -5921,44 +5923,28 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
     color: var(--texte-discret);
 }
 
+/* .carte-don est posée EN PLUS de .carte-dragon sur la
+   même carte (les dragons de la bourse utilisent le même
+   gabarit visuel que ceux de l'écran Élevage). On ne
+   redéfinit ici que ce qui est spécifique aux dons : un
+   liseré doré différent pour les distinguer d'un coup
+   d'œil, et l'espacement du pied de carte (info d'origine
+   + bouton). Tout le reste (fond, padding, stats, pastilles
+   de couleur...) vient déjà de .carte-dragon. */
+
 .carte-don {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-
-    padding: 20px 22px;
-
-    border: 1px solid var(--bordure-fine);
-    border-left: 3px solid var(--or-sombre);
-
-    background: var(--fond-carte);
-
-    box-shadow: var(--ombre-carte);
-}
-
-.carte-don h4 {
-    margin: 0;
-    color: var(--texte-principal);
-    font-size: 1rem;
-    font-weight: normal;
-}
-
-.espece-carte-don {
-    color: var(--texte-discret);
-    font-size: 0.82rem;
-    font-weight: normal;
-}
-
-.perfection-carte-don {
-    margin: 0;
-    color: var(--texte-secondaire);
-    font-size: 0.85rem;
+    border-left-color: var(--or-principal);
 }
 
 .origine-don {
-    margin: 0;
+    margin: 10px 0 0;
     color: var(--texte-discret);
     font-size: 0.78rem;
+}
+
+.carte-don button {
+    width: 100%;
+    margin-top: 10px;
 }
 
 .carte-don button {
