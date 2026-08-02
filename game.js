@@ -3051,12 +3051,25 @@ async function synchroniserPartieAuDemarrage() {
                 );
 
 
+                // Important : on n'écrit PAS le
+                // sauvegardeDistante brut tel que reçu du
+                // serveur. appliquerDonneesSauvegarde() a pu
+                // déclencher un renouvellement (actions,
+                // missions...) qui a modifié l'état en
+                // mémoire ; creerDonneesSauvegarde() relit cet
+                // état à jour, sinon on écrase le renouvellement
+                // qu'on vient de faire par une version périmée
+                // (bug : les actions repartaient à 8 à chaque
+                // réouverture d'onglet).
+
                 localStorage.setItem(
                     "elevageDragons",
                     JSON.stringify(
-                        sauvegardeDistante
+                        creerDonneesSauvegarde()
                     )
                 );
+
+                await sauvegarderPartieDistante();
 
             }
 
@@ -3124,12 +3137,22 @@ async function synchroniserPartieAuDemarrage() {
                 );
 
 
+                // Même remarque que plus haut : on écrit
+                // l'état en mémoire à jour (post-renouvellement
+                // éventuel), pas le sauvegardeDistante brut,
+                // sinon un renouvellement quotidien (actions,
+                // missions) fait par appliquerDonneesSauvegarde()
+                // se retrouve immédiatement écrasé par la
+                // version périmée reçue du serveur.
+
                 localStorage.setItem(
                     "elevageDragons",
                     JSON.stringify(
-                        sauvegardeDistante
+                        creerDonneesSauvegarde()
                     )
                 );
+
+                await sauvegarderPartieDistante();
 
             }
 
