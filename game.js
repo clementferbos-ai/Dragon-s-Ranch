@@ -29,6 +29,16 @@ let idPereSelectionne = "";
 let idMereSelectionne = "";
 let vueParents = "grille";
 
+// Nombre de générations d'ANCÊTRES affichées dans l'arbre
+// généalogique (sans compter le dragon lui-même). 3 = parents,
+// grands-parents, arrière-grands-parents (jusqu'à 14 cartes
+// d'ancêtres). Ce réglage ne change QUE l'affichage : il n'a
+// aucun impact sur ce qui est stocké en sauvegarde, qui reste
+// toujours une seule génération de parents par dragon (voir
+// CHAMPS_EMPREINTE_GENEALOGIQUE plus bas).
+
+const PROFONDEUR_GENEALOGIE_MAX = 3;
+
 // =========================================
 // ÉCONOMIE : PIASTRES DRACONIQUES, MISSIONS
 // ET BOUTIQUE
@@ -3226,6 +3236,21 @@ function appliquerDonneesSauvegarde(
     // peut désormais persister sans risque.
 
     chargementInitialTermine = true;
+
+
+    // Assainit la généalogie de TOUTE sauvegarde chargée, pas
+    // seulement celles créées après coup par une reproduction.
+    // Ça guérit automatiquement une sauvegarde existante qui
+    // aurait été touchée par l'ancien bug d'empreintes
+    // imbriquées, sans action manuelle du joueur. Si quelque
+    // chose a été corrigé, on force une sauvegarde immédiate
+    // pour ne pas perdre le nettoyage au prochain chargement.
+
+    if (assainirGenealogie()) {
+
+        sauvegarderPartie();
+
+    }
 
 
     verifierSucces();
@@ -10248,7 +10273,59 @@ secondOeil:
     };
 }
 
-function nettoyerGenealogie() {
+// Liste blanche des champs qu'une empreinte d'ancêtre a le
+// droit de contenir. C'est la garantie structurelle contre le
+// bug de "poids en octet démultiplié" : une empreinte ne peut
+// JAMAIS embarquer ses propres ancêtres (ni ses gènes, ses
+// statistiques, ses évaluations, etc.), quoi qu'il arrive
+// ailleurs dans le code. Toute donnée en dehors de cette liste
+// est silencieusement ignorée.
+
+const CHAMPS_EMPREINTE_GENEALOGIQUE = [
+    "id",
+    "nom",
+    "espece",
+    "sexe",
+    "generation"
+];
+
+function creerEmpreinteGenealogique(dragon) {
+
+    if (!dragon) {
+        return null;
+    }
+
+    const empreinte = {};
+
+    CHAMPS_EMPREINTE_GENEALOGIQUE.forEach(
+        function (champ) {
+
+            empreinte[champ] = dragon[champ];
+
+        }
+    );
+
+    empreinte.apparence =
+        dragon.apparence
+            ? structuredClone(dragon.apparence)
+            : null;
+
+    return empreinte;
+
+}
+
+// Repasse toute la collection au tamis de la liste blanche
+// ci-dessus : reconstruit chaque référence de parent (pere et
+// mere) à partir de zéro plutôt que de simplement supprimer un
+// champ .parents éventuellement présent. Ça guérit aussi bien
+// les sauvegardes touchées par l'ancien bug (parents imbriqués
+// à répétition) que toute autre donnée superflue qui aurait pu
+// s'y glisser. Retourne true si quelque chose a été corrigé,
+// pour savoir s'il faut forcer une sauvegarde immédiate.
+
+function assainirGenealogie() {
+
+    let corrige = false;
 
     for (const dragon of collectionDragons) {
 
@@ -10264,38 +10341,38 @@ function nettoyerGenealogie() {
                 continue;
             }
 
-            delete parent.parents;
+            const empreinteAssainie =
+                creerEmpreinteGenealogique(parent);
+
+            const avant =
+                JSON.stringify(parent);
+
+            const apres =
+                JSON.stringify(empreinteAssainie);
+
+            if (avant !== apres) {
+                corrige = true;
+            }
+
+            dragon.parents[role] =
+                empreinteAssainie;
 
         }
 
     }
 
-}
+    if (corrige) {
 
-function creerEmpreinteGenealogique(dragon) {
+        console.warn(
+            "Généalogie assainie : des empreintes "
+            + "d'ancêtres contenaient des données "
+            + "superflues (probablement héritées d'une "
+            + "ancienne sauvegarde) et ont été nettoyées."
+        );
 
-    if (!dragon) {
-        return null;
     }
 
-    return {
-
-        id: dragon.id,
-
-        nom: dragon.nom,
-
-        espece: dragon.espece,
-
-        sexe: dragon.sexe,
-
-        generation: dragon.generation,
-
-        apparence:
-            dragon.apparence
-                ? structuredClone(dragon.apparence)
-                : null
-
-    };
+    return corrige;
 
 }
 
@@ -10445,6 +10522,56 @@ function creerCarteGenealogique(noeud) {
     `;
 }
 
+// Transforme l'arbre {dragon, pere, mere} imbriqué (construit
+// par construireArbreGenealogique) en un tableau de rangées :
+// niveaux[0] = [le dragon lui-même], niveaux[1] = [père, mère],
+// niveaux[2] = [4 grands-parents], etc. Chaque rangée fait
+// systématiquement 2× la taille de la précédente (un
+// emplacement vide devient null) afin que le traçage des
+// lignes puisse toujours associer l'ancêtre i de la rangée N
+// à ses deux cases 2i et 2i+1 de la rangée N+1, quelle que
+// soit la profondeur.
+
+function aplatirGenerationsGenealogiques(
+    arbre,
+    profondeurMax
+) {
+
+    const niveaux = [[arbre]];
+
+    for (
+        let n = 1;
+        n <= profondeurMax;
+        n++
+    ) {
+
+        const niveauPrecedent =
+            niveaux[n - 1];
+
+        const niveauCourant = [];
+
+        niveauPrecedent.forEach(
+            function (noeud) {
+
+                niveauCourant.push(
+                    noeud ? noeud.pere : null
+                );
+
+                niveauCourant.push(
+                    noeud ? noeud.mere : null
+                );
+
+            }
+        );
+
+        niveaux.push(niveauCourant);
+
+    }
+
+    return niveaux;
+
+}
+
 function afficherGenealogie(dragon) {
 
     const fenetre =
@@ -10471,13 +10598,31 @@ function afficherGenealogie(dragon) {
     const arbre =
         construireArbreGenealogique(
             dragon,
-            2
+            PROFONDEUR_GENEALOGIE_MAX
+        );
+
+
+    const niveaux =
+        aplatirGenerationsGenealogiques(
+            arbre,
+            PROFONDEUR_GENEALOGIE_MAX
         );
 
 
     titre.textContent =
         "Généalogie de "
         + dragon.nom;
+
+
+    // Le nombre de colonnes dépend de la profondeur affichée :
+    // on le communique au CSS via une variable plutôt que de
+    // dupliquer PROFONDEUR_GENEALOGIE_MAX dans la feuille de
+    // style.
+
+    contenu.style.setProperty(
+        "--nombre-niveaux-genealogie",
+        niveaux.length
+    );
 
 
     contenu.innerHTML = `
@@ -10488,57 +10633,24 @@ function afficherGenealogie(dragon) {
             aria-hidden="true"
         ></svg>
 
-        <div class="generation-genealogie">
+        ${niveaux.map(
+            function (noeuds, indexNiveau) {
 
-            ${creerCarteGenealogique(
-                arbre.dragon
-                    ? arbre
-                    : null
-            )}
+                return `
+                    <div
+                        class="generation-genealogie"
+                        data-niveau="${indexNiveau}"
+                    >
 
-        </div>
+                        ${noeuds.map(
+                            creerCarteGenealogique
+                        ).join("")}
 
+                    </div>
+                `;
 
-        <div class="generation-genealogie">
-
-            ${creerCarteGenealogique(
-                arbre.pere
-            )}
-
-            ${creerCarteGenealogique(
-                arbre.mere
-            )}
-
-        </div>
-
-
-        <div class="generation-genealogie">
-
-            ${creerCarteGenealogique(
-                arbre.pere
-                    ? arbre.pere.pere
-                    : null
-            )}
-
-            ${creerCarteGenealogique(
-                arbre.pere
-                    ? arbre.pere.mere
-                    : null
-            )}
-
-            ${creerCarteGenealogique(
-                arbre.mere
-                    ? arbre.mere.pere
-                    : null
-            )}
-
-            ${creerCarteGenealogique(
-                arbre.mere
-                    ? arbre.mere.mere
-                    : null
-            )}
-
-        </div>
+            }
+        ).join("")}
 
     `;
 
@@ -10683,7 +10795,7 @@ function tracerLignesGenealogie() {
 
     if (
         !svg
-        || generations.length < 3
+        || generations.length < 2
     ) {
         return;
     }
@@ -10820,52 +10932,45 @@ function tracerLignesGenealogie() {
     }
 
 
-    const dragon =
-        generations[0]
-            .querySelectorAll(
+    // Relie chaque rangée à la suivante : la carte i d'une
+    // rangée se branche toujours sur les cases 2i et 2i+1 de
+    // la rangée d'après (c'est exactement l'ordre dans lequel
+    // aplatirGenerationsGenealogiques() les a produites : père
+    // puis mère, à chaque niveau). Générique quelle que soit
+    // la profondeur configurée dans PROFONDEUR_GENEALOGIE_MAX.
+
+    for (
+        let n = 0;
+        n < generations.length - 1;
+        n++
+    ) {
+
+        const rangeeParente =
+            generations[n].querySelectorAll(
                 ".carte-genealogique"
             );
 
-
-    const parents =
-        generations[1]
-            .querySelectorAll(
+        const rangeeEnfants =
+            generations[n + 1].querySelectorAll(
                 ".carte-genealogique"
             );
 
+        rangeeParente.forEach(
+            function (carte, index) {
 
-    const grandsParents =
-        generations[2]
-            .querySelectorAll(
-                ".carte-genealogique"
-            );
+                tracerBranche(
+                    carte,
+                    [
+                        rangeeEnfants[index * 2],
+                        rangeeEnfants[index * 2 + 1]
+                    ]
+                );
 
+            }
+        );
 
-    tracerBranche(
-        dragon[0],
-        [
-            parents[0],
-            parents[1]
-        ]
-    );
+    }
 
-
-    tracerBranche(
-        parents[0],
-        [
-            grandsParents[0],
-            grandsParents[1]
-        ]
-    );
-
-
-    tracerBranche(
-        parents[1],
-        [
-            grandsParents[2],
-            grandsParents[3]
-        ]
-    );
 }
 
 function creerBebe(
@@ -11338,9 +11443,13 @@ function garderBebe() {
 
     signalerDragonObtenu(dragonActuel, "reproduction");
 
-    sauvegarderPartie();
+    // Assainir AVANT de sauvegarder : sinon la version encore
+    // sale part dans la sauvegarde, et le nettoyage n'est
+    // persisté qu'au prochain enregistrement fortuit.
 
-    nettoyerGenealogie();
+    assainirGenealogie();
+
+    sauvegarderPartie();
 
     dragonActuel = null;
 

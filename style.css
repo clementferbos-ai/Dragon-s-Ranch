@@ -5176,14 +5176,20 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
     display: grid;
 
     grid-template-columns:
-        1fr
-        1fr
-        1fr;
+        repeat(
+            var(--nombre-niveaux-genealogie, 3),
+            1fr
+        );
 
     align-items: center;
 
-    min-width: 920px;
-    min-height: 500px;
+    min-width:
+        calc(
+            var(--nombre-niveaux-genealogie, 3)
+            * 300px
+        );
+
+    min-height: 620px;
 
     padding: 40px 20px;
 }
@@ -5272,6 +5278,28 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
 }
 
 
+/* Cartes plus compactes aux niveaux profonds (grands-parents
+   et au-delà), pour que les rangées les plus peuplées restent
+   lisibles sans faire exploser la hauteur de la fenêtre. */
+
+.generation-genealogie[data-niveau="2"] .carte-genealogique,
+.generation-genealogie[data-niveau="3"] .carte-genealogique {
+    width: 170px;
+
+    gap: 4px;
+    padding: 11px 13px;
+}
+
+.generation-genealogie[data-niveau="2"] .carte-genealogique strong,
+.generation-genealogie[data-niveau="3"] .carte-genealogique strong {
+    font-size: 0.85rem;
+}
+
+.generation-genealogie[data-niveau="3"] .carte-genealogique small {
+    display: none;
+}
+
+
 /* Ancêtre inconnu */
 
 .carte-genealogique.inconnue {
@@ -5347,7 +5375,11 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
 
 
     .contenu-genealogie {
-        min-width: 850px;
+        min-width:
+            calc(
+                var(--nombre-niveaux-genealogie, 3)
+                * 230px
+            );
     }
 
 .couleurs-genealogie {
