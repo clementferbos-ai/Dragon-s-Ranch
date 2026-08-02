@@ -2859,6 +2859,27 @@ function obtenirDateSauvegarde(
 // pourra plus jamais écraser silencieusement une
 // collection existante par du vide.
 
+// Lit le nombre de piastres d'une sauvegarde de façon
+// défensive (sauvegarde absente, champ manquant sur une
+// sauvegarde ancienne, valeur corrompue...).
+
+function obtenirPiastresSauvegarde(sauvegarde) {
+
+    if (
+        !sauvegarde
+        || typeof sauvegarde.piastresDraconiques
+            !== "number"
+    ) {
+
+        return 0;
+
+    }
+
+
+    return sauvegarde.piastresDraconiques;
+
+}
+
 function estSauvegardeSuspecte(
     sauvegardeCandidate,
     sauvegardeReference
@@ -2963,6 +2984,38 @@ async function synchroniserPartieAuDemarrage() {
             obtenirDateSauvegarde(
                 sauvegardeDistante
             );
+
+
+        // Protection anti-perte des piastres : contrairement
+        // au reste de la sauvegarde (où on fait confiance à
+        // la date la plus récente), le solde de piastres ne
+        // doit jamais reculer au moment de la synchronisation
+        // au démarrage. Une sauvegarde locale ou distante
+        // peut légitimement être "périmée" (un autre appareil
+        // a joué depuis) sans que ça justifie d'effacer des
+        // piastres gagnées ailleurs : on garde toujours le
+        // plus grand des deux montants connus, quelle que
+        // soit la sauvegarde qui gagne par ailleurs.
+
+        const piastresProteges =
+            Math.max(
+                obtenirPiastresSauvegarde(
+                    sauvegardeLocale
+                ),
+                obtenirPiastresSauvegarde(
+                    sauvegardeDistante
+                )
+            );
+
+        if (sauvegardeLocale) {
+            sauvegardeLocale.piastresDraconiques =
+                piastresProteges;
+        }
+
+        if (sauvegardeDistante) {
+            sauvegardeDistante.piastresDraconiques =
+                piastresProteges;
+        }
 
 
         // 3. La sauvegarde locale
