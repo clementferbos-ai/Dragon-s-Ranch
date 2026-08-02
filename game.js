@@ -39,6 +39,14 @@ let vueParents = "grille";
 
 const PROFONDEUR_GENEALOGIE_MAX = 3;
 
+// Profondeur utilisée pour DÉTECTER la consanguinité (calcul,
+// pas affichage) : volontairement plus profonde que l'arbre
+// visuel, pour repérer aussi les cousinages plus lointains.
+// Sans effet sur ce qui est stocké : ce n'est qu'une remontée
+// en lecture seule des .parents déjà existants.
+
+const PROFONDEUR_CONSANGUINITE_MAX = 6;
+
 // =========================================
 // ÉCONOMIE : PIASTRES DRACONIQUES, MISSIONS
 // ET BOUTIQUE
@@ -9395,6 +9403,8 @@ function afficherParentsDisponibles() {
     afficherApercuParent(idPereSelectionne, "apercu-pere");
     afficherApercuParent(idMereSelectionne, "apercu-mere");
 
+    afficherBadgeConsanguinite();
+
     const boutonComparer =
         document.getElementById("bouton-comparer-parents");
 
@@ -9408,6 +9418,114 @@ function afficherParentsDisponibles() {
         ).innerHTML = "";
 
     }
+
+}
+
+// Avertissement automatique dès que les deux parents sont
+// choisis : contrairement à la comparaison des lignées (qui
+// est optionnelle, sur clic), c'est une information de
+// sécurité que le joueur doit voir sans action supplémentaire
+// — mais qui ne bloque jamais rien, conformément au choix de
+// conception (le joueur reste libre, juste informé).
+
+function afficherBadgeConsanguinite() {
+
+    const zone =
+        document.getElementById(
+            "badge-consanguinite"
+        );
+
+    if (!zone) {
+        return;
+    }
+
+
+    if (
+        idPereSelectionne === ""
+        || idMereSelectionne === ""
+    ) {
+
+        zone.innerHTML = "";
+
+        return;
+
+    }
+
+
+    const pere =
+        collectionDragons.find(
+            dragon => dragon.id === idPereSelectionne
+        );
+
+    const mere =
+        collectionDragons.find(
+            dragon => dragon.id === idMereSelectionne
+        );
+
+    if (!pere || !mere) {
+
+        zone.innerHTML = "";
+
+        return;
+
+    }
+
+
+    const coefficient =
+        calculerCoefficientParente(
+            pere,
+            mere
+        );
+
+    const niveau =
+        obtenirNiveauConsanguinite(
+            coefficient
+        );
+
+    if (!niveau) {
+
+        zone.innerHTML = "";
+
+        return;
+
+    }
+
+
+    const malus =
+        obtenirMalusConsanguinite(
+            coefficient
+        );
+
+    zone.innerHTML = `
+
+        <div class="badge-consanguinite badge-consanguinite-${niveau.severite}">
+
+            <strong>
+                🧬 ${niveau.libelle}
+            </strong>
+
+            <p>
+                ${pere.nom} et ${mere.nom} partagent au
+                moins un ancêtre commun (parenté estimée à
+                ${Math.round(coefficient * 100)}%).
+                ${
+                    malus > 0
+                        ? "En mode libre, la chance d'hériter "
+                            + "du meilleur gène sur chaque "
+                            + "statistique non ciblée est "
+                            + "réduite de " + malus
+                            + " points. La reproduction reste "
+                            + "possible normalement, y compris "
+                            + "en mode ciblé."
+                        : "L'effet sur la reproduction reste "
+                            + "négligeable à ce degré de "
+                            + "parenté."
+                }
+            </p>
+
+        </div>
+
+    `;
 
 }
 
@@ -10395,6 +10513,262 @@ function resoudreAncetre(empreinte) {
 
 }
 
+// =================================
+// CONSANGUINITÉ
+// =================================
+//
+// Remonte les ancêtres d'un dragon (lui-même compris, à
+// distance 0) via les mêmes .parents/resoudreAncetre que
+// l'arbre généalogique — donc purement en lecture, aucun
+// nouveau stockage. Pour chaque ancêtre trouvé, on retient
+// aussi les identifiants de SES PROPRES parents (idPere/
+// idMere) : ça sert ensuite à repérer les ancêtres communs
+// "redondants" (voir calculerCoefficientParente). Si un même
+// ancêtre est atteignable par plusieurs chemins, on garde la
+// distance la plus courte.
+
+function collecterAncetresAvecDistance(
+    dragon,
+    profondeurMax
+) {
+
+    const infos = new Map();
+
+    function explorer(noeud, distance) {
+
+        if (!noeud || distance > profondeurMax) {
+            return;
+        }
+
+        const infoConnue =
+            infos.get(noeud.id);
+
+        if (
+            infoConnue === undefined
+            || distance < infoConnue.distance
+        ) {
+
+            infos.set(
+                noeud.id,
+                {
+                    distance: distance,
+
+                    idPere:
+                        noeud.parents && noeud.parents.pere
+                            ? noeud.parents.pere.id
+                            : null,
+
+                    idMere:
+                        noeud.parents && noeud.parents.mere
+                            ? noeud.parents.mere.id
+                            : null
+                }
+            );
+
+        }
+
+
+        if (!noeud.parents) {
+            return;
+        }
+
+        if (noeud.parents.pere) {
+
+            explorer(
+                resoudreAncetre(noeud.parents.pere),
+                distance + 1
+            );
+
+        }
+
+        if (noeud.parents.mere) {
+
+            explorer(
+                resoudreAncetre(noeud.parents.mere),
+                distance + 1
+            );
+
+        }
+
+    }
+
+    explorer(dragon, 0);
+
+    return infos;
+
+}
+
+// Coefficient de parenté (formule classique de génétique des
+// pedigrees) : pour chaque ancêtre commun aux deux parents
+// candidats, on ajoute (1/2)^(distance1 + distance2). Ça
+// retrouve les valeurs de référence : frère/soeur ou
+// parent-enfant = 0.5, demi-fratrie ou grand-parent = 0.25,
+// cousins germains = 0.125, etc.
+//
+// Point important : un ancêtre commun est ignoré si l'un de
+// SES PROPRES parents est lui-même un ancêtre commun (donc
+// plus récent). Sans ce filtre, un même lien de parenté serait
+// compté deux fois : une fois via l'ancêtre proche (par ex. le
+// père commun de deux frère et sœur), une deuxième fois via
+// SES parents à lui (les grands-parents communs), alors que
+// ces derniers ne représentent pas un lien de parenté
+// supplémentaire, juste le prolongement du même lien déjà
+// compté.
+
+function calculerCoefficientParente(
+    pere,
+    mere
+) {
+
+    if (
+        !pere
+        || !mere
+        || pere.id === mere.id
+    ) {
+
+        return 0;
+
+    }
+
+
+    const ancetresPere =
+        collecterAncetresAvecDistance(
+            pere,
+            PROFONDEUR_CONSANGUINITE_MAX
+        );
+
+    const ancetresMere =
+        collecterAncetresAvecDistance(
+            mere,
+            PROFONDEUR_CONSANGUINITE_MAX
+        );
+
+    const idsCommuns =
+        [...ancetresPere.keys()].filter(
+            function (id) {
+
+                return ancetresMere.has(id);
+
+            }
+        );
+
+    function estRedondant(id) {
+
+        // Redondant si CET ancêtre est lui-même le père ou la
+        // mère d'un AUTRE ancêtre commun : ça veut dire qu'il
+        // n'est qu'un prolongement plus lointain du même lien
+        // de parenté, déjà porté par cet autre ancêtre (plus
+        // récent, donc plus pertinent). On l'exclut pour ne
+        // pas compter deux fois le même lien.
+
+        return idsCommuns.some(
+            function (autreId) {
+
+                if (autreId === id) {
+                    return false;
+                }
+
+
+                const infoAutre =
+                    ancetresPere.get(autreId);
+
+                return (
+                    infoAutre.idPere === id
+                    || infoAutre.idMere === id
+                );
+
+            }
+        );
+
+    }
+
+    let coefficient = 0;
+
+    idsCommuns.forEach(
+        function (id) {
+
+            if (estRedondant(id)) {
+                return;
+            }
+
+
+            const distancePere =
+                ancetresPere.get(id).distance;
+
+            const distanceMere =
+                ancetresMere.get(id).distance;
+
+            coefficient +=
+                Math.pow(
+                    0.5,
+                    distancePere + distanceMere
+                );
+
+        }
+    );
+
+    return coefficient;
+
+}
+
+// Traduit le coefficient en malus (points de pourcentage
+// retirés à la chance d'hériter du meilleur gène). Doux et
+// progressif, jamais bloquant : au pire, la reproduction
+// revient à un tirage 50/50 comme pour un couple de
+// génération 0, jamais pire.
+
+function obtenirMalusConsanguinite(coefficient) {
+
+    return Math.min(
+        35,
+        Math.round(coefficient * 40)
+    );
+
+}
+
+// Libellé + sévérité pour l'avertissement affiché au joueur.
+// Les seuils sont les points milieux entre les valeurs de
+// référence (0.5 / 0.25 / 0.125), pas des noms de lien exacts
+// (un même coefficient peut correspondre à plusieurs types de
+// parenté selon les cas) : on reste volontairement descriptif
+// plutôt que de prétendre deviner "frère" vs "grand-parent".
+
+function obtenirNiveauConsanguinite(coefficient) {
+
+    if (coefficient <= 0) {
+
+        return null;
+
+    }
+
+
+    if (coefficient >= 0.375) {
+
+        return {
+            severite: "notable",
+            libelle: "Parenté très proche"
+        };
+
+    }
+
+
+    if (coefficient >= 0.1875) {
+
+        return {
+            severite: "moderee",
+            libelle: "Parenté proche"
+        };
+
+    }
+
+
+    return {
+        severite: "legere",
+        libelle: "Parenté éloignée"
+    };
+
+}
+
 function construireArbreGenealogique(
     dragon,
     profondeurMax,
@@ -10979,6 +11353,23 @@ function creerBebe(
     statistiqueCiblee = null
 ) {
 
+// Calculé une seule fois pour toute la portée, pas stat par
+// stat. N'affecte QUE le tirage "libre" ci-dessous : la
+// transmission ciblée (payée en actions) reste toujours
+// garantie, la consanguinité ne remet pas en cause un choix
+// délibéré du joueur.
+
+const coefficientParenteBebe =
+    calculerCoefficientParente(
+        pere,
+        mere
+    );
+
+const malusConsanguiniteBebe =
+    obtenirMalusConsanguinite(
+        coefficientParenteBebe
+    );
+
 function transmettre(
     genesParent,
     statistique
@@ -11011,9 +11402,13 @@ function transmettre(
         );
 
     const chanceBonGene =
-        Math.min(
-            50,
-            generationMoyenne
+        Math.max(
+            0,
+            Math.min(
+                50,
+                generationMoyenne
+            )
+            - malusConsanguiniteBebe
         );
 
     if (

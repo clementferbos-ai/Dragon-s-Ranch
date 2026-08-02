@@ -6158,3 +6158,60 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
 .encadre-conseil strong {
     color: #d4c19b;
 }
+
+/* ================================= */
+/* AVERTISSEMENT DE CONSANGUINITÉ    */
+/* ================================= */
+
+.badge-consanguinite {
+    margin: 18px 0;
+    padding: 14px 18px;
+
+    background:
+        rgba(42, 30, 24, 0.55);
+
+    border:
+        1px solid rgba(196, 161, 87, 0.3);
+    border-left:
+        3px solid var(--texte-discret);
+}
+
+.badge-consanguinite strong {
+    display: block;
+    margin-bottom: 6px;
+
+    font-size: 0.92rem;
+    letter-spacing: 0.03em;
+}
+
+.badge-consanguinite p {
+    margin: 0;
+
+    color: var(--texte-secondaire);
+    font-size: 0.85rem;
+    line-height: 1.55;
+}
+
+.badge-consanguinite-legere {
+    border-left-color: #c2a15e;
+}
+
+.badge-consanguinite-legere strong {
+    color: #c2a15e;
+}
+
+.badge-consanguinite-moderee {
+    border-left-color: #d18f4f;
+}
+
+.badge-consanguinite-moderee strong {
+    color: #d18f4f;
+}
+
+.badge-consanguinite-notable {
+    border-left-color: #c66;
+}
+
+.badge-consanguinite-notable strong {
+    color: #d38686;
+}
