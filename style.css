@@ -6039,3 +6039,90 @@ button:not(.bouton-navigation):not(.lien-parent):hover:not(:disabled) {
 .carte-don button {
     width: 100%;
 }
+
+/* ================================= */
+/* ÉCRAN TUTORIEL                    */
+/* ================================= */
+
+.contenu-tutoriel {
+    width: min(720px, 100%);
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.section-tutoriel {
+    padding-bottom: 26px;
+
+    border-bottom:
+        1px solid rgba(190, 151, 76, 0.16);
+}
+
+.section-tutoriel:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.section-tutoriel h3 {
+    margin: 0 0 12px;
+
+    color: var(--or-principal);
+    letter-spacing: 0.04em;
+}
+
+.section-tutoriel p {
+    margin: 0 0 12px;
+
+    color: var(--texte-principal);
+    line-height: 1.65;
+}
+
+.section-tutoriel p:last-child {
+    margin-bottom: 0;
+}
+
+.liste-tutoriel {
+    margin: 0 0 12px;
+    padding-left: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    color: var(--texte-principal);
+    line-height: 1.55;
+}
+
+.liste-tutoriel:last-child {
+    margin-bottom: 0;
+}
+
+.liste-tutoriel li {
+    padding-left: 4px;
+}
+
+.liste-tutoriel li strong {
+    color: #d4c19b;
+}
+
+.encadre-conseil {
+    padding: 14px 18px;
+
+    background:
+        rgba(42, 30, 24, 0.55);
+
+    border:
+        1px solid rgba(196, 161, 87, 0.3);
+    border-left:
+        3px solid var(--or-principal);
+
+    color: var(--texte-secondaire);
+    font-size: 0.88rem;
+    line-height: 1.55;
+}
+
+.encadre-conseil strong {
+    color: #d4c19b;
+}
